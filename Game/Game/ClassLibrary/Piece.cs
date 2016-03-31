@@ -8,5 +8,51 @@ namespace Game.ClassLibrary
 {
     class Piece
     {
+
+        #region Properties
+        private int x; // Abscisse
+
+        public int X
+        {
+            get { return x; }
+            set { x = value; }
+        }
+
+        private int y; // Ordonnée
+
+        public int Y
+        {
+            get { return y; }
+            set { y = value; }
+        }
+
+        private Player player; // Joueur
+
+        public Player Player
+        {
+            get { return player; }
+            set { player = value; }
+        }
+
+        #endregion 
+
+        public Piece(int x , int y)
+        {
+            this.x = x;
+            this.y = y;
+            this.player = null; // Vide par défaut
+        }
+
+        public void switchPiece()
+        {
+            if (this.player.Owner == Player.HUMAN)
+            {
+                this.player.Owner = Player.COMPUTER;
+            }
+            else
+            {
+                this.player.Owner = Player.HUMAN;
+            }
+        }
     }
 }
