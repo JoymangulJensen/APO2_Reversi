@@ -13,65 +13,109 @@ namespace Game
 {
     public partial class Reversi : Form
     {
+        /// <summary>
+        /// Grille
+        /// </summary>
         private Board board;
 
         public Reversi()
         {
             InitializeComponent();
-
+            init();
         }
 
+        /// <summary>
+        /// Initialise la grille
+        /// </summary>
         private void init()
         {
             this.board = new Board();
-            this.refreshBoard();
 
             for (int col = 0; col < boardGUI.ColumnCount; col++)
             {
                 for (int row = 0; row < boardGUI.RowCount; row++)
                 {
-                    // Init picture box
+                    PictureBox p = initPictureBox();
+                    boardGUI.Controls.Add(p, col, row);
                 }
-            }
-
+            } 
+            this.refreshBoard();
         }
 
+        /// <summary>
+        /// Renvoie une PictureBox correctement initialisée
+        /// </summary>
+        /// <returns></returns>
+        private PictureBox initPictureBox()
+        {
+            PictureBox p = new PictureBox();
+            p.Visible = true;
+            p.SizeMode = PictureBoxSizeMode.StretchImage;
+            p.Click += new EventHandler(this.pictureBox_Click);
+            p.MouseHover += new EventHandler(this.pictureBox_Hover);
+            p.BackColor = Color.Transparent;
+            p.Image = null;
+            return p;
+        }
+
+        /// <summary>
+        /// Actualise l'affichage de la grille selon board
+        /// </summary>
         private void refreshBoard()
         {
-            for (int y = 0; y < 8; y ++)
+            for (int col = 0; col < boardGUI.ColumnCount; col++)
             {
-                for (int x = 0; x < 8; x ++)
+                for (int row = 0; row < boardGUI.RowCount; row++)
                 {
-                    PictureBox p = (PictureBox)boardGUI.GetControlFromPosition(x, y);
-                    if (this.board.Grid[x, y].Player == null)
+
+                    PictureBox p = (PictureBox)boardGUI.GetControlFromPosition(col, row);
+
+                    if (this.board.Grid[col, row].Player == null)
                     {
                         // this.boardGUI.
                     }      
                     else
                     {
-                        if (this.board.Grid[x, y].Player.Owner == Player.COMPUTER)
+                        if (this.board.Grid[col, row].Player.Owner == Player.COMPUTER)
                         {
                             // AI : Afficher Noir
-                            p.Image = Image.FromFile("../Resources/black.png");
+                            p.Image = Image.FromFile("../../Resources/black.png");
 
                         }
                         else
                         {
-                            p.Image = Image.FromFile("../Resources/white.png");
+                            p.Image = Image.FromFile("../../Resources/white.png");
                         }
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Clic sur PictureBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pictureBox_Click(object sender, EventArgs e)
         {
-            // play
+            PictureBox p = (PictureBox)sender;
+            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
+            int x = position.Row;
+            int y = position.Column;
+            this.refreshBoard();
         }
 
+        /// <summary>
+        /// Surf sur PictureBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pictureBox_Hover(object sender, EventArgs e)
         {
-            // hover
+            PictureBox p = (PictureBox)sender;
+            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
+            int x = position.Row;
+            int y = position.Column;
         }
 
     }
