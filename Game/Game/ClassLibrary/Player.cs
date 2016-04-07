@@ -39,6 +39,9 @@ namespace Game.ClassLibrary
         public Player(int player)
         {
             this.owner = player;
+        
         }
+
+        
     }
 }
