@@ -95,6 +95,7 @@ namespace Game
         private void refreshScore()
         {
             this.labelScore1.Text = "Score : " + board.numberOfPieceByPlayer(Player.COMPUTER);
+            this.labelScore2.Text = "Score : " + board.numberOfPieceByPlayer(Player.HUMAN);
         }
 
         /// <summary>
@@ -106,8 +107,11 @@ namespace Game
         {
             PictureBox p = (PictureBox)sender;
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
-            int x = position.Row;
-            int y = position.Column;
+            int x = position.Column;
+            int y = position.Row;
+            p.Click -= pictureBox_Click;
+            p.MouseHover -= pictureBox_Hover;
+            this.board.play(x, y);
             this.refreshBoard();
         }
 
@@ -122,7 +126,7 @@ namespace Game
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Row;
             int y = position.Column;
-            MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
+             // MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
         }
 
     }
