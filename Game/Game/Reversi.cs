@@ -24,6 +24,8 @@ namespace Game
             init();
         }
 
+        #region Initialization
+
         /// <summary>
         /// Initialise la grille
         /// </summary>
@@ -52,11 +54,16 @@ namespace Game
             p.Visible = true;
             p.SizeMode = PictureBoxSizeMode.StretchImage;
             p.Click += new EventHandler(this.pictureBox_Click);
-            p.MouseHover += new EventHandler(this.pictureBox_Hover);
+            p.MouseEnter += new EventHandler(this.pictureBox_HoverIn);
+            p.MouseLeave += new EventHandler(this.pictureBox_HoverOut);
             p.BackColor = Color.Transparent;
             p.Image = null;
             return p;
         }
+
+        #endregion
+
+        #region Refresh of display
 
         /// <summary>
         /// Actualise l'affichage de la grille selon board
@@ -72,7 +79,9 @@ namespace Game
 
                     if (this.board.Grid[col, row].Player != null)
                     {
-                        // If there is a piece        
+                        // If there is a piece    
+                        p.MouseEnter -= pictureBox_HoverIn;
+                        p.MouseLeave -= pictureBox_HoverOut;
                 
                         if (this.board.Grid[col, row].Player.Owner == Player.HUMAN)
                         {
@@ -100,6 +109,10 @@ namespace Game
             this.labelScore2.Text = board.Players[1].Name + " : " + board.Players[1].Score;
         }
 
+        #endregion
+
+        #region Events
+
         /// <summary>
         /// Click on PictureBox
         /// </summary>
@@ -111,11 +124,10 @@ namespace Game
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Column;
             int y = position.Row;
-            if (this.board.play(x, y).Count != 0)
+            if (this.board.play(x, y).Count >= 0)
             {
                 // The move can be played (at least a piece is changed)
                 p.Click -= pictureBox_Click;
-                p.MouseHover -= pictureBox_Hover;
             }
             this.refreshBoard();
         }
@@ -125,14 +137,31 @@ namespace Game
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void pictureBox_Hover(object sender, EventArgs e)
+        private void pictureBox_HoverIn(object sender, EventArgs e)
         {
             PictureBox p = (PictureBox)sender;
+            p.Image = Image.FromFile("../../Resources/grey.png");
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Column;
             int y = position.Row;
              // MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
         }
+
+        /// <summary>
+        /// Hover out PictureBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pictureBox_HoverOut(object sender, EventArgs e)
+        {
+            PictureBox p = (PictureBox)sender;
+            p.Image = null;
+            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
+            int x = position.Column;
+            int y = position.Row;
+        }
+
+        #endregion
 
     }
 }

@@ -10,6 +10,8 @@ namespace Game.ClassLibrary
 
     class Board
     {
+        #region Attributes
+
         /// <summary>
         /// List of the players
         /// </summary>
@@ -32,84 +34,9 @@ namespace Game.ClassLibrary
             set { grid = value; }
         }
 
-        /// <summary>
-        /// Try to play on the given coordonates
-        /// </summary>
-        /// <param name="x">Column index</param>
-        /// <param name="y">Row index</param>
-        /// <returns></returns>
-        public List<Piece> play(int x, int y)
-        {
-            List<Piece> changedPieces = new List<Piece>();
-            if (true) // Can play
-            {
-                grid[x, y].Player = this.getCurrentPlayer();
-                changedPieces.Add(grid[x, y]);
-                this.setNextPlayer();
-                this.updateScores();
-            }
-            else
-            {
-                // Can't play
-            }
+        #endregion
 
-            return changedPieces;
-        }
-
-        /// <summary>
-        /// Return the object Player who will play the next move
-        /// </summary>
-        /// <returns></returns>
-        private Player getCurrentPlayer()
-        {
-            return players[Player.CurrentPlayer - 1];
-        }
-
-        /// <summary>
-        /// Update the next player
-        /// </summary>
-        private void setNextPlayer()
-        {
-            if (Player.CurrentPlayer >= players.Count)
-            {
-                Player.CurrentPlayer = Player.HUMAN;
-            }
-            else
-            {
-                Player.CurrentPlayer++;
-            }
-
-        }
-
-        /// <summary>
-        /// Update the score of the players
-        /// </summary>
-        private void updateScores()
-        {
-            foreach (Player player in players)
-            {
-                player.Score = numberOfPieceByPlayer(player);
-            }
-        }
-
-        /// <summary>
-        /// Return the number of piece possessed by the player given
-        /// </summary>
-        /// <param name="p">Player</param>
-        /// <returns>The number of pieces</returns>
-        public int numberOfPieceByPlayer(Player p)
-        {
-            int count = 0;
-            for (int i = 0; i < grid.GetLength(0); i++)
-            {
-                for (int j = 0; j < grid.GetLength(1); j++)
-                {
-                    if (grid[i, j].Player != null && grid[i, j].Player == p)
-                        count++;
-                }
-            }
-            return count;
-        }
+        #region Constructor and Initialization
 
         /// <summary>
         /// Constructor
@@ -142,6 +69,99 @@ namespace Game.ClassLibrary
              */
         }
 
+        #endregion
+
+        #region Manage the player rounds
+
+        /// <summary>
+        /// Return the object Player who will play the next move
+        /// </summary>
+        /// <returns></returns>
+        private Player getCurrentPlayer()
+        {
+            return players[Player.CurrentPlayer - 1];
+        }
+
+        /// <summary>
+        /// Update the next player
+        /// </summary>
+        private void setNextPlayer()
+        {
+            if (Player.CurrentPlayer >= players.Count)
+            {
+                Player.CurrentPlayer = Player.HUMAN;
+            }
+            else
+            {
+                Player.CurrentPlayer++;
+            }
+
+        }
+
+
+
+        /// <summary>
+        /// Update the score of the players
+        /// </summary>
+        private void updateScores()
+        {
+            foreach (Player player in players)
+            {
+                player.Score = numberOfPieceByPlayer(player);
+            }
+        }
+
+        /// <summary>
+        /// Return the number of piece possessed by the player given
+        /// </summary>
+        /// <param name="p">Player</param>
+        /// <returns>The number of pieces</returns>
+        private int numberOfPieceByPlayer(Player p)
+        {
+            int count = 0;
+            for (int i = 0; i < grid.GetLength(0); i++)
+            {
+                for (int j = 0; j < grid.GetLength(1); j++)
+                {
+                    if (grid[i, j].Player != null && grid[i, j].Player == p)
+                        count++;
+                }
+            }
+            return count;
+        }
+
+        #endregion
+
+        #region Play
+
+
+        /// <summary>
+        /// Try to play on the given coordonates
+        /// </summary>
+        /// <param name="x">Column index</param>
+        /// <param name="y">Row index</param>
+        /// <returns></returns>
+        public List<Piece> play(int x, int y)
+        {
+            List<Piece> changedPieces = new List<Piece>();
+            if (true) // Can play
+            {
+                grid[x, y].Player = this.getCurrentPlayer();
+                changedPieces.Add(grid[x, y]);
+                this.setNextPlayer();
+                this.updateScores();
+            }
+            else
+            {
+                // Can't play
+            }
+
+            return changedPieces;
+        }
+
+        #endregion
+
+        #region Tests Jensen
         public Boolean testDiagonal(Piece p)
         {
 
@@ -271,8 +291,7 @@ namespace Game.ClassLibrary
             }
             return false;
         }
-
-
+        #endregion
 
     }
 }
