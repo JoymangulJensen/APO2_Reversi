@@ -10,8 +10,20 @@ namespace Game.ClassLibrary
 
     class Board
     {
+        /// <summary>
+        /// List of the players
+        /// </summary>
         List<Player> players;
 
+        internal List<Player> Players
+        {
+            get { return players; }
+            set { players = value; }
+        }
+
+        /// <summary>
+        /// Grid of the game : 2d Array of Pieces
+        /// </summary>
         private Piece[,] grid;
 
         internal Piece[,] Grid
@@ -20,43 +32,93 @@ namespace Game.ClassLibrary
             set { grid = value; }
         }
 
+        /// <summary>
+        /// Try to play on the given coordonates
+        /// </summary>
+        /// <param name="x">Column index</param>
+        /// <param name="y">Row index</param>
+        /// <returns></returns>
         public List<Piece> play(int x, int y)
         {
-            grid[x, y].Player = getCurrentPlayer();
-            List<Piece> al = new List<Piece>();
-            return al;
+            List<Piece> changedPieces = new List<Piece>();
+            if (true) // Can play
+            {
+                grid[x, y].Player = this.getCurrentPlayer();
+                changedPieces.Add(grid[x, y]);
+                this.setNextPlayer();
+                this.updateScores();
+            }
+            else
+            {
+                // Can't play
+            }
+
+            return changedPieces;
         }
 
+        /// <summary>
+        /// Return the object Player who will play the next move
+        /// </summary>
+        /// <returns></returns>
         private Player getCurrentPlayer()
         {
-            foreach (Player p in players)
-            {
-                if (p.Owner == Player.currentPlayer)
-                    return p;
-            }
-            return players[0];
+            return players[Player.CurrentPlayer - 1];
         }
 
-        public int numberOfPieceByPlayer(int p)
+        /// <summary>
+        /// Update the next player
+        /// </summary>
+        private void setNextPlayer()
+        {
+            if (Player.CurrentPlayer >= players.Count)
+            {
+                Player.CurrentPlayer = Player.HUMAN;
+            }
+            else
+            {
+                Player.CurrentPlayer++;
+            }
+
+        }
+
+        /// <summary>
+        /// Update the score of the players
+        /// </summary>
+        private void updateScores()
+        {
+            foreach (Player player in players)
+            {
+                player.Score = numberOfPieceByPlayer(player);
+            }
+        }
+
+        /// <summary>
+        /// Return the number of piece possessed by the player given
+        /// </summary>
+        /// <param name="p">Player</param>
+        /// <returns>The number of pieces</returns>
+        public int numberOfPieceByPlayer(Player p)
         {
             int count = 0;
             for (int i = 0; i < grid.GetLength(0); i++)
             {
                 for (int j = 0; j < grid.GetLength(1); j++)
                 {
-                    if (grid[i, j].Player != null && grid[i, j].Player.Owner == p)
+                    if (grid[i, j].Player != null && grid[i, j].Player == p)
                         count++;
                 }
             }
             return count;
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public Board()
         {
-
             players = new List<Player>();
-            players.Add(new Player(Player.HUMAN));
-            players.Add(new Player(Player.COMPUTER));
+            players.Add(new Player(Player.HUMAN, "Joueur"));
+            players.Add(new Player(Player.COMPUTER, "Ordinateur"));
 
             this.grid = new Piece[8, 8];
             for (int i = 0; i < grid.GetLength(0); i++)
@@ -67,10 +129,17 @@ namespace Game.ClassLibrary
                 }
             }
 
+            this.play(3, 4);
+            this.play(4, 4);
+            this.play(4, 3);
+            this.play(3, 3);
+
+            /**
             grid[3, 3].Player = players[0]; // HUMAN
             grid[3, 4].Player = players[1]; // COMPUTER
             grid[4, 3].Player = players[1]; // HUMAN
             grid[4, 4].Player = players[0]; // COMPUTER
+             */
         }
 
         public Boolean testDiagonal(Piece p)
@@ -86,11 +155,11 @@ namespace Game.ClassLibrary
             int indY = p.Y;
             for(int i= indY ; i<grid.GetLength(1); i++)
             {
-                if(grid[indX, i].Player != p.Player)
+                if (grid[indX, i].Player != this.getCurrentPlayer())
                 {
                     return true;
                 }
-                if(grid[grid.GetLength(0) - i, indY].Player != p.Player)
+                if (grid[grid.GetLength(0) - i, indY].Player != this.getCurrentPlayer())
                 {
                     return true;
                 }
@@ -106,7 +175,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test Upper left
-                if (grid[indX - 1, indY - 1].Player != p.Player && indX != 0 && indY != 0)
+                if (grid[indX - 1, indY - 1].Player != null && grid[indX - 1, indY - 1].Player != this.getCurrentPlayer() && indX != 0 && indY != 0)
                 {
                     return true;
                 }
@@ -118,7 +187,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test Upper right
-                if (grid[indX - 1, indY + 1].Player != p.Player && indX != 0 && indY != grid.GetLength(1) - 1)
+                if (grid[indX - 1, indY + 1].Player !=   null && grid[indX - 1, indY + 1].Player != this.getCurrentPlayer() && indX != 0 && indY != grid.GetLength(1) - 1)
                 {
                     return true;
                 }
@@ -131,7 +200,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test bottom right
-                if (grid[indX + 1, indY + 1].Player != p.Player && indX != grid.GetLength(0) - 1 && indY != grid.GetLength(1) - 1)
+                if (grid[indX - 1, indY + 1].Player != null && grid[indX + 1, indY + 1].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1 && indY != grid.GetLength(1) - 1)
                 {
                     return true;
                 }
@@ -143,7 +212,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test bottom left
-                if (grid[indX + 1, indY - 1].Player != p.Player && indX != grid.GetLength(0) - 1 && indY != 0)
+                if (grid[indX - 1, indY + 1].Player != null  && grid[indX + 1, indY - 1].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1 && indY != 0)
                 {
                     return true;
                 }
@@ -155,7 +224,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test Upper middle
-                if (grid[indX - 1, indY].Player != p.Player && indX != 0)
+                if (grid[indX - 1, indY + 1].Player != null && (grid[indX - 1, indY].Player != this.getCurrentPlayer() && indX != 0))
                 {
                     return true;
                 }
@@ -167,7 +236,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test right
-                if (grid[indX, indY + 1].Player != p.Player && indY != grid.GetLength(1) - 1)
+                if (grid[indX - 1, indY + 1].Player != null && grid[indX, indY + 1].Player != this.getCurrentPlayer() && indY != grid.GetLength(1) - 1)
                 {
                     return true;
                 }
@@ -179,7 +248,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test bottom 
-                if (grid[indX + 1, indY].Player != p.Player && indX != grid.GetLength(0) - 1)
+                if (grid[indX - 1, indY + 1].Player != null && grid[indX + 1, indY].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1)
                 {
                     return true;
                 }
@@ -191,7 +260,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test left
-                if (grid[indX, indY - 1].Player != p.Player && indY != 0)
+                if (grid[indX - 1, indY + 1].Player != null && grid[indX, indY - 1].Player != this.getCurrentPlayer() && indY != 0)
                 {
                     return true;
                 }
@@ -202,6 +271,8 @@ namespace Game.ClassLibrary
             }
             return false;
         }
+
+
 
     }
 }

@@ -13,12 +13,40 @@ namespace Game.ClassLibrary
         /// Global
         /// Player who will put the next piece
         /// </summary>
-        public static int currentPlayer;
+        private static int currentPlayer = HUMAN;
+
+        /// <summary>
+        /// Number of pieces
+        /// </summary>
+        private int score = 0;
+
+        public int Score
+        {
+            get { return score; }
+            set { score = value; }
+        }
+
+        public static int CurrentPlayer
+        {
+            get { return Player.currentPlayer; }
+            set { Player.currentPlayer = value; }
+        }
 
         /// <summary>
         /// Num of the player (1 or 2)
         /// </summary>
         private int owner;
+
+        /// <summary>
+        /// Name of the player
+        /// </summary>
+        private string name = "Player";
+
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
 
         public int Owner
         {
@@ -27,18 +55,26 @@ namespace Game.ClassLibrary
         }
 
         /// <summary>
-        /// White
-        /// </summary>
-        public const int HUMAN = 1; // White
-
-        /// <summary>
         /// Black
         /// </summary>
-        public const int COMPUTER = 2; // Black
+        public const int HUMAN = 1; // Black
+
+        /// <summary>
+        /// White
+        /// </summary>
+        public const int COMPUTER = 2; // White
 
         public Player(int player)
         {
-            this.owner = player;
+            this.owner = player;        
         }
+
+        public Player(int player, String name)
+        {
+            this.owner = player;
+            this.name = name;
+        }
+
+        
     }
 }

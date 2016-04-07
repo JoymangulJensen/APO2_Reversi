@@ -40,7 +40,7 @@ namespace Game.ClassLibrary
         {
             this.x = x;
             this.y = y;
-            this.player = null; // Vide par défaut
+            this.player = null; // Empty by default
         }
 
         public Piece(int x, int y, Player p)
