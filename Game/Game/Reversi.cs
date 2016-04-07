@@ -14,7 +14,7 @@ namespace Game
     public partial class Reversi : Form
     {
         /// <summary>
-        /// Grille
+        /// Board
         /// </summary>
         private Board board;
 
@@ -70,19 +70,18 @@ namespace Game
 
                     PictureBox p = (PictureBox)boardGUI.GetControlFromPosition(col, row);
 
-                    if (this.board.Grid[col, row].Player == null)
+                    if (this.board.Grid[col, row].Player != null)
                     {
-                        // this.boardGUI.
-                    }      
-                    else
-                    {
+                        // If there is a piece        
+                
                         if (this.board.Grid[col, row].Player.Owner == Player.HUMAN)
                         {
-                            // AI : Afficher Noir
+                            // Human : Display Black
                             p.Image = Image.FromFile("../../Resources/black.png");
                         }
                         else
                         {
+                            // AI : Display White
                             p.Image = Image.FromFile("../../Resources/white.png");
                         }
                     }
@@ -92,14 +91,17 @@ namespace Game
 
         }
 
+        /// <summary>
+        /// Update the labels containing the scores
+        /// </summary>
         private void refreshScore()
         {
-            this.labelScore1.Text = "Score : " + board.numberOfPieceByPlayer(Player.COMPUTER);
-            this.labelScore2.Text = "Score : " + board.numberOfPieceByPlayer(Player.HUMAN);
+            this.labelScore1.Text = board.Players[0].Name + " : " + board.Players[0].Score;
+            this.labelScore2.Text = board.Players[1].Name + " : " + board.Players[1].Score;
         }
 
         /// <summary>
-        /// Clic sur PictureBox
+        /// Click on PictureBox
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -109,14 +111,17 @@ namespace Game
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Column;
             int y = position.Row;
-            p.Click -= pictureBox_Click;
-            p.MouseHover -= pictureBox_Hover;
-            this.board.play(x, y);
+            if (this.board.play(x, y).Count != 0)
+            {
+                // The move can be played (at least a piece is changed)
+                p.Click -= pictureBox_Click;
+                p.MouseHover -= pictureBox_Hover;
+            }
             this.refreshBoard();
         }
 
         /// <summary>
-        /// Surf sur PictureBox
+        /// Hover on PictureBox
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -124,8 +129,8 @@ namespace Game
         {
             PictureBox p = (PictureBox)sender;
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
-            int x = position.Row;
-            int y = position.Column;
+            int x = position.Column;
+            int y = position.Row;
              // MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
         }
 

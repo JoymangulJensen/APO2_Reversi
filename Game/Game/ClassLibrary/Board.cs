@@ -10,8 +10,20 @@ namespace Game.ClassLibrary
 
     class Board
     {
+        /// <summary>
+        /// List of the players
+        /// </summary>
         List<Player> players;
 
+        internal List<Player> Players
+        {
+            get { return players; }
+            set { players = value; }
+        }
+
+        /// <summary>
+        /// Grid of the game : 2d Array of Pieces
+        /// </summary>
         private Piece[,] grid;
 
         internal Piece[,] Grid
@@ -20,20 +32,42 @@ namespace Game.ClassLibrary
             set { grid = value; }
         }
 
+        /// <summary>
+        /// Try to play on the given coordonates
+        /// </summary>
+        /// <param name="x">Column index</param>
+        /// <param name="y">Row index</param>
+        /// <returns></returns>
         public List<Piece> play(int x, int y)
         {
-            grid[x, y].Player = this.getCurrentPlayer();
-            this.setNextPlayer();
+            List<Piece> changedPieces = new List<Piece>();
+            if (true) // Can play
+            {
+                grid[x, y].Player = this.getCurrentPlayer();
+                changedPieces.Add(grid[x, y]);
+                this.setNextPlayer();
+                this.updateScores();
+            }
+            else
+            {
+                // Can't play
+            }
 
-            List<Piece> al = new List<Piece>();
-            return al;
+            return changedPieces;
         }
 
+        /// <summary>
+        /// Return the object Player who will play the next move
+        /// </summary>
+        /// <returns></returns>
         private Player getCurrentPlayer()
         {
             return players[Player.CurrentPlayer - 1];
         }
 
+        /// <summary>
+        /// Update the next player
+        /// </summary>
         private void setNextPlayer()
         {
             if (Player.CurrentPlayer >= players.Count)
@@ -47,25 +81,44 @@ namespace Game.ClassLibrary
 
         }
 
-        public int numberOfPieceByPlayer(int p)
+        /// <summary>
+        /// Update the score of the players
+        /// </summary>
+        private void updateScores()
+        {
+            foreach (Player player in players)
+            {
+                player.Score = numberOfPieceByPlayer(player);
+            }
+        }
+
+        /// <summary>
+        /// Return the number of piece possessed by the player given
+        /// </summary>
+        /// <param name="p">Player</param>
+        /// <returns>The number of pieces</returns>
+        public int numberOfPieceByPlayer(Player p)
         {
             int count = 0;
             for (int i = 0; i < grid.GetLength(0); i++)
             {
                 for (int j = 0; j < grid.GetLength(1); j++)
                 {
-                    if (grid[i, j].Player != null && grid[i, j].Player.Owner == p)
+                    if (grid[i, j].Player != null && grid[i, j].Player == p)
                         count++;
                 }
             }
             return count;
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public Board()
         {
             players = new List<Player>();
-            players.Add(new Player(Player.HUMAN));
-            players.Add(new Player(Player.COMPUTER));
+            players.Add(new Player(Player.HUMAN, "Joueur"));
+            players.Add(new Player(Player.COMPUTER, "Ordinateur"));
 
             this.grid = new Piece[8, 8];
             for (int i = 0; i < grid.GetLength(0); i++)
