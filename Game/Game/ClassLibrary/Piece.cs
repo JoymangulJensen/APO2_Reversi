@@ -43,6 +43,13 @@ namespace Game.ClassLibrary
             this.player = null; // Vide par défaut
         }
 
+        public Piece(int x, int y, Player p)
+        {
+            this.x = x;
+            this.y = y;
+            this.player = p;
+        }
+
         public void switchPiece()
         {
             if (this.player.Owner == Player.HUMAN)

@@ -89,6 +89,13 @@ namespace Game
                     }
                 }
             }
+            this.refreshScore();
+
+        }
+
+        private void refreshScore()
+        {
+            this.labelScore1.Text = "Score : " + board.numberOfPieceByPlayer(Player.COMPUTER);
         }
 
         /// <summary>
@@ -100,8 +107,10 @@ namespace Game
         {
             PictureBox p = (PictureBox)sender;
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
-            int x = position.Row;
-            int y = position.Column;
+            int x = position.Column;
+            int y = position.Row;
+            board.play(x, y);
+
             this.refreshBoard();
         }
 

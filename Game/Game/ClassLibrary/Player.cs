@@ -9,7 +9,16 @@ namespace Game.ClassLibrary
     class Player
     {
 
-        private int owner; // Soit 1 soit 2
+        /// <summary>
+        /// Global
+        /// Player who will put the next piece
+        /// </summary>
+        public static int currentPlayer;
+
+        /// <summary>
+        /// Num of the player (1 or 2)
+        /// </summary>
+        private int owner;
 
         public int Owner
         {
