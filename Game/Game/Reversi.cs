@@ -102,6 +102,7 @@ namespace Game
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Row;
             int y = position.Column;
+            
             this.refreshBoard();
         }
 
@@ -116,6 +117,7 @@ namespace Game
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Row;
             int y = position.Column;
+            MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
         }
 
     }
