@@ -8,7 +8,9 @@ namespace Game.ClassLibrary
 {
     class Player
     {
+        #region Properties
 
+        #region Static
         /// <summary>
         /// Global
         /// Player who will put the next piece
@@ -21,6 +23,9 @@ namespace Game.ClassLibrary
             set { Player.currentPlayer = value; }
         }
 
+        #endregion
+
+        #region fields
         /// <summary>
         /// Num of the player (1 or 2)
         /// </summary>
@@ -33,6 +38,32 @@ namespace Game.ClassLibrary
         }
 
         /// <summary>
+        /// Number of pieces
+        /// </summary>
+        private int score = 0;
+
+        public int Score
+        {
+            get { return score; }
+            set { score = value; }
+        }
+
+        /// <summary>
+        /// Name of the player
+        /// </summary>
+        private string name = "Player";
+
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+        #endregion
+
+        #endregion
+
+        #region Constants
+        /// <summary>
         /// Black
         /// </summary>
         public const int HUMAN = 1; // Black
@@ -42,12 +73,20 @@ namespace Game.ClassLibrary
         /// </summary>
         public const int COMPUTER = 2; // White
 
+        #endregion
+
+        #region Constructors
+
         public Player(int player)
         {
-            this.owner = player;
-        
+            this.owner = player;        
         }
 
-        
+        public Player(int player, String name)
+        {
+            this.owner = player;
+            this.name = name;
+        }
+        #endregion
     }
 }

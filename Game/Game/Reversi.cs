@@ -14,7 +14,7 @@ namespace Game
     public partial class Reversi : Form
     {
         /// <summary>
-        /// Grille
+        /// Board
         /// </summary>
         private Board board;
 
@@ -23,6 +23,8 @@ namespace Game
             InitializeComponent();
             init();
         }
+
+        #region Initialization
 
         /// <summary>
         /// Initialise la grille
@@ -52,11 +54,16 @@ namespace Game
             p.Visible = true;
             p.SizeMode = PictureBoxSizeMode.StretchImage;
             p.Click += new EventHandler(this.pictureBox_Click);
-            p.MouseHover += new EventHandler(this.pictureBox_Hover);
+            p.MouseEnter += new EventHandler(this.pictureBox_HoverIn);
+            p.MouseLeave += new EventHandler(this.pictureBox_HoverOut);
             p.BackColor = Color.Transparent;
             p.Image = null;
             return p;
         }
+
+        #endregion
+
+        #region Refresh of display
 
         /// <summary>
         /// Actualise l'affichage de la grille selon board
@@ -70,19 +77,20 @@ namespace Game
 
                     PictureBox p = (PictureBox)boardGUI.GetControlFromPosition(col, row);
 
-                    if (this.board.Grid[col, row].Player == null)
+                    if (this.board.Grid[col, row].Player != null)
                     {
-                        // this.boardGUI.
-                    }      
-                    else
-                    {
+                        // If there is a piece    
+                        p.MouseEnter -= pictureBox_HoverIn;
+                        p.MouseLeave -= pictureBox_HoverOut;
+                
                         if (this.board.Grid[col, row].Player.Owner == Player.HUMAN)
                         {
-                            // AI : Afficher Noir
+                            // Human : Display Black
                             p.Image = Image.FromFile("../../Resources/black.png");
                         }
                         else
                         {
+                            // AI : Display White
                             p.Image = Image.FromFile("../../Resources/white.png");
                         }
                     }
@@ -92,41 +100,64 @@ namespace Game
 
         }
 
+        /// <summary>
+        /// Update the labels containing the scores
+        /// </summary>
         private void refreshScore()
         {
-            this.labelScore1.Text = "Score : " + board.numberOfPieceByPlayer(Player.COMPUTER);
+            this.labelScore1.Text = board.Players[0].Name + " : " + board.Players[0].Score;
+            this.labelScore2.Text = board.Players[1].Name + " : " + board.Players[1].Score;
         }
 
+        #endregion
+
+        #region Events
+
         /// <summary>
-        /// Clic sur PictureBox
+        /// Click on PictureBox
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void pictureBox_Click(object sender, EventArgs e)
         {
-            PictureBox pi = (PictureBox)sender;
-            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(pi);
-            int x = position.Row;
-            int y = position.Column;
-            Piece pie = board.canPlay(board.Grid[x, y]);
-            MessageBox.Show(pie.X + "  " + pie.Y);
-            //MessageBox.Show(board.testLigne(board.Grid[y, x]).ToString());
-            this.refreshBoard();
-        }
-
-        /// <summary>
-        /// Surf sur PictureBox
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void pictureBox_Hover(object sender, EventArgs e)
-        {
             PictureBox p = (PictureBox)sender;
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Row;
             int y = position.Column;
-            
+            //MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
+            this.refreshBoard();
         }
+
+        /// <summary>
+        /// Hover on PictureBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pictureBox_HoverIn(object sender, EventArgs e)
+        {
+            PictureBox p = (PictureBox)sender;
+            p.Image = Image.FromFile("../../Resources/grey.png");
+            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
+            int x = position.Column;
+            int y = position.Row;
+             // MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
+        }
+            
+        /// <summary>
+        /// Hover out PictureBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pictureBox_HoverOut(object sender, EventArgs e)
+        {
+            PictureBox p = (PictureBox)sender;
+            p.Image = null;
+            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
+            int x = position.Column;
+            int y = position.Row;
+        }
+
+        #endregion
 
     }
 }

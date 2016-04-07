@@ -36,6 +36,8 @@ namespace Game.ClassLibrary
 
         #endregion 
 
+        #region Constructor
+
         public Piece(int x , int y)
         {
             this.x = x;
@@ -49,6 +51,8 @@ namespace Game.ClassLibrary
             this.y = y;
             this.player = p;
         }
+
+        #endregion
 
         public void switchPiece()
         {
