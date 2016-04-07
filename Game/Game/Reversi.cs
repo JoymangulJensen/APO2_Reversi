@@ -76,11 +76,10 @@ namespace Game
                     }      
                     else
                     {
-                        if (this.board.Grid[col, row].Player.Owner == Player.COMPUTER)
+                        if (this.board.Grid[col, row].Player.Owner == Player.HUMAN)
                         {
                             // AI : Afficher Noir
                             p.Image = Image.FromFile("../../Resources/black.png");
-
                         }
                         else
                         {

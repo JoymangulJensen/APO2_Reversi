@@ -13,7 +13,13 @@ namespace Game.ClassLibrary
         /// Global
         /// Player who will put the next piece
         /// </summary>
-        public static int currentPlayer;
+        private static int currentPlayer = HUMAN;
+
+        public static int CurrentPlayer
+        {
+            get { return Player.currentPlayer; }
+            set { Player.currentPlayer = value; }
+        }
 
         /// <summary>
         /// Num of the player (1 or 2)
@@ -27,14 +33,14 @@ namespace Game.ClassLibrary
         }
 
         /// <summary>
-        /// White
-        /// </summary>
-        public const int HUMAN = 1; // White
-
-        /// <summary>
         /// Black
         /// </summary>
-        public const int COMPUTER = 2; // Black
+        public const int HUMAN = 1; // Black
+
+        /// <summary>
+        /// White
+        /// </summary>
+        public const int COMPUTER = 2; // White
 
         public Player(int player)
         {

@@ -22,19 +22,29 @@ namespace Game.ClassLibrary
 
         public List<Piece> play(int x, int y)
         {
-            grid[x, y].Player = getCurrentPlayer();
+            grid[x, y].Player = this.getCurrentPlayer();
+            this.setNextPlayer();
+
             List<Piece> al = new List<Piece>();
             return al;
         }
 
         private Player getCurrentPlayer()
         {
-            foreach (Player p in players)
+            return players[Player.CurrentPlayer - 1];
+        }
+
+        private void setNextPlayer()
+        {
+            if (Player.CurrentPlayer >= players.Count)
             {
-                if (p.Owner == Player.currentPlayer)
-                    return p;
+                Player.CurrentPlayer = Player.HUMAN;
             }
-            return players[0];
+            else
+            {
+                Player.CurrentPlayer++;
+            }
+
         }
 
         public int numberOfPieceByPlayer(int p)
@@ -53,7 +63,6 @@ namespace Game.ClassLibrary
 
         public Board()
         {
-
             players = new List<Player>();
             players.Add(new Player(Player.HUMAN));
             players.Add(new Player(Player.COMPUTER));
@@ -67,10 +76,17 @@ namespace Game.ClassLibrary
                 }
             }
 
+            this.play(3, 4);
+            this.play(4, 4);
+            this.play(4, 3);
+            this.play(3, 3);
+
+            /**
             grid[3, 3].Player = players[0]; // HUMAN
             grid[3, 4].Player = players[1]; // COMPUTER
             grid[4, 3].Player = players[1]; // HUMAN
             grid[4, 4].Player = players[0]; // COMPUTER
+             */
         }
 
         public Boolean testDiagonal(Piece p)
