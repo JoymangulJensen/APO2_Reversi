@@ -102,11 +102,11 @@ namespace Game.ClassLibrary
             int indY = p.Y;
             for(int i= indY ; i<grid.GetLength(1); i++)
             {
-                if(grid[indX, i].Player != p.Player)
+                if (grid[indX, i].Player != this.getCurrentPlayer())
                 {
                     return true;
                 }
-                if(grid[grid.GetLength(0) - i, indY].Player != p.Player)
+                if (grid[grid.GetLength(0) - i, indY].Player != this.getCurrentPlayer())
                 {
                     return true;
                 }
@@ -122,7 +122,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test Upper left
-                if (grid[indX - 1, indY - 1].Player != p.Player && indX != 0 && indY != 0)
+                if (grid[indX - 1, indY - 1].Player != null && grid[indX - 1, indY - 1].Player != this.getCurrentPlayer() && indX != 0 && indY != 0)
                 {
                     return true;
                 }
@@ -134,7 +134,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test Upper right
-                if (grid[indX - 1, indY + 1].Player != p.Player && indX != 0 && indY != grid.GetLength(1) - 1)
+                if (grid[indX - 1, indY + 1].Player !=   null && grid[indX - 1, indY + 1].Player != this.getCurrentPlayer() && indX != 0 && indY != grid.GetLength(1) - 1)
                 {
                     return true;
                 }
@@ -147,7 +147,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test bottom right
-                if (grid[indX + 1, indY + 1].Player != p.Player && indX != grid.GetLength(0) - 1 && indY != grid.GetLength(1) - 1)
+                if (grid[indX - 1, indY + 1].Player != null && grid[indX + 1, indY + 1].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1 && indY != grid.GetLength(1) - 1)
                 {
                     return true;
                 }
@@ -159,7 +159,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test bottom left
-                if (grid[indX + 1, indY - 1].Player != p.Player && indX != grid.GetLength(0) - 1 && indY != 0)
+                if (grid[indX - 1, indY + 1].Player != null  && grid[indX + 1, indY - 1].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1 && indY != 0)
                 {
                     return true;
                 }
@@ -171,7 +171,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test Upper middle
-                if (grid[indX - 1, indY].Player != p.Player && indX != 0)
+                if (grid[indX - 1, indY + 1].Player != null && (grid[indX - 1, indY].Player != this.getCurrentPlayer() && indX != 0))
                 {
                     return true;
                 }
@@ -183,7 +183,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test right
-                if (grid[indX, indY + 1].Player != p.Player && indY != grid.GetLength(1) - 1)
+                if (grid[indX - 1, indY + 1].Player != null && grid[indX, indY + 1].Player != this.getCurrentPlayer() && indY != grid.GetLength(1) - 1)
                 {
                     return true;
                 }
@@ -195,7 +195,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test bottom 
-                if (grid[indX + 1, indY].Player != p.Player && indX != grid.GetLength(0) - 1)
+                if (grid[indX - 1, indY + 1].Player != null && grid[indX + 1, indY].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1)
                 {
                     return true;
                 }
@@ -207,7 +207,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test left
-                if (grid[indX, indY - 1].Player != p.Player && indY != 0)
+                if (grid[indX - 1, indY + 1].Player != null && grid[indX, indY - 1].Player != this.getCurrentPlayer() && indY != 0)
                 {
                     return true;
                 }
@@ -218,6 +218,8 @@ namespace Game.ClassLibrary
             }
             return false;
         }
+
+
 
     }
 }
