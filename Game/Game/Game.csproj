@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClassLibrary\Board.cs" />
+    <Compile Include="ClassLibrary\Direction.cs" />
     <Compile Include="ClassLibrary\Piece.cs" />
     <Compile Include="ClassLibrary\Player.cs" />
     <Compile Include="Program.cs" />

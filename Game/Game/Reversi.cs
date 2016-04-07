@@ -104,11 +104,13 @@ namespace Game
         /// <param name="e"></param>
         private void pictureBox_Click(object sender, EventArgs e)
         {
-            PictureBox p = (PictureBox)sender;
-            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
+            PictureBox pi = (PictureBox)sender;
+            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(pi);
             int x = position.Row;
             int y = position.Column;
-            MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
+            Piece pie = board.canPlay(board.Grid[x, y]);
+            MessageBox.Show(pie.X + "  " + pie.Y);
+            //MessageBox.Show(board.testLigne(board.Grid[y, x]).ToString());
             this.refreshBoard();
         }
 

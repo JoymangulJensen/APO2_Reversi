@@ -14,6 +14,8 @@ namespace Game.ClassLibrary
 
         private Piece[,] grid;
 
+
+
         internal Piece[,] Grid
         {
             get { return grid; }
@@ -89,31 +91,35 @@ namespace Game.ClassLibrary
              */
         }
 
-        public Boolean testDiagonal(Piece p)
+        public Piece canPlay(Piece p)
         {
 
-            return true;
+            return getNext(Direction.NORTHEAST, p);
+            /*bool legal = false; //By default a move is illegal
 
-        }
-
-        public Boolean testLigne(Piece p)
-        {
-            int indX = p.X;
-            int indY = p.Y;
-            for(int i= indY ; i<grid.GetLength(1); i++)
+            if(p.Player != null)    //If there id already a piece
             {
-                if (grid[indX, i].Player != this.getCurrentPlayer())
-                {
-                    return true;
-                }
-                if (grid[grid.GetLength(0) - i, indY].Player != this.getCurrentPlayer())
-                {
-                    return true;
-                }
-            }
-            
-            return true;
+                return legal = false;
+            }*/
         }
+
+        public Piece getNext(int direction, Piece p)
+        {
+            Piece res;
+            if(direction == Direction.NORTHEAST)
+            {
+                if (p.X - 1  < 0 && p.Y - 1 < 0)
+                {
+                    return res = new Piece(0,0);
+                } else 
+                    return res = new Piece(--p.X, --p.Y);
+            }
+            return res = new Piece(0, 0);
+        }
+        
+#region Not Working Test
+        /*
+
 
         public Boolean testNeighbour(Piece p)
         {
@@ -134,7 +140,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test Upper right
-                if (grid[indX - 1, indY + 1].Player !=   null && grid[indX - 1, indY + 1].Player != this.getCurrentPlayer() && indX != 0 && indY != grid.GetLength(1) - 1)
+                if (grid[indX - 1, indY + 1].Player != null && grid[indX - 1, indY + 1].Player != this.getCurrentPlayer() && indX != 0 && indY != grid.GetLength(1) - 1)
                 {
                     return true;
                 }
@@ -147,7 +153,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test bottom right
-                if (grid[indX - 1, indY + 1].Player != null && grid[indX + 1, indY + 1].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1 && indY != grid.GetLength(1) - 1)
+                if (grid[indX + 1, indY + 1].Player != null && grid[indX + 1, indY + 1].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1 && indY != grid.GetLength(1) - 1)
                 {
                     return true;
                 }
@@ -159,7 +165,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test bottom left
-                if (grid[indX - 1, indY + 1].Player != null  && grid[indX + 1, indY - 1].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1 && indY != 0)
+                if (grid[indX + 1, indY - 1].Player != null  && grid[indX + 1, indY - 1].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1 && indY != 0)
                 {
                     return true;
                 }
@@ -171,7 +177,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test Upper middle
-                if (grid[indX - 1, indY + 1].Player != null && (grid[indX - 1, indY].Player != this.getCurrentPlayer() && indX != 0))
+                if (grid[indX - 1, indY].Player != null && (grid[indX - 1, indY].Player != this.getCurrentPlayer() && indX != 0))
                 {
                     return true;
                 }
@@ -183,7 +189,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test right
-                if (grid[indX - 1, indY + 1].Player != null && grid[indX, indY + 1].Player != this.getCurrentPlayer() && indY != grid.GetLength(1) - 1)
+                if (grid[indX, indY + 1].Player != null && grid[indX, indY + 1].Player != this.getCurrentPlayer() && indY != grid.GetLength(1) - 1)
                 {
                     return true;
                 }
@@ -195,7 +201,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test bottom 
-                if (grid[indX - 1, indY + 1].Player != null && grid[indX + 1, indY].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1)
+                if (grid[indX + 1, indY].Player != null && grid[indX + 1, indY].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1)
                 {
                     return true;
                 }
@@ -207,7 +213,7 @@ namespace Game.ClassLibrary
             try
             {
                 //Test left
-                if (grid[indX - 1, indY + 1].Player != null && grid[indX, indY - 1].Player != this.getCurrentPlayer() && indY != 0)
+                if (grid[indX, indY - 1].Player != null && grid[indX, indY - 1].Player != this.getCurrentPlayer() && indY != 0)
                 {
                     return true;
                 }
@@ -219,7 +225,8 @@ namespace Game.ClassLibrary
             return false;
         }
 
-
+*/
+#endregion
 
     }
 }
