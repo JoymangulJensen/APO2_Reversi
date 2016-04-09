@@ -122,9 +122,11 @@ namespace Game
         {
             PictureBox p = (PictureBox)sender;
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
-            int x = position.Row;
-            int y = position.Column;
+            int x = position.Column;
+            int y = position.Row;
             //MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
+            this.board.play(x, y);
+            p.Click -= pictureBox_Click;
             this.refreshBoard();
         }
 
