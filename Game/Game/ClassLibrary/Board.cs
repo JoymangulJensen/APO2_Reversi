@@ -163,20 +163,98 @@ namespace Game.ClassLibrary
 
         #endregion
 
+        public Boolean canMove(Piece p)
+        {
+            Boolean res = false;
+
+            for(int direction = 1; direction <9; direction++)
+            {
+                Piece next = this.getNext(direction, p);
+                Piece tempo;
+                Boolean stop = true;
+                int turnover = 0;
+                while (Grid[next.X, next.Y].Player == Players[1] && stop)
+                {
+                    tempo = this.getNext(direction, next);
+                    if (tempo.X == -1)
+                    {
+                        stop = false;
+                    }
+                    else
+                    {
+                        turnover++;
+                        next = tempo;
+                    }
+                }
+                if( turnover !=0 && Grid[next.X, next.Y].Player == Players[0])
+                {
+                    res = true;
+                }
+            }
+            return res;
+        }
 
         public Piece getNext(int direction, Piece p)
         {
             Piece res;
-            if(direction == Direction.NORTHEAST)
+            if(direction == Direction.NORTHWEST)
             {
                 if (p.X - 1  < 0 && p.Y - 1 < 0)
-                {
-                    return res = new Piece(0,0);
-                } else 
+                    return res = new Piece(-1, -1);
+                else 
                     return res = new Piece(--p.X, --p.Y);
-                }
-            return res = new Piece(0, 0);
             }
+            if(direction == Direction.NORTH)
+            {
+                if (p.X - 1 < 0)
+                    return res = new Piece(-1, -1);
+                else
+                    return res = new Piece(--p.X, p.Y);
+            }
+            if(direction == Direction.NORTHEAST)
+            {
+                if (p.X - 1 < 0 && p.Y + 1 >= this.Grid.GetLength(1))
+                    return res = new Piece(-1, -1);
+                else
+                    return res = new Piece(--p.X, ++p.Y);
+            }
+            if(direction == Direction.EAST)
+            {
+                if (p.Y + 1 > this.Grid.GetLength(1))
+                    return res = new Piece(-1, -1);
+                else
+                    return res = new Piece(p.X, ++p.Y);
+            }
+            if(direction == Direction.SOUTHEAST)
+            {
+                if (p.X + 1 >= this.Grid.GetLength(0) && p.Y + 1 >= this.Grid.GetLength(1))
+                    return res = new Piece(-1, -1);
+                else
+                    return res = new Piece(++p.X, ++p.Y);
+            }
+            if (direction == Direction.SOUTH)
+            {
+                if (p.X + 1 >= this.Grid.GetLength(0))
+                    return res = new Piece(-1, -1);
+                else
+                    return res = new Piece(++p.X, p.Y);
+            }
+            if (direction == Direction.SOUTHWEST)
+            {
+                if (p.X - 1 > this.Grid.GetLength(0) && p.Y - 1 < 0)
+                    return res = new Piece(-1, -1);
+                else
+                    return res = new Piece(++p.X, --p.Y);
+            }
+            if (direction == Direction.WEST)
+            {
+                if (p.Y - 1 < 0)
+                    return res = new Piece(-1, -1);
+                else
+                    return res = new Piece(p.X, --p.Y);
+            }
+            return res = new Piece(-1, -1);
+        }
             
 #region Not Working Test
         /*

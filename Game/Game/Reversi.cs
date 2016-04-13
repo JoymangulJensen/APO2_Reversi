@@ -125,8 +125,9 @@ namespace Game
             int x = position.Column;
             int y = position.Row;
             //MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
-            this.board.play(x, y);
-            p.Click -= pictureBox_Click;
+            //this.board.play(x, y);
+            //p.Click -= pictureBox_Click;
+            MessageBox.Show(board.canMove(board.Grid[y, x]).ToString());
             this.refreshBoard();
         }
 
@@ -139,6 +140,7 @@ namespace Game
         {
             PictureBox p = (PictureBox)sender;
             p.Image = Image.FromFile("../../Resources/grey.png");
+            p.BackColor = Color.Azure;
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Column;
             int y = position.Row;
