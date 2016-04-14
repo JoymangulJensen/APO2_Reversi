@@ -50,13 +50,13 @@ namespace Game.ClassLibrary
             players.Add(new Player(Player.COMPUTER, "Ordinateur"));
 
             this.grid = new Piece[8, 8];
-            for (int i = 0; i < grid.GetLength(0); i++)
+            /*for (int i = 0; i < grid.GetLength(0); i++)
             {
                 for (int j = 0; j < grid.GetLength(1); j++)
                 {
                     grid[i, j] = new Piece(i, j);
                 }
-            }
+            }*/
 
             this.play(3, 4);
             this.play(4, 4);
@@ -79,7 +79,7 @@ namespace Game.ClassLibrary
         /// Return the object Player who will play the next move
         /// </summary>
         /// <returns></returns>
-        private Player getCurrentPlayer()
+        public Player getCurrentPlayer()
         {
             return players[Player.CurrentPlayer - 1];
         }
@@ -110,7 +110,7 @@ namespace Game.ClassLibrary
             foreach (Player player in players)
             {
                 player.Score = numberOfPieceByPlayer(player);
-        }
+            }
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace Game.ClassLibrary
             {
                 for (int j = 0; j < grid.GetLength(1); j++)
                 {
-                    if (grid[i, j].Player != null && grid[i, j].Player == p)
+                    if (grid[i, j] != null && grid[i, j].Player == p)
                         count++;
                 }
             }
@@ -144,15 +144,17 @@ namespace Game.ClassLibrary
         /// <param name="y">Row index</param>
         /// <returns></returns>
         public List<Piece> play(int x, int y)
-            {
+        {
             List<Piece> changedPieces = new List<Piece>();
             if (true) // Can play
-                {
-                grid[x, y].Player = this.getCurrentPlayer();
+            {
+                Piece p = new Piece(x, y);
+                p.Player = this.getCurrentPlayer();
+                grid[x, y] = p;
                 changedPieces.Add(grid[x, y]);
                 this.setNextPlayer();
                 this.updateScores();
-                }
+            }
             else
             {
                 // Can't play
@@ -163,30 +165,43 @@ namespace Game.ClassLibrary
 
         #endregion
 
+        #region Test if move is legal
+
         public Boolean canMove(Piece p)
         {
             Boolean res = false;
 
-            for(int direction = 1; direction <9; direction++)
+            if (grid[p.X, p.Y] != null)
+                return res = false;
+
+            for (int direction = 1; direction < 9; direction++)
             {
                 Piece next = this.getNext(direction, p);
                 Piece tempo;
                 Boolean stop = true;
                 int turnover = 0;
-                while (Grid[next.X, next.Y].Player == Players[1] && stop)
+
+                try
                 {
-                    tempo = this.getNext(direction, next);
-                    if (tempo.X == -1)
+                    while (Grid[next.X, next.Y].Player != null && Grid[next.X, next.Y].Player.Owner == Player.COMPUTER && stop)
                     {
-                        stop = false;
-                    }
-                    else
-                    {
-                        turnover++;
-                        next = tempo;
+                        tempo = this.getNext(direction, next);
+                        if (tempo.X == -1)
+                        {
+                            stop = false;
+                        }
+                        else
+                        {
+                            turnover++;
+                            next = tempo;
+                        }
                     }
                 }
-                if( turnover !=0 && Grid[next.X, next.Y].Player == Players[0])
+                catch (Exception e)
+                {
+                    continue;
+                }
+                if (Grid[next.X, next.Y].Player != null && turnover != 0 && Grid[next.X, next.Y].Player.Owner == Player.HUMAN)
                 {
                     res = true;
                 }
@@ -194,177 +209,75 @@ namespace Game.ClassLibrary
             return res;
         }
 
+        /// <summary>
+        /// Lethode to get next piece
+        /// </summary>
+        /// <param name="direction">Direction to move</param>
+        /// <param name="p">Current piece</param>    
+        /// <returns>true: move legal </returns>
         public Piece getNext(int direction, Piece p)
         {
             Piece res;
-            if(direction == Direction.NORTHWEST)
+            if (direction == Direction.NORTHWEST)
             {
-                if (p.X - 1  < 0 && p.Y - 1 < 0)
+                if (p.X - 1 < 0 && p.Y - 1 < 0)
                     return res = new Piece(-1, -1);
-                else 
-                    return res = new Piece(--p.X, --p.Y);
+                else
+                    return res = new Piece(p.X - 1, p.Y - 1);
             }
-            if(direction == Direction.NORTH)
+            if (direction == Direction.NORTH)
             {
                 if (p.X - 1 < 0)
                     return res = new Piece(-1, -1);
                 else
-                    return res = new Piece(--p.X, p.Y);
+                    return res = new Piece(p.X - 1, p.Y);
             }
-            if(direction == Direction.NORTHEAST)
+            if (direction == Direction.NORTHEAST)
             {
                 if (p.X - 1 < 0 && p.Y + 1 >= this.Grid.GetLength(1))
                     return res = new Piece(-1, -1);
                 else
-                    return res = new Piece(--p.X, ++p.Y);
+                    return res = new Piece(p.X - 1, p.Y + 1);
             }
-            if(direction == Direction.EAST)
+            if (direction == Direction.EAST)
             {
                 if (p.Y + 1 > this.Grid.GetLength(1))
                     return res = new Piece(-1, -1);
                 else
-                    return res = new Piece(p.X, ++p.Y);
+                    return res = new Piece(p.X, p.Y + 1);
             }
-            if(direction == Direction.SOUTHEAST)
+            if (direction == Direction.SOUTHEAST)
             {
                 if (p.X + 1 >= this.Grid.GetLength(0) && p.Y + 1 >= this.Grid.GetLength(1))
                     return res = new Piece(-1, -1);
                 else
-                    return res = new Piece(++p.X, ++p.Y);
+                    return res = new Piece(p.X + 1, p.Y + 1);
             }
             if (direction == Direction.SOUTH)
             {
                 if (p.X + 1 >= this.Grid.GetLength(0))
                     return res = new Piece(-1, -1);
                 else
-                    return res = new Piece(++p.X, p.Y);
+                    return res = new Piece(p.X + 1, p.Y);
             }
             if (direction == Direction.SOUTHWEST)
             {
                 if (p.X - 1 > this.Grid.GetLength(0) && p.Y - 1 < 0)
                     return res = new Piece(-1, -1);
                 else
-                    return res = new Piece(++p.X, --p.Y);
+                    return res = new Piece(p.X + 1, p.Y - 1);
             }
             if (direction == Direction.WEST)
             {
                 if (p.Y - 1 < 0)
                     return res = new Piece(-1, -1);
                 else
-                    return res = new Piece(p.X, --p.Y);
+                    return res = new Piece(p.X, p.Y - 1);
             }
             return res = new Piece(-1, -1);
         }
-            
-#region Not Working Test
-        /*
 
-
-        public Boolean testNeighbour(Piece p)
-        {
-            int indX = p.X;
-            int indY = p.Y;
-            try
-            {
-                //Test Upper left
-                if (grid[indX - 1, indY - 1].Player != null && grid[indX - 1, indY - 1].Player != this.getCurrentPlayer() && indX != 0 && indY != 0)
-                {
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-
-            }
-            try
-            {
-                //Test Upper right
-                if (grid[indX - 1, indY + 1].Player != null && grid[indX - 1, indY + 1].Player != this.getCurrentPlayer() && indX != 0 && indY != grid.GetLength(1) - 1)
-                {
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-
-            }
-
-            try
-            {
-                //Test bottom right
-                if (grid[indX + 1, indY + 1].Player != null && grid[indX + 1, indY + 1].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1 && indY != grid.GetLength(1) - 1)
-                {
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-
-            }
-            try
-            {
-                //Test bottom left
-                if (grid[indX + 1, indY - 1].Player != null  && grid[indX + 1, indY - 1].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1 && indY != 0)
-                {
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-
-            }
-            try
-            {
-                //Test Upper middle
-                if (grid[indX - 1, indY].Player != null && (grid[indX - 1, indY].Player != this.getCurrentPlayer() && indX != 0))
-                {
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-
-            }
-            try
-            {
-                //Test right
-                if (grid[indX, indY + 1].Player != null && grid[indX, indY + 1].Player != this.getCurrentPlayer() && indY != grid.GetLength(1) - 1)
-                {
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-
-            }
-            try
-            {
-                //Test bottom 
-                if (grid[indX + 1, indY].Player != null && grid[indX + 1, indY].Player != this.getCurrentPlayer() && indX != grid.GetLength(0) - 1)
-                {
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-
-            }
-            try
-            {
-                //Test left
-                if (grid[indX, indY - 1].Player != null && grid[indX, indY - 1].Player != this.getCurrentPlayer() && indY != 0)
-                {
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-
-            }
-            return false;
-        }
-        */
-
-        #endregion
+    #endregion
+      
     }
 }

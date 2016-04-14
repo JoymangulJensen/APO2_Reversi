@@ -77,7 +77,7 @@ namespace Game
 
                     PictureBox p = (PictureBox)boardGUI.GetControlFromPosition(col, row);
 
-                    if (this.board.Grid[col, row].Player != null)
+                    if (this.board.Grid[col, row] != null)
                     {
                         // If there is a piece    
                         p.MouseEnter -= pictureBox_HoverIn;
@@ -127,7 +127,7 @@ namespace Game
             //MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
             //this.board.play(x, y);
             //p.Click -= pictureBox_Click;
-            MessageBox.Show(board.canMove(board.Grid[y, x]).ToString());
+            MessageBox.Show(board.canMove(new Piece(x,y)).ToString());
             this.refreshBoard();
         }
 
@@ -140,7 +140,6 @@ namespace Game
         {
             PictureBox p = (PictureBox)sender;
             p.Image = Image.FromFile("../../Resources/grey.png");
-            p.BackColor = Color.Azure;
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Column;
             int y = position.Row;
