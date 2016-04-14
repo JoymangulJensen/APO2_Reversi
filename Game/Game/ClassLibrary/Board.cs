@@ -235,62 +235,65 @@ namespace Game.ClassLibrary
         /// <returns>true: move legal </returns>
         public Piece getNext(int direction, Piece p)
         {
-            Piece res;
-            if (direction == Direction.NORTHWEST)
+
+            int nb_colonnes = 8, nb_lignes = 8;
+
+            if (direction == Direction.NORTHEAST)
             {
-                if (p.X - 1 < 0 && p.Y - 1 < 0)
+                if (p.Y <= 0 || p.X >= nb_colonnes)
                     return null;
                 else
-                    return res = new Piece(p.X - 1, p.Y - 1);
+                    return new Piece(p.X + 1, p.Y - 1);
             }
             if (direction == Direction.NORTH)
             {
-                if (p.Y - 1 < 0)
+                if (p.Y <= 0)
                     return null;
                 else
-                    return res = new Piece(p.X, p.Y-1);
+                    return new Piece(p.X, p.Y - 1);
             }
-            if (direction == Direction.NORTHEAST)
+            if (direction == Direction.NORTHWEST)
             {
-                if (p.Y - 1 < 0 && p.X + 1 >= this.Grid.GetLength(1))
+                if (p.X <= 0 || p.Y <= 0)
                     return null;
                 else
-                    return res = new Piece(p.X + 1, p.Y - 1);
+                    return new Piece(p.X - 1, p.Y - 1);
             }
+            
             if (direction == Direction.EAST)
             {
-                if (p.X + 1 >= this.Grid.GetLength(1))
+                if (p.X >= nb_colonnes)
                     return null;
                 else
-                    return res = new Piece(p.X + 1, p.Y);
+                    return new Piece(p.X + 1, p.Y);
             }
             if (direction == Direction.SOUTHEAST)
             {
-                if (p.Y + 1 >= this.Grid.GetLength(0) && p.X + 1 >= this.Grid.GetLength(1))
+                if (p.Y >= nb_lignes || p.X >= nb_colonnes)
                     return null;
                 else
-                    return res = new Piece(p.Y + 1, p.X + 1);
+                    return new Piece(p.X + 1, p.Y + 1);
             }
             if (direction == Direction.SOUTH)
             {
-                if (p.Y + 1 >= this.Grid.GetLength(0))
+                if (p.Y >= nb_lignes)
                     return null;
                 else
-                    return res = new Piece(p.X, p.Y + 1);
+                    return new Piece(p.X, p.Y + 1);
             }
             if (direction == Direction.SOUTHWEST)
             {
-                if (p.Y - 1 >= this.Grid.GetLength(0) && p.X - 1 < 0)
+                if (p.Y - 1 >= nb_lignes || p.X - 1 < 0)
                     return null;
                 else
-                    return res = new Piece(p.X - 1, p.Y + 1);
+                    return new Piece(p.X - 1, p.Y + 1);
             }
             if (direction == Direction.WEST)
             {
                 if (p.X - 1 < 0)
                     return null;
                 else
-                    return res = new Piece(p.X - 1 , p.Y);
+                    return new Piece(p.X - 1 , p.Y);
             }
             return null;
         }

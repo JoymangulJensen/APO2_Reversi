@@ -200,7 +200,7 @@ namespace Game
                     }
                     else
                     {
-                        pic.Image = Image.FromFile("../../Resources/grey.png");
+                        pic.Image = Image.FromFile("../../Resources/dark_grey_small.png");
                     }
                 }
             }
