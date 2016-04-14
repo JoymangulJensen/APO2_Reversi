@@ -66,7 +66,7 @@ namespace Game.ClassLibrary
             }
         }
 
-        public String toString()
+        public String ToString()
         {
             String res = " ";
             res += "X : " + this.X + "  y : " + this.Y;
