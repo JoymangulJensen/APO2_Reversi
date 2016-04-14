@@ -153,8 +153,15 @@ namespace Game
             int x = position.Column;
             int y = position.Row;
             //MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
-            // this.board.play(x, y);
-            //p.Click -= pictureBox_Click;
+            List<Piece> pieces = this.board.play(x, y);
+
+            foreach(Piece piece in pieces)
+            {
+                PictureBox pic = (PictureBox) this.boardGUI.GetControlFromPosition(piece.X, piece.Y);
+                pic.Image = Image.FromFile("../../Resources/grey.png");
+            }
+
+            p.Click -= pictureBox_Click;
 
             MessageBox.Show(board.canMove(new Piece(x,y)).ToString());
             foreach (KeyValuePair<int, int> t in board.turnover)
@@ -177,6 +184,16 @@ namespace Game
             int x = position.Column;
             int y = position.Row;
              // MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
+
+            /*
+            List<Piece> pieces = this.board.play(x, y);
+
+            foreach (Piece piece in pieces)
+            {
+                PictureBox pic = (PictureBox)this.boardGUI.GetControlFromPosition(piece.X, piece.Y);
+                pic.Image = Image.FromFile("../../Resources/grey.png");
+            }
+             */
         }
             
         /// <summary>
