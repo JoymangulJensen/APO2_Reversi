@@ -21,7 +21,7 @@ namespace Game.ClassLibrary
         /// Key : direction [1-8]
         /// Value : the number of turnover
         /// </summary>
-        public Dictionary<int, int> turnover = new Dictionary<int, int>();
+        public Dictionary<int, int> turnover = new Dictionary<int,int>();
 
         internal List<Player> Players
         {
@@ -55,31 +55,16 @@ namespace Game.ClassLibrary
             players.Add(new Player(Player.HUMAN, "Joueur"));
             players.Add(new Player(Player.COMPUTER, "Ordinateur"));
 
-            this.grid = new Piece[8, 8];
-            /*for (int i = 0; i < grid.GetLength(0); i++)
-            {
-                for (int j = 0; j < grid.GetLength(1); j++)
-                {
-                    grid[i, j] = new Piece(i, j);
-                }
-            }*/
-
-            this.play(3, 4);
-            this.play(4, 4);
-            this.play(4, 3);
-            this.play(3, 3);
-
-            /**
-            grid[3, 3].Player = players[0]; // HUMAN
-            grid[3, 4].Player = players[1]; // COMPUTER
-            grid[4, 3].Player = players[1]; // HUMAN
-            grid[4, 4].Player = players[0]; // COMPUTER
-             */
+            this.grid = new Piece[8, 8];        
 
             //Initialise the turonver table
             for (int i = 1; i < 9; i++)
                 this.turnover.Add(i, 0);
-            
+
+            this.grid[3, 3] = new Piece(3, 3, players[1]);
+            this.grid[3, 4] = new Piece(3, 4, players[0]);
+            this.grid[4, 3] = new Piece(4, 3, players[0]);
+            this.grid[4, 4] = new Piece(4, 4, players[1]);
         }
 
         /// <summary>
@@ -156,31 +141,30 @@ namespace Game.ClassLibrary
 
         #region Play
 
-
         /// <summary>
-        /// Try to play on the given coordonates
+        /// Try to play the given Piece
         /// </summary>
-        /// <param name="x">Column index</param>
-        /// <param name="y">Row index</param>
-        /// <returns></returns>
-        public List<Piece> play(int x, int y)
+        /// <param name="p">Piece to play</param>
+        /// <returns>True if the move is legal</returns>
+        public bool play(Piece p)
         {
-            List<Piece> changedPieces = new List<Piece>();
-            if (true) // Can play
+            if (this.canMove(p)) // Can play
             {
-                Piece p = new Piece(x, y);
-                p.Player = this.getCurrentPlayer();
-                grid[x, y] = p;
-                changedPieces.Add(grid[x, y]);
+                // p.Player = this.getCurrentPlayer();
+                // grid[p.X, p.Y] = p;
+
+                List<Piece> changedPieces = this.listeMove(p);
+
+                foreach (Piece piece in changedPieces)
+                {
+                    piece.Player = this.getCurrentPlayer();
+                    this.grid[piece.X, piece.Y] = piece;
+                }
                 this.setNextPlayer();
                 this.updateScores();
+                return true;
             }
-            else
-            {
-                // Can't play
-            }
-
-            return changedPieces;
+            return false;
         }
 
         #endregion

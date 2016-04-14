@@ -14,7 +14,7 @@ namespace Game
     public partial class Reversi : Form
     {
 
-        private Dictionary<Player, Label> labels = new Dictionary<Player,Label>();
+        private Dictionary<Player, Label> labels = new Dictionary<Player, Label>();
 
         /// <summary>
         /// Board
@@ -88,7 +88,7 @@ namespace Game
                         // If there is a piece    
                         p.MouseEnter -= pictureBox_HoverIn;
                         p.MouseLeave -= pictureBox_HoverOut;
-                
+
                         if (this.board.Grid[col, row].Player.Owner == Player.HUMAN)
                         {
                             // Human : Display Black
@@ -124,7 +124,7 @@ namespace Game
         /// </summary>
         private void refreshCurrentPlayer()
         {
-            foreach(Player p in board.Players)
+            foreach (Player p in board.Players)
             {
                 if (board.getCurrentPlayer() == p)
                 {
@@ -134,7 +134,7 @@ namespace Game
                 {
                     this.labels[p].Font = new Font(this.labels[p].Font, FontStyle.Regular);
                 }
-            }            
+            }
         }
 
         #endregion
@@ -152,22 +152,16 @@ namespace Game
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Column;
             int y = position.Row;
-            //MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
-            // this.board.play(x, y);
-            //p.Click -= pictureBox_Click;
 
-            MessageBox.Show(board.canMove(new Piece(x,y)).ToString());
-            foreach (KeyValuePair<int, int> t in board.turnover)
+            if (!this.board.play(new Piece(x, y)))
             {
-                MessageBox.Show(t.Key + "    " + t.Value);
-            } */
-            Piece pi = new Piece(x,y);
-            board.canMove(pi);
-            List<Piece> listMove = board.listeMove(pi);
-            foreach (Piece pie in listMove)
-            {
-                MessageBox.Show(pie.toString());
+                MessageBox.Show("Vous ne pouvez pas jouer ici !");
             }
+            else
+            {
+                p.Click -= pictureBox_Click;
+            }
+
             this.refreshBoard();
         }
 
@@ -179,23 +173,40 @@ namespace Game
         private void pictureBox_HoverIn(object sender, EventArgs e)
         {
             PictureBox p = (PictureBox)sender;
-            p.Image = Image.FromFile("../../Resources/grey.png");
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Column;
             int y = position.Row;
-             // MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
+            // MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
 
-            /*
-            List<Piece> pieces = this.board.play(x, y);
 
-            foreach (Piece piece in pieces)
+            Piece pi = new Piece(x, y);
+            if (board.canMove(pi))
             {
-                PictureBox pic = (PictureBox)this.boardGUI.GetControlFromPosition(piece.X, piece.Y);
-                pic.Image = Image.FromFile("../../Resources/grey.png");
+                // p.Image = Image.FromFile("../../Resources/grey.png");
+                List<Piece> pieces = board.listeMove(pi);
+                foreach (Piece piece in pieces)
+                {
+                    PictureBox pic = (PictureBox)this.boardGUI.GetControlFromPosition(piece.X, piece.Y);
+                    if (piece.X == x && piece.Y == y)
+                    {
+                        if (this.board.getCurrentPlayer() == this.board.Players[0])
+                        {
+                            pic.Image = Image.FromFile("../../Resources/black.png");
+                        }
+                        else
+                        {
+                            pic.Image = Image.FromFile("../../Resources/white.png");
+                        }
+                    }
+                    else
+                    {
+                        pic.Image = Image.FromFile("../../Resources/grey.png");
+                    }
+                }
             }
-             */
+
         }
-            
+
         /// <summary>
         /// Hover out PictureBox
         /// </summary>
@@ -208,6 +219,7 @@ namespace Game
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
             int x = position.Column;
             int y = position.Row;
+            this.refreshBoard();
         }
 
         #endregion
