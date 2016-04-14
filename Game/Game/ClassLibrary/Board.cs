@@ -213,7 +213,7 @@ namespace Game.ClassLibrary
                     while (Grid[next.X, next.Y].Player != null && Grid[next.X, next.Y].Player.Owner != this.getCurrentPlayer().Owner && !stop)
                     {
                         tempo = this.getNext(direction, next);
-                        if (tempo.X == -1) //if outbound stop the loop
+                        if (tempo == null) //if outbound stop the loop
                         {
                             stop = true;
                         }
@@ -255,60 +255,60 @@ namespace Game.ClassLibrary
             if (direction == Direction.NORTHWEST)
             {
                 if (p.X - 1 < 0 && p.Y - 1 < 0)
-                    return res = new Piece(-1, -1);
+                    return null;
                 else
                     return res = new Piece(p.X - 1, p.Y - 1);
             }
             if (direction == Direction.NORTH)
             {
                 if (p.Y - 1 < 0)
-                    return res = new Piece(-1, -1);
+                    return null;
                 else
                     return res = new Piece(p.X, p.Y-1);
             }
             if (direction == Direction.NORTHEAST)
             {
                 if (p.Y - 1 < 0 && p.X + 1 >= this.Grid.GetLength(1))
-                    return res = new Piece(-1, -1);
+                    return null;
                 else
                     return res = new Piece(p.X + 1, p.Y - 1);
             }
             if (direction == Direction.EAST)
             {
-                if (p.X + 1 > this.Grid.GetLength(1))
-                    return res = new Piece(-1, -1);
+                if (p.X + 1 >= this.Grid.GetLength(1))
+                    return null;
                 else
                     return res = new Piece(p.X + 1, p.Y);
             }
             if (direction == Direction.SOUTHEAST)
             {
                 if (p.Y + 1 >= this.Grid.GetLength(0) && p.X + 1 >= this.Grid.GetLength(1))
-                    return res = new Piece(-1, -1);
+                    return null;
                 else
                     return res = new Piece(p.Y + 1, p.X + 1);
             }
             if (direction == Direction.SOUTH)
             {
                 if (p.Y + 1 >= this.Grid.GetLength(0))
-                    return res = new Piece(-1, -1);
+                    return null;
                 else
                     return res = new Piece(p.X, p.Y + 1);
             }
             if (direction == Direction.SOUTHWEST)
             {
-                if (p.Y - 1 > this.Grid.GetLength(0) && p.X - 1 < 0)
-                    return res = new Piece(-1, -1);
+                if (p.Y - 1 >= this.Grid.GetLength(0) && p.X - 1 < 0)
+                    return null;
                 else
                     return res = new Piece(p.X - 1, p.Y + 1);
             }
             if (direction == Direction.WEST)
             {
                 if (p.X - 1 < 0)
-                    return res = new Piece(-1, -1);
+                    return null;
                 else
                     return res = new Piece(p.X - 1 , p.Y);
             }
-            return res = new Piece(-1, -1);
+            return null;
         }
 
     #endregion
