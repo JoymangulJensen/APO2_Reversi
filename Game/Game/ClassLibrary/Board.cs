@@ -312,6 +312,28 @@ namespace Game.ClassLibrary
         }
 
     #endregion
-      
+        
+        #region return all legal move
+        /*
+        public List<Piece> listeMove(Piece p)
+        {
+            List<Piece> listePiece = new List<Piece>();
+            listePiece.Add(p);
+            for (int direction = 1; direction < 9; direction++)
+            {
+                Piece next = this.getNext(direction, p);
+                int retournement = this.turnover[direction];
+
+                while (retournement > 0)
+                {
+
+                    next = this.getNext(direction, next);
+                    retournement--;
+                }
+            }
+            return listePiece;
+        }*/
+        #endregion
+
     }
 }
