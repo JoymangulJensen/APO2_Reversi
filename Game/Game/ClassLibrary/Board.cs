@@ -82,6 +82,9 @@ namespace Game.ClassLibrary
             
         }
 
+        /// <summary>
+        /// Reinitialise the table of turonvers
+        /// </summary>
         public void reInitTurnover()
         {
             for (int i = 1; i < 9; i++)
@@ -184,32 +187,40 @@ namespace Game.ClassLibrary
 
         #region Test if move is legal
 
+        /// <summary>
+        /// Methode to test if a player can play in a specific compartiment
+        /// this method also update the turonver table to get the number of turnover possible in a specific direction
+        /// </summary>
+        /// <param name="p">Piece which the player want to play</param>
+        /// <returns>true: can play piece</returns>
         public Boolean canMove(Piece p)
         {
-            Boolean res = false;
-            this.reInitTurnover();
-            if (grid[p.X, p.Y] != null)
+            Boolean res = false;    //By default a move is illegal
+            this.reInitTurnover();  //reinitilase all the turnovers
+            if (grid[p.X, p.Y] != null) //If the current compartiment already contain a player
                 return res = false;
 
+            //Go through all directions
             for (int direction = 1; direction < 9; direction++)
             {
-                Piece next = this.getNext(direction, p);
-                Piece tempo;
-                Boolean stop = true;
-                int turnover = 0;
+                Piece next = this.getNext(direction, p); //get nex move of the current piece
+                Piece tempo;    //temporary variable to check if next piece is not outbound
+                Boolean stop = false;    //Variable is set true when outbound
+                int turnover = 0;   //the current number of turonver for the specific direction
                 try
                 {
-                    while (Grid[next.X, next.Y].Player != null && Grid[next.X, next.Y].Player.Owner == Player.COMPUTER && stop)
+                    //Loop untill the next compartiment is different from the current player and not outbound
+                    while (Grid[next.X, next.Y].Player != null && Grid[next.X, next.Y].Player.Owner != this.getCurrentPlayer().Owner && !stop)
                     {
                         tempo = this.getNext(direction, next);
-                        if (tempo.X == -1)
+                        if (tempo.X == -1) //if outbound stop the loop
                         {
-                            stop = false;
+                            stop = true;
                         }
                         else
                         {
-                            turnover++;
-                            next = tempo;
+                            turnover++; //increment the number of turonver for that specific direction
+                            next = tempo;   
                         }
                     }
                 }
@@ -217,9 +228,11 @@ namespace Game.ClassLibrary
                 {
                     continue;
                 }
-                if (Grid[next.X, next.Y].Player != null && turnover != 0 && Grid[next.X, next.Y].Player.Owner == Player.HUMAN)
+                //If the turonver is not zero and the last piece to be tested is the same as the current player
+                if (Grid[next.X, next.Y].Player != null && turnover != 0 && Grid[next.X, next.Y].Player.Owner == this.getCurrentPlayer().Owner)
                 {
                     res = true;
+                    //update the turonver table for that specific direction
                     this.turnover[direction] = turnover;
                 }
                 else
@@ -301,25 +314,26 @@ namespace Game.ClassLibrary
     #endregion
         
         #region return all legal move
-        /*
+        
         public List<Piece> listeMove(Piece p)
         {
             List<Piece> listePiece = new List<Piece>();
-            listePiece.Add(p);
+            
             for (int direction = 1; direction < 9; direction++)
             {
                 Piece next = this.getNext(direction, p);
                 int retournement = this.turnover[direction];
-
                 while (retournement > 0)
                 {
-
+                    listePiece.Add(next);
                     next = this.getNext(direction, next);
                     retournement--;
                 }
             }
+            if(listePiece.Count!=0)
+                listePiece.Add(p);
             return listePiece;
-        }*/
+        }
         #endregion
 
     }
