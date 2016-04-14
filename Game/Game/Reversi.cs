@@ -127,7 +127,12 @@ namespace Game
             //MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
             //this.board.play(x, y);
             //p.Click -= pictureBox_Click;
+
             MessageBox.Show(board.canMove(new Piece(x,y)).ToString());
+            foreach (KeyValuePair<int, int> t in board.turnover)
+            {
+                MessageBox.Show(t.Key + "    " + t.Value);
+            }
             this.refreshBoard();
         }
 

@@ -65,5 +65,12 @@ namespace Game.ClassLibrary
                 this.player.Owner = Player.HUMAN;
             }
         }
+
+        public String toString()
+        {
+            String res = " ";
+            res += "X : " + this.X + "  y : " + this.Y;
+            return res;
+        }
     }
 }

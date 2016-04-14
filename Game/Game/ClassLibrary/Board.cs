@@ -16,6 +16,12 @@ namespace Game.ClassLibrary
         /// List of the players
         /// </summary>
         List<Player> players;
+        /// <summary>
+        /// The number od turnover in each direction
+        /// Key : direction [1-8]
+        /// Value : the number of turnover
+        /// </summary>
+        public Dictionary<int, int> turnover = new Dictionary<int, int>();
 
         internal List<Player> Players
         {
@@ -69,6 +75,17 @@ namespace Game.ClassLibrary
             grid[4, 3].Player = players[1]; // HUMAN
             grid[4, 4].Player = players[0]; // COMPUTER
              */
+
+            //Initialise the turonver table
+            for (int i = 1; i < 9; i++)
+                this.turnover.Add(i, 0);
+            
+        }
+
+        public void reInitTurnover()
+        {
+            for (int i = 1; i < 9; i++)
+                this.turnover[i] = 0;
         }
 
         #endregion
@@ -170,7 +187,7 @@ namespace Game.ClassLibrary
         public Boolean canMove(Piece p)
         {
             Boolean res = false;
-
+            this.reInitTurnover();
             if (grid[p.X, p.Y] != null)
                 return res = false;
 
@@ -180,7 +197,6 @@ namespace Game.ClassLibrary
                 Piece tempo;
                 Boolean stop = true;
                 int turnover = 0;
-
                 try
                 {
                     while (Grid[next.X, next.Y].Player != null && Grid[next.X, next.Y].Player.Owner == Player.COMPUTER && stop)
@@ -204,6 +220,11 @@ namespace Game.ClassLibrary
                 if (Grid[next.X, next.Y].Player != null && turnover != 0 && Grid[next.X, next.Y].Player.Owner == Player.HUMAN)
                 {
                     res = true;
+                    this.turnover[direction] = turnover;
+                }
+                else
+                {
+                    this.turnover[direction] = 0;
                 }
             }
             return res;
@@ -227,52 +248,52 @@ namespace Game.ClassLibrary
             }
             if (direction == Direction.NORTH)
             {
-                if (p.X - 1 < 0)
+                if (p.Y - 1 < 0)
                     return res = new Piece(-1, -1);
                 else
-                    return res = new Piece(p.X - 1, p.Y);
+                    return res = new Piece(p.X, p.Y-1);
             }
             if (direction == Direction.NORTHEAST)
             {
-                if (p.X - 1 < 0 && p.Y + 1 >= this.Grid.GetLength(1))
-                    return res = new Piece(-1, -1);
-                else
-                    return res = new Piece(p.X - 1, p.Y + 1);
-            }
-            if (direction == Direction.EAST)
-            {
-                if (p.Y + 1 > this.Grid.GetLength(1))
-                    return res = new Piece(-1, -1);
-                else
-                    return res = new Piece(p.X, p.Y + 1);
-            }
-            if (direction == Direction.SOUTHEAST)
-            {
-                if (p.X + 1 >= this.Grid.GetLength(0) && p.Y + 1 >= this.Grid.GetLength(1))
-                    return res = new Piece(-1, -1);
-                else
-                    return res = new Piece(p.X + 1, p.Y + 1);
-            }
-            if (direction == Direction.SOUTH)
-            {
-                if (p.X + 1 >= this.Grid.GetLength(0))
-                    return res = new Piece(-1, -1);
-                else
-                    return res = new Piece(p.X + 1, p.Y);
-            }
-            if (direction == Direction.SOUTHWEST)
-            {
-                if (p.X - 1 > this.Grid.GetLength(0) && p.Y - 1 < 0)
+                if (p.Y - 1 < 0 && p.X + 1 >= this.Grid.GetLength(1))
                     return res = new Piece(-1, -1);
                 else
                     return res = new Piece(p.X + 1, p.Y - 1);
             }
-            if (direction == Direction.WEST)
+            if (direction == Direction.EAST)
             {
-                if (p.Y - 1 < 0)
+                if (p.X + 1 > this.Grid.GetLength(1))
                     return res = new Piece(-1, -1);
                 else
-                    return res = new Piece(p.X, p.Y - 1);
+                    return res = new Piece(p.X + 1, p.Y);
+            }
+            if (direction == Direction.SOUTHEAST)
+            {
+                if (p.Y + 1 >= this.Grid.GetLength(0) && p.X + 1 >= this.Grid.GetLength(1))
+                    return res = new Piece(-1, -1);
+                else
+                    return res = new Piece(p.Y + 1, p.X + 1);
+            }
+            if (direction == Direction.SOUTH)
+            {
+                if (p.Y + 1 >= this.Grid.GetLength(0))
+                    return res = new Piece(-1, -1);
+                else
+                    return res = new Piece(p.X, p.Y + 1);
+            }
+            if (direction == Direction.SOUTHWEST)
+            {
+                if (p.Y - 1 > this.Grid.GetLength(0) && p.X - 1 < 0)
+                    return res = new Piece(-1, -1);
+                else
+                    return res = new Piece(p.X - 1, p.Y + 1);
+            }
+            if (direction == Direction.WEST)
+            {
+                if (p.X - 1 < 0)
+                    return res = new Piece(-1, -1);
+                else
+                    return res = new Piece(p.X - 1 , p.Y);
             }
             return res = new Piece(-1, -1);
         }
