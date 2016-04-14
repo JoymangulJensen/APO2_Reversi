@@ -194,10 +194,10 @@ namespace Game.ClassLibrary
                 try
                 {
                     //Loop untill the next compartiment is different from the current player and not outbound
-                    while (Grid[next.X, next.Y].Player != null && Grid[next.X, next.Y].Player.Owner != this.getCurrentPlayer().Owner && !stop)
+                    while (!stop && (Grid[next.X, next.Y] != null && Grid[next.X, next.Y].Player.Owner != this.getCurrentPlayer().Owner) )
                     {
                         tempo = this.getNext(direction, next);
-                        if (tempo == null) //if outbound stop the loop
+                        if (tempo.X < 0 || tempo.Y < 0 || tempo.X > 7 || tempo.Y > 7)  //if outbound stop the loop
                         {
                             stop = true;
                         }
@@ -213,7 +213,7 @@ namespace Game.ClassLibrary
                     continue;
                 }
                 //If the turonver is not zero and the last piece to be tested is the same as the current player
-                if (Grid[next.X, next.Y].Player != null && turnover != 0 && Grid[next.X, next.Y].Player.Owner == this.getCurrentPlayer().Owner)
+                if (Grid[next.X, next.Y] != null && turnover != 0 && Grid[next.X, next.Y].Player.Owner == this.getCurrentPlayer().Owner)
                 {
                     res = true;
                     //update the turonver table for that specific direction
@@ -235,67 +235,40 @@ namespace Game.ClassLibrary
         /// <returns>true: move legal </returns>
         public Piece getNext(int direction, Piece p)
         {
-
-            int nb_colonnes = 8, nb_lignes = 8;
-
             if (direction == Direction.NORTHEAST)
             {
-                if (p.Y <= 0 || p.X >= nb_colonnes)
-                    return null;
-                else
                     return new Piece(p.X + 1, p.Y - 1);
             }
             if (direction == Direction.NORTH)
             {
-                if (p.Y <= 0)
-                    return null;
-                else
                     return new Piece(p.X, p.Y - 1);
             }
             if (direction == Direction.NORTHWEST)
             {
-                if (p.X <= 0 || p.Y <= 0)
-                    return null;
-                else
                     return new Piece(p.X - 1, p.Y - 1);
             }
             
             if (direction == Direction.EAST)
             {
-                if (p.X >= nb_colonnes)
-                    return null;
-                else
                     return new Piece(p.X + 1, p.Y);
             }
             if (direction == Direction.SOUTHEAST)
             {
-                if (p.Y >= nb_lignes || p.X >= nb_colonnes)
-                    return null;
-                else
                     return new Piece(p.X + 1, p.Y + 1);
             }
             if (direction == Direction.SOUTH)
             {
-                if (p.Y >= nb_lignes)
-                    return null;
-                else
                     return new Piece(p.X, p.Y + 1);
             }
             if (direction == Direction.SOUTHWEST)
             {
-                if (p.Y - 1 >= nb_lignes || p.X - 1 < 0)
-                    return null;
-                else
                     return new Piece(p.X - 1, p.Y + 1);
             }
             if (direction == Direction.WEST)
             {
-                if (p.X - 1 < 0)
-                    return null;
-                else
                     return new Piece(p.X - 1 , p.Y);
             }
-            return null;
+            return new Piece(0,0);
         }
 
     #endregion
