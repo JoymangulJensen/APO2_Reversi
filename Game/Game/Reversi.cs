@@ -111,8 +111,10 @@ namespace Game
         /// </summary>
         private void refreshScore()
         {
-            this.labelScore1.Text = board.Players[0].Name + " : " + board.Players[0].Score;
-            this.labelScore2.Text = board.Players[1].Name + " : " + board.Players[1].Score;
+            foreach (KeyValuePair<Player, Label> label in labels)
+            {
+                label.Value.Text = label.Key.Name + " : " + label.Key.Score;
+            }
             this.refreshCurrentPlayer();
         }
 
@@ -132,9 +134,7 @@ namespace Game
                 {
                     this.labels[p].Font = new Font(this.labels[p].Font, FontStyle.Regular);
                 }
-            }
-
-            
+            }            
         }
 
         #endregion
