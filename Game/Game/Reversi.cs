@@ -13,6 +13,9 @@ namespace Game
 {
     public partial class Reversi : Form
     {
+
+        private Dictionary<Player, Label> labels = new Dictionary<Player,Label>();
+
         /// <summary>
         /// Board
         /// </summary>
@@ -40,7 +43,10 @@ namespace Game
                     PictureBox p = initPictureBox();
                     boardGUI.Controls.Add(p, col, row);
                 }
-            } 
+            }
+
+            this.labels.Add(board.Players[0], this.labelScore1);
+            this.labels.Add(board.Players[1], this.labelScore2);
             this.refreshBoard();
         }
 
@@ -105,8 +111,30 @@ namespace Game
         /// </summary>
         private void refreshScore()
         {
-            this.labelScore1.Text = board.Players[0].Name + " : " + board.Players[0].Score;
-            this.labelScore2.Text = board.Players[1].Name + " : " + board.Players[1].Score;
+            foreach (KeyValuePair<Player, Label> label in labels)
+            {
+                label.Value.Text = label.Key.Name + " : " + label.Key.Score;
+            }
+            this.refreshCurrentPlayer();
+        }
+
+        /// <summary>
+        /// Update the labels according to the current player
+        /// Set in Bold the next player
+        /// </summary>
+        private void refreshCurrentPlayer()
+        {
+            foreach(Player p in board.Players)
+            {
+                if (board.getCurrentPlayer() == p)
+                {
+                    this.labels[p].Font = new Font(this.labels[p].Font, FontStyle.Bold);
+                }
+                else
+                {
+                    this.labels[p].Font = new Font(this.labels[p].Font, FontStyle.Regular);
+                }
+            }            
         }
 
         #endregion
@@ -125,7 +153,7 @@ namespace Game
             int x = position.Column;
             int y = position.Row;
             //MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
-            //this.board.play(x, y);
+            // this.board.play(x, y);
             //p.Click -= pictureBox_Click;
 
             MessageBox.Show(board.canMove(new Piece(x,y)).ToString());
