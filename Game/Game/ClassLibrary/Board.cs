@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Game.ClassLibrary
 {
@@ -22,7 +23,10 @@ namespace Game.ClassLibrary
         /// Value : the number of turnover
         /// </summary>
         public Dictionary<int, int> turnover = new Dictionary<int,int>();
-
+        /// <summary>
+        /// Save the turnover table for the last played piece
+        /// </summary>
+        public Dictionary<int, int> saveTurnover = new Dictionary<int, int>();
         internal List<Player> Players
         {
             get { return players; }
@@ -139,6 +143,7 @@ namespace Game.ClassLibrary
 
         #endregion
 
+        
         #region Play
 
         /// <summary>
@@ -160,11 +165,68 @@ namespace Game.ClassLibrary
                     piece.Player = this.getCurrentPlayer();
                     this.grid[piece.X, piece.Y] = piece;
                 }
+                //Copy the turnover table for the played piece(used for undoing a move)
+                for (int i = 1; i < 9; i++)
+                    saveTurnover[i] = turnover[i];
+                    
                 this.setNextPlayer();
                 this.updateScores();
                 return true;
             }
             return false;
+        }
+
+        #endregion
+
+        #region return all legal move
+
+        public List<Piece> listeMove(Piece p)
+        {
+            List<Piece> listePiece = new List<Piece>();
+
+            for (int direction = 1; direction < 9; direction++)
+            {
+                Piece next = this.getNext(direction, p);
+                int retournement = this.turnover[direction];
+                while (retournement > 0)
+                {
+                    listePiece.Add(next);
+                    next = this.getNext(direction, next);
+                    retournement--;
+                }
+            }
+            if (listePiece.Count != 0)
+                listePiece.Add(p);
+            return listePiece;
+        }
+        #endregion
+
+        #region undo a move
+        /// <summary>
+        /// Methode to undo a previous move
+        /// THe grid return to its previous state
+        /// </summary>
+        /// <param name="p">The piece to be undone</param>
+        public void undoMove(Piece p)
+        {
+            this.grid[p.X, p.Y] = null ;  //delete the piece
+
+            //Go through all directions
+            for (int direction = 1; direction < 9; direction++)
+            {
+                Piece next = this.getNext(direction, p); //get next move of the current piece
+                int turnover = this.saveTurnover[direction];  //get the turnonver for a specific direction
+
+                while (turnover > 0)
+                {
+                    //make the piece return to its previos state
+                    this.grid[next.X, next.Y] = new Piece(next.X, next.Y, this.getCurrentPlayer());
+                    next = this.getNext(direction, next);
+                    turnover = turnover - 1;
+                }
+            }
+            this.setNextPlayer();        //Make the player that wanted an undo plat again
+            this.updateScores();
         }
 
         #endregion
@@ -180,14 +242,14 @@ namespace Game.ClassLibrary
         public Boolean canMove(Piece p)
         {
             Boolean res = false;    //By default a move is illegal
-            this.reInitTurnover();  //reinitilase all the turnovers
+            this.reInitTurnover();  //reinitiliase all the turnovers
             if (grid[p.X, p.Y] != null) //If the current compartiment already contain a player
                 return res = false;
 
             //Go through all directions
             for (int direction = 1; direction < 9; direction++)
             {
-                Piece next = this.getNext(direction, p); //get nex move of the current piece
+                Piece next = this.getNext(direction, p); //get next move of the current piece
                 Piece tempo;    //temporary variable to check if next piece is not outbound
                 Boolean stop = false;    //Variable is set true when outbound
                 int turnover = 0;   //the current number of turonver for the specific direction
@@ -218,6 +280,7 @@ namespace Game.ClassLibrary
                     res = true;
                     //update the turonver table for that specific direction
                     this.turnover[direction] = turnover;
+                    
                 }
                 else
                 {
@@ -273,28 +336,7 @@ namespace Game.ClassLibrary
 
     #endregion
         
-        #region return all legal move
-        
-        public List<Piece> listeMove(Piece p)
-        {
-            List<Piece> listePiece = new List<Piece>();
-            
-            for (int direction = 1; direction < 9; direction++)
-            {
-                Piece next = this.getNext(direction, p);
-                int retournement = this.turnover[direction];
-                while (retournement > 0)
-                {
-                    listePiece.Add(next);
-                    next = this.getNext(direction, next);
-                    retournement--;
-                }
-            }
-            if(listePiece.Count!=0)
-                listePiece.Add(p);
-            return listePiece;
-        }
-        #endregion
+       
 
     }
 }

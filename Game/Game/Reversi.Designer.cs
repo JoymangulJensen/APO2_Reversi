@@ -31,6 +31,7 @@
             this.boardGUI = new System.Windows.Forms.TableLayoutPanel();
             this.labelScore1 = new System.Windows.Forms.Label();
             this.labelScore2 = new System.Windows.Forms.Label();
+            this.but_Undo = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // boardGUI
@@ -78,12 +79,24 @@
             this.labelScore2.TabIndex = 2;
             this.labelScore2.Text = "Joueur 2 : 0";
             // 
+            // but_Undo
+            // 
+            this.but_Undo.Enabled = false;
+            this.but_Undo.Location = new System.Drawing.Point(62, 24);
+            this.but_Undo.Name = "but_Undo";
+            this.but_Undo.Size = new System.Drawing.Size(75, 23);
+            this.but_Undo.TabIndex = 3;
+            this.but_Undo.Text = "Undo";
+            this.but_Undo.UseVisualStyleBackColor = true;
+            this.but_Undo.Click += new System.EventHandler(this.but_Undo_Click);
+            // 
             // Reversi
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::Game.Properties.Resources.background;
             this.ClientSize = new System.Drawing.Size(616, 548);
+            this.Controls.Add(this.but_Undo);
             this.Controls.Add(this.labelScore2);
             this.Controls.Add(this.labelScore1);
             this.Controls.Add(this.boardGUI);
@@ -99,6 +112,6 @@
         private System.Windows.Forms.TableLayoutPanel boardGUI;
         private System.Windows.Forms.Label labelScore1;
         private System.Windows.Forms.Label labelScore2;
-
+        private System.Windows.Forms.Button but_Undo;
     }
 }

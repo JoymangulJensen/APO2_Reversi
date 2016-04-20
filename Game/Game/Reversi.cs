@@ -13,6 +13,7 @@ namespace Game
 {
     public partial class Reversi : Form
     {
+        private Piece previousPlay;
 
         private Dictionary<Player, Label> labels = new Dictionary<Player, Label>();
 
@@ -100,6 +101,14 @@ namespace Game
                             p.Image = Image.FromFile("../../Resources/white.png");
                         }
                     }
+                    else if(p.Image != null)
+                    {
+                        p.Click += new EventHandler(this.pictureBox_Click);
+                        p.MouseEnter += new EventHandler(this.pictureBox_HoverIn);
+                        p.MouseLeave += new EventHandler(this.pictureBox_HoverOut);
+                        p.BackColor = Color.Transparent;
+                        p.Image = null;
+                    }
                 }
             }
             this.refreshScore();
@@ -160,8 +169,9 @@ namespace Game
             else
             {
                 p.Click -= pictureBox_Click;
+                previousPlay = this.board.Grid[x, y];
             }
-
+            this.but_Undo.Enabled = true;
             this.refreshBoard();
         }
 
@@ -224,5 +234,12 @@ namespace Game
 
         #endregion
 
+        private void but_Undo_Click(object sender, EventArgs e)
+        {
+            board.undoMove(previousPlay);
+            this.refreshBoard();
+            previousPlay = null;
+            this.but_Undo.Enabled = false;
+        }
     }
 }
