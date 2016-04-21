@@ -172,6 +172,12 @@ namespace Game
                 previousPlay = this.board.Grid[x, y];
             }
             this.but_Undo.Enabled = true;
+            if(!this.board.canPlay())
+            {
+                this.board.setNextPlayer();
+                if (this.board.gameEnd()) ;
+                    MessageBox.Show("Jeux Terminé");
+            }
             this.refreshBoard();
         }
 

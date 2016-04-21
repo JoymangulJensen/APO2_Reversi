@@ -96,7 +96,7 @@ namespace Game.ClassLibrary
         /// <summary>
         /// Update the next player
         /// </summary>
-        private void setNextPlayer()
+        public void setNextPlayer()
         {
             if (Player.CurrentPlayer >= players.Count)
             {
@@ -143,7 +143,6 @@ namespace Game.ClassLibrary
 
         #endregion
 
-        
         #region Play
 
         /// <summary>
@@ -174,6 +173,39 @@ namespace Game.ClassLibrary
                 return true;
             }
             return false;
+        }
+
+        #endregion
+
+        #region Test if a player have a legal move remaining and if a game ends                  
+
+        public Boolean gameEnd()
+        {
+            if(!this.canPlay(new Player(Player.COMPUTER)) && !this.canPlay(new Player(Player.HUMAN)))
+                return true;
+            return false;
+        }
+
+        public Boolean canPlay()
+        {
+            return this.canPlay(this.getCurrentPlayer());
+        }
+
+        public Boolean canPlay(Player player)
+        {
+            Boolean res = false; //by default we cannot play
+            for(int col=0; col < this.grid.GetLength(0); col++)
+            {
+                for(int row=0; row < this.grid.GetLength(1); row++)
+                {
+                    if(grid[col, row] == null)
+                    {
+                        if(this.canMove(new Piece(col,row), player))
+                            return res = true;
+                    }
+                }
+            }
+            return res;
         }
 
         #endregion
@@ -233,13 +265,17 @@ namespace Game.ClassLibrary
 
         #region Test if move is legal
 
+        public Boolean canMove(Piece p)
+        {
+            return this.canMove(p, this.getCurrentPlayer());
+        }
         /// <summary>
         /// Methode to test if a player can play in a specific compartiment
         /// this method also update the turonver table to get the number of turnover possible in a specific direction
         /// </summary>
         /// <param name="p">Piece which the player want to play</param>
         /// <returns>true: can play piece</returns>
-        public Boolean canMove(Piece p)
+        public Boolean canMove(Piece p, Player player)
         {
             Boolean res = false;    //By default a move is illegal
             this.reInitTurnover();  //reinitiliase all the turnovers
@@ -256,7 +292,7 @@ namespace Game.ClassLibrary
                 try
                 {
                     //Loop untill the next compartiment is different from the current player and not outbound
-                    while (!stop && (Grid[next.X, next.Y] != null && Grid[next.X, next.Y].Player.Owner != this.getCurrentPlayer().Owner) )
+                    while (!stop && (Grid[next.X, next.Y] != null && Grid[next.X, next.Y].Player.Owner != player.Owner) )
                     {
                         tempo = this.getNext(direction, next);
                         if (tempo.X < 0 || tempo.Y < 0 || tempo.X > 7 || tempo.Y > 7)  //if outbound stop the loop
@@ -275,7 +311,7 @@ namespace Game.ClassLibrary
                     continue;
                 }
                 //If the turonver is not zero and the last piece to be tested is the same as the current player
-                if (Grid[next.X, next.Y] != null && turnover != 0 && Grid[next.X, next.Y].Player.Owner == this.getCurrentPlayer().Owner)
+                if (Grid[next.X, next.Y] != null && turnover != 0 && Grid[next.X, next.Y].Player.Owner == player.Owner)
                 {
                     res = true;
                     //update the turonver table for that specific direction
@@ -336,7 +372,6 @@ namespace Game.ClassLibrary
 
     #endregion
         
-       
 
     }
 }
