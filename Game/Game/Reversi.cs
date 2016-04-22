@@ -172,11 +172,19 @@ namespace Game
                 previousPlay = this.board.Grid[x, y];
             }
             this.but_Undo.Enabled = true;
-            if(!this.board.canPlay())
+            List<Piece> listPiece = this.board.getAllLegalMoves();
+            String s = "";
+            foreach (Piece pie in listPiece)
+            {
+                s += pie.ToString() + " \n";
+            }
+            MessageBox.Show(s);
+            if (!this.board.canPlay())
             {
                 this.board.setNextPlayer();
-                if (this.board.gameEnd()) ;
+                if (this.board.gameEnd())
                     MessageBox.Show("Jeux Terminé");
+
             }
             this.refreshBoard();
         }

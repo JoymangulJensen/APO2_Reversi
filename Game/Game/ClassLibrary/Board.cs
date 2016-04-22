@@ -22,7 +22,7 @@ namespace Game.ClassLibrary
         /// Key : direction [1-8]
         /// Value : the number of turnover
         /// </summary>
-        public Dictionary<int, int> turnover = new Dictionary<int,int>();
+        public Dictionary<int, int> turnover = new Dictionary<int, int>();
         /// <summary>
         /// Save the turnover table for the last played piece
         /// </summary>
@@ -45,6 +45,17 @@ namespace Game.ClassLibrary
             get { return grid; }
             set { grid = value; }
         }
+
+        private int[,] gridWeight = new int[8, 8] { 
+                                                { 4 , -3, 2 , 2 , 2 , 2 , -3, 4  },
+                                                { -3, -4, -1, -1, -1, -1, -4, -3 },
+                                                { 2 , -1, 1 , 0 , 0 , 1 , -1, 2  },
+                                                { 2 , -1, 0 , 1 , 1 , 0 , -1, 2  },
+                                                { 2 , -1, 0 , 1 , 1 , 0 , -1, 2  },
+                                                { 2 , -1, 1 , 0 , 0 , 1 , -1, 2  },
+                                                { -3, -4, -1, -1, -1, -1, -4, -3 },
+                                                { 4 , -3, 2 , 2 , 2 , 2 , -3, 4  }
+                                                    };
 
         #endregion
 
@@ -370,8 +381,44 @@ namespace Game.ClassLibrary
             return new Piece(0,0);
         }
 
-    #endregion
-        
+        #endregion
 
+        #region AI
+        /// <summary>
+        /// Methode tha return all the piece tha can be placed on the grid
+        /// </summary>
+        /// <returns></returns>
+        public List<Piece> getAllLegalMoves()
+        {
+            List<Piece> listPiece = new List<Piece>();
+            for (int col = 0; col < 8; col++)
+            {
+                for (int lig = 0; lig < 8; lig++)
+                {
+                    Piece p = new Piece(col, lig);
+                    if (this.canMove(p))
+                        listPiece.Add(p);
+                }
+            }
+            return listPiece;
+        }
+        /// <summary>
+        /// Methode to evaluate the grid with the corresponding weight
+        /// </summary>
+        /// <returns></returns>
+        public int evaluateGrid()
+        {
+            int score = 0;
+            for (int col = 0; col < 8; col++)
+            {
+                for(int lig = 0; lig < 8; lig++)
+                {
+                    if (this.grid[col, lig] != null)
+                        score += this.gridWeight[col, lig];
+                }
+            }
+            return score;
+        }
+        #endregion
     }
 }
