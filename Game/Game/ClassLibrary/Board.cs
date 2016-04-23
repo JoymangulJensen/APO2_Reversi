@@ -46,6 +46,11 @@ namespace Game.ClassLibrary
             set { grid = value; }
         }
 
+
+
+        /// <summary>
+        /// The weight matrix
+        /// </summary>
         private int[,] gridWeight = new int[8, 8] { 
                                                 { 4 , -3, 2 , 2 , 2 , 2 , -3, 4  },
                                                 { -3, -4, -1, -1, -1, -1, -4, -3 },
@@ -56,6 +61,19 @@ namespace Game.ClassLibrary
                                                 { -3, -4, -1, -1, -1, -1, -4, -3 },
                                                 { 4 , -3, 2 , 2 , 2 , 2 , -3, 4  }
                                                     };
+        private Piece bestMove;
+        internal Piece BestMove
+        {
+            get
+            {
+                return bestMove;
+            }
+
+            set
+            {
+                bestMove = value;
+            }
+        }
 
         #endregion
 
@@ -253,12 +271,13 @@ namespace Game.ClassLibrary
         public void undoMove(Piece p)
         {
             this.grid[p.X, p.Y] = null ;  //delete the piece
+            this.canMove(p);
 
             //Go through all directions
             for (int direction = 1; direction < 9; direction++)
             {
                 Piece next = this.getNext(direction, p); //get next move of the current piece
-                int turnover = this.saveTurnover[direction];  //get the turnonver for a specific direction
+                int turnover = this.turnover[direction];  //get the turnonver for a specific direction
 
                 while (turnover > 0)
                 {
@@ -384,6 +403,65 @@ namespace Game.ClassLibrary
         #endregion
 
         #region AI
+        public int getBestMove(int depth, int alpha, int beta, Piece bestMove)
+        {
+            int bestScore;
+            if(depth == 0 || this.gameEnd())
+            {
+                return this.evaluateGrid();
+            }
+            if (this.canPlay())
+            {
+                List<Piece> listPiece = this.getAllLegalMoves();
+                Piece firstPiece = listPiece[0];
+                firstPiece.Player = this.getCurrentPlayer();
+                if(bestMove != null)
+                {
+                    bestMove = firstPiece;
+                }
+                listPiece.RemoveAt(0);
+                this.play(firstPiece);
+                bestScore = -getBestMove(depth - 1, -alpha, -beta, null);
+                this.undoMove(firstPiece);
+
+                if(bestScore >= alpha )
+                {
+                    alpha = bestScore;
+                }
+                if(bestScore < beta)
+                {
+                    foreach(Piece p in listPiece)
+                    {
+                        p.Player = this.getCurrentPlayer();
+                        this.play(p);                      
+                        int score = getBestMove(depth - 1, -beta, -alpha, null);
+                        this.undoMove(p);
+                        if(score > bestScore)
+                        {
+                            bestScore = score;
+                            bestMove = p;
+                            if(bestScore > alpha)
+                            {
+                                alpha = score;
+                                if(bestScore > beta)
+                                {
+                                    return bestScore;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                this.setNextPlayer();
+                bestScore = -getBestMove(depth - 1, -beta, alpha, null);
+                this.setNextPlayer();
+            }
+            return bestScore;
+        }
+
+
         /// <summary>
         /// Methode tha return all the piece tha can be placed on the grid
         /// </summary>

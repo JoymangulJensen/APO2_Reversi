@@ -172,13 +172,8 @@ namespace Game
                 previousPlay = this.board.Grid[x, y];
             }
             this.but_Undo.Enabled = true;
-            List<Piece> listPiece = this.board.getAllLegalMoves();
-            String s = "";
-            foreach (Piece pie in listPiece)
-            {
-                s += pie.ToString() + " \n";
-            }
-            MessageBox.Show(s);
+            int score = this.board.getBestMove(2, 50, - 50, this.board.BestMove);
+            this.board.play(this.board.BestMove);
             if (!this.board.canPlay())
             {
                 this.board.setNextPlayer();
