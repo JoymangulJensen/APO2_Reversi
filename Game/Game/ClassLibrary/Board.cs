@@ -200,8 +200,8 @@ namespace Game.ClassLibrary
                 this.setNextPlayer();
                 this.updateScores();
                 return true;
-            }
-            return false;
+            }else
+                return false;
         }
 
         #endregion
@@ -265,19 +265,18 @@ namespace Game.ClassLibrary
         #region undo a move
         /// <summary>
         /// Methode to undo a previous move
-        /// THe grid return to its previous state
+        /// The grid return to its previous state
         /// </summary>
         /// <param name="p">The piece to be undone</param>
         public void undoMove(Piece p)
         {
             this.grid[p.X, p.Y] = null ;  //delete the piece
-            this.canMove(p);
 
             //Go through all directions
             for (int direction = 1; direction < 9; direction++)
             {
                 Piece next = this.getNext(direction, p); //get next move of the current piece
-                int turnover = this.turnover[direction];  //get the turnonver for a specific direction
+                int turnover = this.saveTurnover[direction];  //get the turnonver for a specific direction
 
                 while (turnover > 0)
                 {
@@ -309,6 +308,7 @@ namespace Game.ClassLibrary
         {
             Boolean res = false;    //By default a move is illegal
             this.reInitTurnover();  //reinitiliase all the turnovers
+
             if (grid[p.X, p.Y] != null) //If the current compartiment already contain a player
                 return res = false;
 
@@ -346,7 +346,7 @@ namespace Game.ClassLibrary
                     res = true;
                     //update the turonver table for that specific direction
                     this.turnover[direction] = turnover;
-                    
+
                 }
                 else
                 {
@@ -406,30 +406,25 @@ namespace Game.ClassLibrary
         public int getBestMove(int depth, int alpha, int beta, Piece bestMove)
         {
             int bestScore;
-            if(depth == 0 || this.gameEnd())
-            {
+            if(depth == 0 || this.gameEnd()){
                 return this.evaluateGrid();
             }
-            if (this.canPlay())
-            {
+            if (this.canPlay()) {
                 List<Piece> listPiece = this.getAllLegalMoves();
                 Piece firstPiece = listPiece[0];
                 firstPiece.Player = this.getCurrentPlayer();
-                if(bestMove != null)
-                {
+                if(bestMove != null) {
                     bestMove = firstPiece;
                 }
                 listPiece.RemoveAt(0);
                 this.play(firstPiece);
-                bestScore = -getBestMove(depth - 1, -alpha, -beta, null);
+                bestScore =- getBestMove(depth - 1, -alpha, -beta, null);
                 this.undoMove(firstPiece);
 
-                if(bestScore >= alpha )
-                {
+                if(bestScore >= alpha ) {
                     alpha = bestScore;
                 }
-                if(bestScore < beta)
-                {
+                if(bestScore < beta){
                     foreach(Piece p in listPiece)
                     {
                         p.Player = this.getCurrentPlayer();
@@ -451,11 +446,9 @@ namespace Game.ClassLibrary
                         }
                     }
                 }
-            }
-            else
-            {
+            }else {
                 this.setNextPlayer();
-                bestScore = -getBestMove(depth - 1, -beta, alpha, null);
+                bestScore =- getBestMove(depth - 1, -beta, alpha, null);
                 this.setNextPlayer();
             }
             return bestScore;
@@ -463,7 +456,7 @@ namespace Game.ClassLibrary
 
 
         /// <summary>
-        /// Methode tha return all the piece tha can be placed on the grid
+        /// Methode tha return all the piece that can be placed on the grid
         /// </summary>
         /// <returns></returns>
         public List<Piece> getAllLegalMoves()

@@ -171,9 +171,12 @@ namespace Game
                 p.Click -= pictureBox_Click;
                 previousPlay = this.board.Grid[x, y];
             }
+            
             this.but_Undo.Enabled = true;
+            /*
             int score = this.board.getBestMove(2, 50, - 50, this.board.BestMove);
             this.board.play(this.board.BestMove);
+            */
             if (!this.board.canPlay())
             {
                 this.board.setNextPlayer();
@@ -181,6 +184,7 @@ namespace Game
                     MessageBox.Show("Jeux Terminé");
 
             }
+            
             this.refreshBoard();
         }
 
@@ -189,6 +193,7 @@ namespace Game
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        /// 
         private void pictureBox_HoverIn(object sender, EventArgs e)
         {
             PictureBox p = (PictureBox)sender;
