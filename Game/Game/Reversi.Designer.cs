@@ -33,6 +33,15 @@
             this.labelScore2 = new System.Windows.Forms.Label();
             this.but_Undo = new System.Windows.Forms.Button();
             this.but_restart = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.difficultyItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.easyItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mediumItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hardItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modeItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pvpItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pveItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // boardGUI
@@ -82,6 +91,7 @@
             // 
             // but_Undo
             // 
+            this.but_Undo.Enabled = false;
             this.but_Undo.Location = new System.Drawing.Point(215, 492);
             this.but_Undo.Name = "but_Undo";
             this.but_Undo.Size = new System.Drawing.Size(75, 23);
@@ -100,6 +110,75 @@
             this.but_restart.UseVisualStyleBackColor = true;
             this.but_restart.Click += new System.EventHandler(this.but_restart_Click);
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.difficultyItem,
+            this.modeItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(616, 24);
+            this.menuStrip1.TabIndex = 5;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // difficultyItem
+            // 
+            this.difficultyItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.easyItem,
+            this.mediumItem,
+            this.hardItem});
+            this.difficultyItem.Name = "difficultyItem";
+            this.difficultyItem.Size = new System.Drawing.Size(67, 20);
+            this.difficultyItem.Text = "Difficulté";
+            // 
+            // easyItem
+            // 
+            this.easyItem.Name = "easyItem";
+            this.easyItem.Size = new System.Drawing.Size(152, 22);
+            this.easyItem.Text = "Facile";
+            this.easyItem.Click += new System.EventHandler(this.menuItemDifficulty_Click);
+            // 
+            // mediumItem
+            // 
+            this.mediumItem.Checked = true;
+            this.mediumItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.mediumItem.Name = "mediumItem";
+            this.mediumItem.Size = new System.Drawing.Size(152, 22);
+            this.mediumItem.Text = "Moyen";
+            this.mediumItem.Click += new System.EventHandler(this.menuItemDifficulty_Click);
+            // 
+            // hardItem
+            // 
+            this.hardItem.Name = "hardItem";
+            this.hardItem.Size = new System.Drawing.Size(152, 22);
+            this.hardItem.Text = "Difficile";
+            this.hardItem.Click += new System.EventHandler(this.menuItemDifficulty_Click);
+            // 
+            // modeItem
+            // 
+            this.modeItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.pvpItem,
+            this.pveItem});
+            this.modeItem.Name = "modeItem";
+            this.modeItem.Size = new System.Drawing.Size(50, 20);
+            this.modeItem.Text = "Mode";
+            // 
+            // pvpItem
+            // 
+            this.pvpItem.Checked = true;
+            this.pvpItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.pvpItem.Name = "pvpItem";
+            this.pvpItem.Size = new System.Drawing.Size(161, 22);
+            this.pvpItem.Text = "Joueur vs Joueur";
+            this.pvpItem.Click += new System.EventHandler(this.menuItemMode_Click);
+            // 
+            // pveItem
+            // 
+            this.pveItem.Name = "pveItem";
+            this.pveItem.Size = new System.Drawing.Size(161, 22);
+            this.pveItem.Text = "Joueur vs IA";
+            this.pveItem.Click += new System.EventHandler(this.menuItemMode_Click);
+            // 
             // Reversi
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -111,8 +190,12 @@
             this.Controls.Add(this.labelScore2);
             this.Controls.Add(this.labelScore1);
             this.Controls.Add(this.boardGUI);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Reversi";
             this.Text = "Reversi";
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -125,5 +208,13 @@
         private System.Windows.Forms.Label labelScore2;
         private System.Windows.Forms.Button but_Undo;
         private System.Windows.Forms.Button but_restart;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem difficultyItem;
+        private System.Windows.Forms.ToolStripMenuItem mediumItem;
+        private System.Windows.Forms.ToolStripMenuItem hardItem;
+        private System.Windows.Forms.ToolStripMenuItem modeItem;
+        private System.Windows.Forms.ToolStripMenuItem pvpItem;
+        private System.Windows.Forms.ToolStripMenuItem pveItem;
+        private System.Windows.Forms.ToolStripMenuItem easyItem;
     }
 }

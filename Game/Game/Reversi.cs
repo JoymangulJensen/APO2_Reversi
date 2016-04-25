@@ -74,6 +74,7 @@ namespace Game
             this.labels.Add(board.Players[0], this.labelScore1);
             this.labels.Add(board.Players[1], this.labelScore2);
             this.refreshBoard();
+            this.refreshScore();
         }
 
         #endregion
@@ -117,8 +118,6 @@ namespace Game
                     }
                 }
             }
-            this.refreshScore();
-
         }
 
         /// <summary>
@@ -197,6 +196,7 @@ namespace Game
             }
             
             this.refreshBoard();
+            this.refreshScore();
         }
 
         /// <summary>
@@ -257,12 +257,12 @@ namespace Game
             this.refreshBoard();
         }
 
-        #endregion
 
         private void but_Undo_Click(object sender, EventArgs e)
         {
             board.undoMove(previousPlay);
             this.refreshBoard();
+            this.refreshScore();
             previousPlay = null;
             this.but_Undo.Enabled = false;
         }
@@ -271,5 +271,62 @@ namespace Game
         {
             this.init();
         }
+        #endregion
+
+        #region Menu Items
+        /// <summary>
+        /// Click on an item of the difficulty menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuItemDifficulty_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem tsmi = (ToolStripMenuItem)sender;
+            this.manageCheck(tsmi, difficultyItem);
+            if (tsmi == easyItem)
+            {
+                MessageBox.Show("Easy !");
+            }
+            else if (tsmi == mediumItem)
+            {
+                MessageBox.Show("Medium !");
+            }
+            else
+            {
+                MessageBox.Show("Hard !");
+            }
+        }
+
+        /// <summary>
+        /// Click on an item of the mode menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuItemMode_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem tsmi = (ToolStripMenuItem)sender;
+            this.manageCheck(tsmi, modeItem);
+        }
+
+        /// <summary>
+        /// Manage the check of the items
+        /// </summary>
+        /// <param name="clicked">Item cliecked</param>
+        /// <param name="parent">Parent of the item clicked (Mode or Difficulty)</param>
+        private void manageCheck(ToolStripMenuItem clicked, ToolStripMenuItem parent)
+        {
+            foreach (ToolStripMenuItem ts in parent.DropDownItems)
+            {
+                if (clicked == ts)
+                {
+                    clicked.Checked = true;
+                }
+                else
+                {
+                    ts.Checked = false;
+                }
+            }
+        }
+        #endregion
     }
 }
