@@ -15,7 +15,7 @@ namespace Game
     {
         private Piece previousPlay;
 
-        private Dictionary<Player, Label> labels = new Dictionary<Player, Label>();
+        private Dictionary<Player, Label> labels;
 
         /// <summary>
         /// Board
@@ -25,18 +25,17 @@ namespace Game
         public Reversi()
         {
             InitializeComponent();
+            initGUI();
             init();
         }
 
         #region Initialization
 
         /// <summary>
-        /// Initialise la grille
+        /// Initialize the GUI
         /// </summary>
-        private void init()
+        private void initGUI()
         {
-            this.board = new Board();
-
             for (int col = 0; col < boardGUI.ColumnCount; col++)
             {
                 for (int row = 0; row < boardGUI.RowCount; row++)
@@ -45,14 +44,10 @@ namespace Game
                     boardGUI.Controls.Add(p, col, row);
                 }
             }
-
-            this.labels.Add(board.Players[0], this.labelScore1);
-            this.labels.Add(board.Players[1], this.labelScore2);
-            this.refreshBoard();
         }
 
         /// <summary>
-        /// Renvoie une PictureBox correctement initialisée
+        /// Return a picturebox properly set & initialized
         /// </summary>
         /// <returns></returns>
         private PictureBox initPictureBox()
@@ -66,6 +61,19 @@ namespace Game
             p.BackColor = Color.Transparent;
             p.Image = null;
             return p;
+        }
+
+        /// <summary>
+        /// Initialize the board
+        /// </summary>
+        private void init()
+        {
+            Player.CurrentPlayer = Player.HUMAN;
+            this.board = new Board();
+            this.labels = new Dictionary<Player, Label>();
+            this.labels.Add(board.Players[0], this.labelScore1);
+            this.labels.Add(board.Players[1], this.labelScore2);
+            this.refreshBoard();
         }
 
         #endregion
@@ -86,9 +94,7 @@ namespace Game
 
                     if (this.board.Grid[col, row] != null)
                     {
-                        // If there is a piece    
-                        p.MouseEnter -= pictureBox_HoverIn;
-                        p.MouseLeave -= pictureBox_HoverOut;
+                        // If there is a piece
 
                         if (this.board.Grid[col, row].Player.Owner == Player.HUMAN)
                         {
@@ -120,9 +126,9 @@ namespace Game
         /// </summary>
         private void refreshScore()
         {
-            foreach (KeyValuePair<Player, Label> label in labels)
+            foreach (KeyValuePair<Player, Label> item in labels)
             {
-                label.Value.Text = label.Key.Name + " : " + label.Key.Score;
+                item.Value.Text = item.Key.Name + " : " + item.Key.Score;
             }
             this.refreshCurrentPlayer();
         }
@@ -133,15 +139,18 @@ namespace Game
         /// </summary>
         private void refreshCurrentPlayer()
         {
+            Font bold = new Font(this.labelScore1.Font, FontStyle.Bold);
+            Font regular = new Font(this.labelScore1.Font, FontStyle.Regular);
             foreach (Player p in board.Players)
             {
                 if (board.getCurrentPlayer() == p)
                 {
-                    this.labels[p].Font = new Font(this.labels[p].Font, FontStyle.Bold);
+                    this.labels[p].Font = bold;
                 }
                 else
                 {
-                    this.labels[p].Font = new Font(this.labels[p].Font, FontStyle.Regular);
+                    this.labels[p].Font = regular;
+                    // new Font(this.labels[p].Font, FontStyle.Regular);
                 }
             }
         }
@@ -169,6 +178,8 @@ namespace Game
             else
             {
                 p.Click -= pictureBox_Click;
+                p.MouseEnter -= pictureBox_HoverIn;
+                p.MouseLeave -= pictureBox_HoverOut;
                 previousPlay = this.board.Grid[x, y];
             }
             
@@ -254,6 +265,11 @@ namespace Game
             this.refreshBoard();
             previousPlay = null;
             this.but_Undo.Enabled = false;
+        }
+
+        private void but_restart_Click(object sender, EventArgs e)
+        {
+            this.init();
         }
     }
 }

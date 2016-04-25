@@ -98,6 +98,8 @@ namespace Game.ClassLibrary
             this.grid[3, 4] = new Piece(3, 4, players[0]);
             this.grid[4, 3] = new Piece(4, 3, players[0]);
             this.grid[4, 4] = new Piece(4, 4, players[1]);
+
+            this.updateScores();
         }
 
         /// <summary>
