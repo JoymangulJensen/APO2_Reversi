@@ -12,7 +12,8 @@ namespace Game.ClassLibrary
     class Board
     {
         #region Attributes
-
+        private int nbWhite;
+        private int nbBlanck;
         /// <summary>
         /// List of the players
         /// </summary>
@@ -46,20 +47,15 @@ namespace Game.ClassLibrary
             set { grid = value; }
         }
 
-
-
-        /// <summary>
-        /// The weight matrix
-        /// </summary>
         private int[,] gridWeight = new int[8, 8] {
-                                                { 4 , -3, 2 , 2 , 2 , 2 , -3, 4  },
-                                                { -3, -4, -1, -1, -1, -1, -4, -3 },
-                                                { 2 , -1, 1 , 0 , 0 , 1 , -1, 2  },
-                                                { 2 , -1, 0 , 1 , 1 , 0 , -1, 2  },
-                                                { 2 , -1, 0 , 1 , 1 , 0 , -1, 2  },
-                                                { 2 , -1, 1 , 0 , 0 , 1 , -1, 2  },
-                                                { -3, -4, -1, -1, -1, -1, -4, -3 },
-                                                { 4 , -3, 2 , 2 , 2 , 2 , -3, 4  }
+                                                { 500 , -150, 30 , 10 , 10 , 30 , -150, 500  },
+                                                { -150, -250, 0, 0, 0, 0, -250, -150 },
+                                                { 30 , 0, 1 , 2 , 2 , 1 , 0, 30  },
+                                                { 10 , 0, 2 , 16 , 16 , 2 , 0, 10  },
+                                                { 10 , 0, 2 , 16 , 16 , 2 , 0, 10  },
+                                                { 30 , 0, 1 , 2 , 2 , 1 , 0, 30  },
+                                                { -150, -250, 0, 0, 0, 0, -250, -150 },
+                                                { 500 , -150, 30 , 10 , 10 , 30 , -150, 500  },
                                                     };
         private Piece bestMove;
         internal Piece BestMove
@@ -425,12 +421,15 @@ namespace Game.ClassLibrary
 
         #endregion
 
-        #region AI
+        #region IA
+        //C'est le bestMove BestMove qui pose probleme je croie...
+
         public int getBestMove(int depth, int alpha, int beta, Piece bestMove)
         {
             int bestScore;
             if (depth == 0 || this.gameEnd())
             {
+                this.BestMove = bestMove;
                 return this.evaluateGrid();
             }
             if (this.canPlay())
@@ -438,13 +437,15 @@ namespace Game.ClassLibrary
                 List<Piece> listPiece = this.getAllLegalMoves();
                 Piece firstPiece = listPiece[0];
                 firstPiece.Player = this.getCurrentPlayer();
-                if (bestMove != null)
-                {
-                    bestMove = firstPiece;
-                }
+
+                bestMove = firstPiece;
+                
                 listPiece.RemoveAt(0);
                 this.play(firstPiece);
+                this.setNextPlayer();
+
                 bestScore = -getBestMove(depth - 1, -alpha, -beta, null);
+                this.setNextPlayer();
                 this.undoMove(firstPiece);
 
                 if (bestScore >= alpha)
@@ -457,9 +458,16 @@ namespace Game.ClassLibrary
                     {
                         p.Player = this.getCurrentPlayer();
                         this.play(p);
-                        int score = getBestMove(depth - 1, -beta, -alpha, null);
+                        this.setNextPlayer();
+                        int score = getBestMove(depth - 1, -alpha - 1, -alpha, null);
+
+                        if(score > alpha && score < beta)
+                        {
+                            score = getBestMove(depth - 1, -beta, -alpha, null);
+                        }
+                        this.setNextPlayer();
                         this.undoMove(p);
-                        if (score > bestScore)
+                        if (score >= bestScore)
                         {
                             bestScore = score;
                             bestMove = p;
@@ -468,6 +476,7 @@ namespace Game.ClassLibrary
                                 alpha = score;
                                 if (bestScore > beta)
                                 {
+                                    this.BestMove = bestMove;
                                     return bestScore;
                                 }
                             }
@@ -480,7 +489,28 @@ namespace Game.ClassLibrary
                 bestScore = -getBestMove(depth - 1, -beta, alpha, null);
                 this.setNextPlayer();
             }
+            this.bestMove = BestMove;
             return bestScore;
+        }
+
+        public void getMoveWithBadIa()
+        {
+            int score, bestScore;
+            bestScore = 0;
+            List<Piece> listPiece = this.getAllLegalMoves();
+            foreach (Piece p in listPiece)
+            {
+                p.Player = this.getCurrentPlayer();
+                this.play(p);
+                score = evaluateGrid();
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    this.bestMove = p;
+                }
+                this.undoMove(p);
+            }
+            
         }
 
 
@@ -502,6 +532,8 @@ namespace Game.ClassLibrary
             }
             return listPiece;
         }
+
+        
         /// <summary>
         /// Methode to evaluate the grid with the corresponding weight
         /// </summary>
@@ -514,9 +546,13 @@ namespace Game.ClassLibrary
                 for (int lig = 0; lig < 8; lig++)
                 {
                     if (this.grid[col, lig] != null)
+                    { // Attention je ne suis pas sur faudrai peut etre plutot vérifier si c'est a un joueur?
                         score += this.gridWeight[col, lig];
+                        
+                    }
                 }
             }
+
             return score;
         }
         #endregion
