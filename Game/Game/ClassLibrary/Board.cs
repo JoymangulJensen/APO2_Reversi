@@ -98,8 +98,8 @@ namespace Game.ClassLibrary
             players.Add(new Player(Player.HUMAN, "Joueur"));
             players.Add(new Player(Player.COMPUTER, "Ordinateur"));
 
-            this.grid = new Piece[8, 8];     
-            this.bestMove = new Piece(0,0,new Player(2));
+            this.grid = new Piece[8, 8];
+            this.bestMove = new Piece(0, 0, new Player(2));
 
             //Initialise the turonver table
             for (int i = 1; i < 9; i++)
@@ -228,7 +228,7 @@ namespace Game.ClassLibrary
                 //Copy the turnover table for the played piece(used for undoing a move)
                 for (int i = 1; i < 9; i++)
                     saveTurnover[i] = turnover[i];
-                    
+
                 // Respect the orders of the call of the two next methods
                 this.updateScoresOp(changedPieces);
                 this.setNextPlayer();
@@ -243,12 +243,12 @@ namespace Game.ClassLibrary
                 return true;
             }
             else
-            return false;
+                return false;
         }
 
         #endregion
 
-        #region Test if a player have a legal move remaining and if a game ends                  
+        #region Test if a player have a legal move remaining and if a game ends
 
         public Boolean gameEnd()
         {
@@ -312,7 +312,7 @@ namespace Game.ClassLibrary
         /// <param name="p">The piece to be undone</param>
         public void undoMove(Piece p)
         {
-            this.grid[p.X, p.Y] = null ;  //delete the piece
+            this.grid[p.X, p.Y] = null;  //delete the piece
             this.canMove(p);
 
             //Go through all directions
@@ -375,7 +375,7 @@ namespace Game.ClassLibrary
                         else
                         {
                             turnover++; //increment the number of turonver for that specific direction
-                            next = tempo;   
+                            next = tempo;
                         }
                     }
                 }
@@ -389,7 +389,7 @@ namespace Game.ClassLibrary
                     res = true;
                     //update the turonver table for that specific direction
                     this.turnover[direction] = turnover;
-                    
+
                 }
                 else
                 {
@@ -409,32 +409,32 @@ namespace Game.ClassLibrary
         {
             if (direction == Direction.NORTHEAST)
             {
-                    return new Piece(p.X + 1, p.Y - 1);
+                return new Piece(p.X + 1, p.Y - 1);
             }
             if (direction == Direction.NORTH)
             {
-                    return new Piece(p.X, p.Y - 1);
+                return new Piece(p.X, p.Y - 1);
             }
             if (direction == Direction.NORTHWEST)
             {
-                    return new Piece(p.X - 1, p.Y - 1);
+                return new Piece(p.X - 1, p.Y - 1);
             }
-            
+
             if (direction == Direction.EAST)
             {
-                    return new Piece(p.X + 1, p.Y);
+                return new Piece(p.X + 1, p.Y);
             }
             if (direction == Direction.SOUTHEAST)
             {
-                    return new Piece(p.X + 1, p.Y + 1);
+                return new Piece(p.X + 1, p.Y + 1);
             }
             if (direction == Direction.SOUTH)
             {
-                    return new Piece(p.X, p.Y + 1);
+                return new Piece(p.X, p.Y + 1);
             }
             if (direction == Direction.SOUTHWEST)
             {
-                    return new Piece(p.X - 1, p.Y + 1);
+                return new Piece(p.X - 1, p.Y + 1);
             }
             if (direction == Direction.WEST)
             {
@@ -449,7 +449,7 @@ namespace Game.ClassLibrary
         public int getBestMove(int depth, int alpha, int beta, Piece bestMove)
         {
             int bestScore;
-            if(depth == 0 || this.gameEnd())
+            if (depth == 0 || this.gameEnd())
             {
                 return this.evaluateGrid();
             }
@@ -458,28 +458,28 @@ namespace Game.ClassLibrary
                 List<Piece> listPiece = this.getAllLegalMoves();
                 Piece firstPiece = listPiece[0];
                 firstPiece.Player = this.getCurrentPlayer();
-                if(bestMove != null)
+                if (bestMove != null)
                 {
                     this.bestMove = firstPiece;
                 }
-                    
+
                 listPiece.RemoveAt(0);
                 Piece[,] tempo = new Piece[8, 8];
                 this.copyGrid(this.Grid, tempo);
 
                 this.play(firstPiece);
-                
+
                 bestScore = -getBestMove(depth - 1, -beta, -alpha, null);
                 this.copyGrid(tempo, this.Grid);
                 this.setNextPlayer();
 
-                if(bestScore >= alpha )
+                if (bestScore >= alpha)
                 {
                     alpha = bestScore;
                 }
-                if(bestScore < beta)
+                if (bestScore < beta)
                 {
-                    foreach(Piece p in listPiece)
+                    foreach (Piece p in listPiece)
                     {
                         p.Player = this.getCurrentPlayer();
                         Piece[,] tempo2 = new Piece[8, 8];
@@ -487,9 +487,9 @@ namespace Game.ClassLibrary
                         this.play(p);
 
 
-                        int score = getBestMove(depth - 1, -alpha -1, -alpha, null);
+                        int score = getBestMove(depth - 1, -alpha - 1, -alpha, null);
 
-                        
+
                         this.copyGrid(tempo2, this.Grid);
 
 
@@ -498,7 +498,7 @@ namespace Game.ClassLibrary
 
                         score = getBestMove(depth - 1, -beta, -alpha, null);
                         this.setNextPlayer();
-                        if(score > bestScore)
+                        if (score > bestScore)
                         {
                             if (bestMove != null)
                             {
@@ -506,10 +506,10 @@ namespace Game.ClassLibrary
                             }
 
 
-                            if(bestScore > alpha)
+                            if (bestScore > alpha)
                             {
                                 alpha = score;
-                                if(bestScore > beta)
+                                if (bestScore > beta)
                                 {
                                     return bestScore;
                                 }
@@ -529,9 +529,9 @@ namespace Game.ClassLibrary
 
         public void copyGrid(Piece[,] source, Piece[,] destination)
         {
-            for(int col=0; col <8; col++)
+            for (int col = 0; col < 8; col++)
             {
-                for(int lig=0; lig<8;lig++)
+                for (int lig = 0; lig < 8; lig++)
                 {
                     if (source[col, lig] == null)
                         destination[col, lig] = null;
@@ -540,7 +540,7 @@ namespace Game.ClassLibrary
                         int playnum = source[col, lig].Player.Owner;
                         Player player = new Player(playnum);
                         destination[col, lig] = new Piece(col, lig, player);
-                    }    
+                    }
                 }
             }
         }
@@ -565,7 +565,7 @@ namespace Game.ClassLibrary
             return listPiece;
         }
 
-        
+
         /// <summary>
         /// Methode to evaluate the grid with the corresponding weight
         /// </summary>
@@ -580,7 +580,7 @@ namespace Game.ClassLibrary
                     if (this.grid[col, lig] != null)
                     { // Attention je ne suis pas sur faudrai peut etre plutot vérifier si c'est a un joueur?
                         score += this.gridWeight[col, lig];
-                        
+
                     }
                 }
             }

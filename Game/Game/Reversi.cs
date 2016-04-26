@@ -202,6 +202,25 @@ namespace Game
             this.refreshScore();
         }
 
+        /*
+        private void manageEnd()
+        {
+            List<Player> winners = this.board.getWinners();
+            if (winners.Count > 1)
+            {
+                MessageBox.Show("Egalité");
+            }
+            else if (winners.Count == 1)
+            {
+                MessageBox.Show(winners[0].Name + " a gagné !");
+            }
+            else
+            {
+                MessageBox.Show("Pas de gagnant");
+            }
+        }
+         */ 
+
         /// <summary>
         /// Hover on PictureBox
         /// </summary>
