@@ -184,7 +184,10 @@ namespace Game
             }
             
             this.but_Undo.Enabled = true;
-            int score = this.board.getBestMove(1, 500, -500, this.board.BestMove);
+            //int score = this.board.getBestMove(1, 500, -500, this.board.BestMove);
+            //this.board.play(this.board.BestMove);
+
+            int score = this.board.aplhaBeta(2, -500, 500, 2);
             this.board.play(this.board.BestMove);
 
             if (!this.board.canPlay())

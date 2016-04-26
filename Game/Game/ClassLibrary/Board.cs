@@ -509,6 +509,66 @@ namespace Game.ClassLibrary
         #endregion
 
         #region AI
+        //Prog ou Adver
+        public int aplhaBeta(int depth, int alpha, int beta, int noeud)
+        {
+            if(depth <= 0 || this.gameEnd())
+            {
+                return this.evaluateGrid();
+            }
+            List<Piece> listPiece = this.getAllLegalMoves();
+            if (noeud == 1)//Appeller a 1 commence programme
+            {
+                foreach (Piece p in listPiece)
+                {
+                    p.Player = this.getCurrentPlayer();
+                    Piece[,] tempo = new Piece[8, 8];
+                    this.copyGrid(this.Grid, tempo);
+
+                    this.play(p);
+
+                    int score = aplhaBeta(depth - 1, alpha, beta, 2);
+                    this.copyGrid(tempo, this.Grid);
+                    this.setNextPlayer();
+                    if(score> alpha)
+                    {
+                        alpha = score;
+                        this.BestMove = p;
+                        if (alpha >= beta)
+                        {
+                            break;
+                        }
+                    }
+                }
+                return alpha;
+            }
+            else
+            {//Adversaire
+                foreach (Piece p in listPiece)
+                {
+                    p.Player = this.getCurrentPlayer();
+                    Piece[,] tempo = new Piece[8, 8];
+                    this.copyGrid(this.Grid, tempo);
+
+                    this.play(p);
+
+                    int score = aplhaBeta(depth - 1, alpha, beta, 2);
+                    this.copyGrid(tempo, this.Grid);
+                    this.setNextPlayer();
+                    if (score < beta)
+                    {
+                        beta = score;
+                        this.BestMove = p;
+                        if (alpha >= beta)
+                        {
+                            break;
+                        }
+                    }
+                }
+                return beta;
+            }
+        }
+
         public int getBestMove(int depth, int alpha, int beta, Piece bestMove)
         {
             int bestScore;
@@ -659,7 +719,7 @@ namespace Game.ClassLibrary
             }
             if(nbCurrent+ nbNext <= 15)//Begining
             {
-                res = 1 * (nbCurrent-nbNext) + (scoreIA - score) * 1 + mobility * (-2);
+                res = -3 * (nbCurrent-nbNext) + (scoreIA - score) * 1 + mobility * (-2);
             }
             else if (nbCurrent + nbNext <= 40)//middle
             {
