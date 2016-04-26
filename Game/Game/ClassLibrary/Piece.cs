@@ -38,6 +38,8 @@ namespace Game.ClassLibrary
 
         #region Constructor
 
+        public Piece() { }
+
         public Piece(int x , int y)
         {
             this.x = x;

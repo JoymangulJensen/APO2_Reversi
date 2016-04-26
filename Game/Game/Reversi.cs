@@ -188,16 +188,35 @@ namespace Game
             //int score = this.board.getBestMove(1, 50, - 50, null);
             //this.board.play(this.board.BestMove);
 
-            if (!this.board.canPlay())
+            if (this.board.gameFinished())
+                this.manageEnd();
+
+            /*
+            if (this.board.getAllLegalMoves().Count <= 0)
             {
                 this.board.setNextPlayer();
-                if (this.board.gameEnd())
-                    MessageBox.Show("Jeux Terminé");
-
             }
+             * */
             
             this.refreshBoard();
             this.refreshScore();
+        }
+
+        private void manageEnd()
+        {
+            List<Player> winners = this.board.getWinners();
+            if (winners.Count > 1)
+            {
+                MessageBox.Show("Egalité");
+            }
+            else if(winners.Count == 1)
+            {
+                MessageBox.Show(winners[0].Name + " a gagné !");
+            }
+            else
+            {
+                MessageBox.Show("Pas de gagnant");
+            }
         }
 
         /// <summary>

@@ -59,7 +59,7 @@ namespace Game.ClassLibrary
             set { grid = value; }
         }
 
-        private int[,] gridWeight = new int[8, 8] {
+        private int[,] gridWeight = new int[8, 8] { 
                                                 { 500 , -150, 30 , 10 , 10 , 30 , -150, 500  },
                                                 { -150, -250, 0, 0, 0, 0, -250, -150 },
                                                 { 30 , 0, 1 , 2 , 2 , 1 , 0, 30  },
@@ -69,6 +69,8 @@ namespace Game.ClassLibrary
                                                 { -150, -250, 0, 0, 0, 0, -250, -150 },
                                                 { 500 , -150, 30 , 10 , 10 , 30 , -150, 500  },
                                                     };
+
+
         private Piece bestMove;
         internal Piece BestMove
         {
@@ -231,11 +233,11 @@ namespace Game.ClassLibrary
                 this.setNextPlayer();
 
                 // playIA
-                if (IA_ON)
+                /*if (IA_ON)
                 {
                     this.getMoveWithBadIa();
                     this.play(this.BestMove);
-                }
+                }*/
 
                 return true;
             }
@@ -245,7 +247,58 @@ namespace Game.ClassLibrary
 
         #endregion
 
-        #region Test if a player have a legal move remaining and if a game ends                  
+        #region End of the game
+        /// <summary>
+        /// If none of the players can play
+        /// </summary>
+        /// <returns>true if none of the players can play</returns>
+        public Boolean gameFinished()
+        {
+            /*
+            foreach (Player p in players)
+            {
+                if (this.getAllLegalMoves(p).Count >= 0) // if p can play
+                    return false;
+            }
+            return true;
+             */
+            int sumScore = 0;
+            foreach (Player p in players)
+            {
+                sumScore += p.Score;
+                if (p.Score == 0)
+                    return true;
+            }
+            return (sumScore == 64);
+        }
+
+        /// <summary>
+        /// Return the winner(s) : players with the maximum score
+        /// </summary>
+        /// <returns>The winners (players with the maximum score)</returns>
+        public List<Player> getWinners()
+        {
+            List<Player> winners = new List<Player>();
+            Player currentWinner = players[0];
+            foreach (Player p in players)
+            {
+
+                if (p.Score > currentWinner.Score)
+                {
+                    currentWinner = p;
+                    winners.Clear();
+                    winners.Add(p);
+                }
+                else if (p.Score == currentWinner.Score)
+                {
+                    winners.Add(p);
+                }
+            }
+            return winners;
+        }
+        #endregion
+
+        #region Test if a player have a legal move remaining and if a game ends
 
         public Boolean gameEnd()
         {
@@ -310,6 +363,7 @@ namespace Game.ClassLibrary
         public void undoMove(Piece p)
         {
             this.grid[p.X, p.Y] = null;  //delete the piece
+            this.canMove(p);
 
             //Go through all directions
             for (int direction = 1; direction < 9; direction++)
@@ -441,15 +495,12 @@ namespace Game.ClassLibrary
 
         #endregion
 
-        #region IA
-        //C'est le bestMove BestMove qui pose probleme je croie...
-
+        #region AI
         public int getBestMove(int depth, int alpha, int beta, Piece bestMove)
         {
             int bestScore;
             if (depth == 0 || this.gameEnd())
             {
-                this.BestMove = bestMove;
                 return this.evaluateGrid();
             }
             if (this.canPlay())
@@ -457,16 +508,16 @@ namespace Game.ClassLibrary
                 List<Piece> listPiece = this.getAllLegalMoves();
                 Piece firstPiece = listPiece[0];
                 firstPiece.Player = this.getCurrentPlayer();
-
-                bestMove = firstPiece;
-                
+                if (bestMove != null)
+                {
+                    bestMove = firstPiece;
+                }
                 listPiece.RemoveAt(0);
                 this.play(firstPiece);
+                Piece[,] tempo = this.copyGrid(this.Grid);
+                bestScore = -getBestMove(depth - 1, -beta, -alpha, null);
+                this.Grid = this.copyGrid(tempo);
                 this.setNextPlayer();
-
-                bestScore = -getBestMove(depth - 1, -alpha, -beta, null);
-                this.setNextPlayer();
-                this.undoMove(firstPiece);
 
                 if (bestScore >= alpha)
                 {
@@ -478,16 +529,11 @@ namespace Game.ClassLibrary
                     {
                         p.Player = this.getCurrentPlayer();
                         this.play(p);
-                        this.setNextPlayer();
+                        tempo = this.copyGrid(this.Grid);
                         int score = getBestMove(depth - 1, -alpha - 1, -alpha, null);
-
-                        if(score > alpha && score < beta)
-                        {
-                            score = getBestMove(depth - 1, -beta, -alpha, null);
-                        }
+                        this.Grid = this.copyGrid(tempo);
                         this.setNextPlayer();
-                        this.undoMove(p);
-                        if (score >= bestScore)
+                        if (score > bestScore)
                         {
                             bestScore = score;
                             bestMove = p;
@@ -496,7 +542,6 @@ namespace Game.ClassLibrary
                                 alpha = score;
                                 if (bestScore > beta)
                                 {
-                                    this.BestMove = bestMove;
                                     return bestScore;
                                 }
                             }
@@ -504,33 +549,26 @@ namespace Game.ClassLibrary
                     }
                 }
             }
-            else {
+            else
+            {
                 this.setNextPlayer();
-                bestScore = -getBestMove(depth - 1, -beta, alpha, null);
+                bestScore = -getBestMove(depth - 1, -beta, -alpha, null);
                 this.setNextPlayer();
             }
-            this.bestMove = BestMove;
             return bestScore;
         }
 
-        public void getMoveWithBadIa()
+        public Piece[,] copyGrid(Piece[,] grid)
         {
-            int score, bestScore;
-            bestScore = 0;
-            List<Piece> listPiece = this.getAllLegalMoves();
-            foreach (Piece p in listPiece)
+            Piece[,] res = new Piece[8, 8];
+            for (int col = 0; col < 8; col++)
             {
-                p.Player = this.getCurrentPlayer();
-                this.play(p);
-                score = evaluateGrid();
-                if (score > bestScore)
+                for (int lig = 0; lig < 8; lig++)
                 {
-                    bestScore = score;
-                    this.bestMove = p;
+                    res[col, lig] = this.grid[col, lig];
                 }
-                this.undoMove(p);
             }
-            
+            return res;
         }
 
 
@@ -553,7 +591,7 @@ namespace Game.ClassLibrary
             return listPiece;
         }
 
-        
+
         /// <summary>
         /// Methode to evaluate the grid with the corresponding weight
         /// </summary>
@@ -568,7 +606,7 @@ namespace Game.ClassLibrary
                     if (this.grid[col, lig] != null)
                     { // Attention je ne suis pas sur faudrai peut etre plutot vérifier si c'est a un joueur?
                         score += this.gridWeight[col, lig];
-                        
+
                     }
                 }
             }
