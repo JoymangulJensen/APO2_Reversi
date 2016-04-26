@@ -12,8 +12,20 @@ namespace Game.ClassLibrary
     class Board
     {
         #region Attributes
-        private int nbWhite;
-        private int nbBlanck;
+
+        /// <summary>
+        /// Indicates if the IA is activated or not
+        /// </summary>
+        public bool IA_ON = false;
+
+        /// <summary>
+        /// Indicates the level of the IA : 
+        /// 1 = Easy
+        /// 2 = Medium
+        /// 3 = Hard
+        /// </summary>
+        public int IA_LEVEL = 1;
+
         /// <summary>
         /// List of the players
         /// </summary>
@@ -219,6 +231,14 @@ namespace Game.ClassLibrary
                 // Respect the orders of the call of the two next methods
                 this.updateScoresOp(changedPieces);
                 this.setNextPlayer();
+
+                // playIA
+                /*if (IA_ON)
+                {
+                    this.getMoveWithBadIa();
+                    this.play(this.BestMove);
+                }*/
+
                 return true;
             }
             else

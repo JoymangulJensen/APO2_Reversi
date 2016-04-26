@@ -75,6 +75,7 @@ namespace Game
             this.labels.Add(board.Players[1], this.labelScore2);
             this.refreshBoard();
             this.refreshScore();
+            this.board.IA_ON = this.pveItem.Checked;
         }
 
         #endregion
@@ -95,7 +96,7 @@ namespace Game
 
                     if (this.board.Grid[col, row] != null)
                     {
-                        // If there is a piece    
+                        // If there is a piece
 
                         if (this.board.Grid[col, row].Player.Owner == Player.HUMAN)
                         {
@@ -185,6 +186,10 @@ namespace Game
             this.but_Undo.Enabled = true;
             int score = this.board.getBestMove(1, 50, - 50, this.board.BestMove);
             //this.board.play(this.board.BestMove);
+
+            //this.board.getMoveWithBadIa();
+            //this.board.play(this.board.BestMove);
+
             if (!this.board.canPlay())
             {
                 this.board.setNextPlayer();
@@ -304,6 +309,8 @@ namespace Game
         {
             ToolStripMenuItem tsmi = (ToolStripMenuItem)sender;
             this.manageCheck(tsmi, modeItem);
+            this.board.IA_ON = this.pvpItem.Checked;
+            this.init();
         }
 
         /// <summary>

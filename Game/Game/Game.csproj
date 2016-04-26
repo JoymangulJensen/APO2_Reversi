@@ -56,12 +56,6 @@
     <Compile Include="Reversi.Designer.cs">
       <DependentUpon>Reversi.cs</DependentUpon>
     </Compile>
-    <Compile Include="Save.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Save.Designer.cs">
-      <DependentUpon>Save.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -74,9 +68,6 @@
     </Compile>
     <EmbeddedResource Include="Reversi.resx">
       <DependentUpon>Reversi.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Save.resx">
-      <DependentUpon>Save.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
