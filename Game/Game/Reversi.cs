@@ -190,20 +190,19 @@ namespace Game
             //this.board.getMoveWithBadIa();
             //this.board.play(this.board.BestMove);
 
-            if (this.board.gameFinished())
-                this.manageEnd();
-
-            /*
-            if (this.board.getAllLegalMoves().Count <= 0)
+            if (!this.board.canPlay())
             {
                 this.board.setNextPlayer();
+                if (this.board.gameEnd())
+                    MessageBox.Show("Jeux Terminé");
+
             }
-             * */
             
             this.refreshBoard();
             this.refreshScore();
         }
 
+        /*
         private void manageEnd()
         {
             List<Player> winners = this.board.getWinners();
@@ -211,7 +210,7 @@ namespace Game
             {
                 MessageBox.Show("Egalité");
             }
-            else if(winners.Count == 1)
+            else if (winners.Count == 1)
             {
                 MessageBox.Show(winners[0].Name + " a gagné !");
             }
@@ -220,6 +219,7 @@ namespace Game
                 MessageBox.Show("Pas de gagnant");
             }
         }
+         */ 
 
         /// <summary>
         /// Hover on PictureBox

@@ -59,7 +59,7 @@ namespace Game.ClassLibrary
             set { grid = value; }
         }
 
-        private int[,] gridWeight = new int[8, 8] {
+        private int[,] gridWeight = new int[8, 8] { 
                                                 { 500 , -150, 30 , 10 , 10 , 30 , -150, 500  },
                                                 { -150, -250, 0, 0, 0, 0, -250, -150 },
                                                 { 30 , 0, 1 , 2 , 2 , 1 , 0, 30  },
@@ -69,8 +69,6 @@ namespace Game.ClassLibrary
                                                 { -150, -250, 0, 0, 0, 0, -250, -150 },
                                                 { 500 , -150, 30 , 10 , 10 , 30 , -150, 500  },
                                                     };
-
-
         private Piece bestMove;
         internal Piece BestMove
         {
@@ -203,50 +201,6 @@ namespace Game.ClassLibrary
 
         #endregion
 
-        #region Play
-
-        /// <summary>
-        /// Try to play the given Piece
-        /// </summary>
-        /// <param name="p">Piece to play</param>
-        /// <returns>True if the move is legal</returns>
-        public bool play(Piece p)
-        {
-            if (this.canMove(p)) // Can play
-            {
-                // p.Player = this.getCurrentPlayer();
-                // grid[p.X, p.Y] = p;
-
-                List<Piece> changedPieces = this.listeMove(p);
-
-                foreach (Piece piece in changedPieces)
-                {
-                    piece.Player = this.getCurrentPlayer();
-                    this.grid[piece.X, piece.Y] = piece;
-                }
-                //Copy the turnover table for the played piece(used for undoing a move)
-                for (int i = 1; i < 9; i++)
-                    saveTurnover[i] = turnover[i];
-
-                // Respect the orders of the call of the two next methods
-                this.updateScoresOp(changedPieces);
-                this.setNextPlayer();
-
-                // playIA
-                /*if (IA_ON)
-                {
-                    this.getMoveWithBadIa();
-                    this.play(this.BestMove);
-                }*/
-
-                return true;
-            }
-            else
-                return false;
-        }
-
-        #endregion
-
         #region End of the game
         /// <summary>
         /// If none of the players can play
@@ -298,7 +252,51 @@ namespace Game.ClassLibrary
         }
         #endregion
 
-        #region Test if a player have a legal move remaining and if a game ends                  
+        #region Play
+
+        /// <summary>
+        /// Try to play the given Piece
+        /// </summary>
+        /// <param name="p">Piece to play</param>
+        /// <returns>True if the move is legal</returns>
+        public bool play(Piece p)
+        {
+            if (this.canMove(p)) // Can play
+            {
+                // p.Player = this.getCurrentPlayer();
+                // grid[p.X, p.Y] = p;
+
+                List<Piece> changedPieces = this.listeMove(p);
+
+                foreach (Piece piece in changedPieces)
+                {
+                    piece.Player = this.getCurrentPlayer();
+                    this.grid[piece.X, piece.Y] = piece;
+                }
+                //Copy the turnover table for the played piece(used for undoing a move)
+                for (int i = 1; i < 9; i++)
+                    saveTurnover[i] = turnover[i];
+
+                // Respect the orders of the call of the two next methods
+                this.updateScoresOp(changedPieces);
+                this.setNextPlayer();
+
+                // playIA
+                if (IA_ON)
+                {
+                    this.getMoveWithBadIa();
+                    this.play(this.BestMove);
+                }
+
+                return true;
+            }
+            else
+                return false;
+            }
+
+        #endregion
+
+        #region Test if a player have a legal move remaining and if a game ends
 
         public Boolean gameEnd()
         {
@@ -494,12 +492,15 @@ namespace Game.ClassLibrary
 
         #endregion
 
-        #region AI
+        #region IA
+        //C'est le bestMove BestMove qui pose probleme je croie...
+
         public int getBestMove(int depth, int alpha, int beta, Piece bestMove)
         {
             int bestScore;
             if(depth == 0 || this.gameEnd())
             {
+                this.BestMove = bestMove;
                 return this.evaluateGrid();
             }
             if (this.canPlay())
@@ -508,13 +509,10 @@ namespace Game.ClassLibrary
                 Piece firstPiece = listPiece[0];
                 firstPiece.Player = this.getCurrentPlayer();
 
-                bestMove = firstPiece;
-                }
+                    bestMove = firstPiece;
+                
                 listPiece.RemoveAt(0);
                 this.play(firstPiece);
-                Piece[,] tempo = this.copyGrid(this.Grid);
-                bestScore = -getBestMove(depth - 1, -beta, -alpha, null);
-                this.Grid = this.copyGrid(tempo);
                 this.setNextPlayer();
 
                 bestScore = -getBestMove(depth - 1, -alpha, -beta, null);
@@ -549,6 +547,7 @@ namespace Game.ClassLibrary
                                 alpha = score;
                                 if(bestScore > beta)
                                 {
+                                    this.BestMove = bestMove;
                                     return bestScore;
                                 }
                             }
@@ -556,16 +555,16 @@ namespace Game.ClassLibrary
                     }
                 }
             }
-            else
-            {
+            else {
                 this.setNextPlayer();
-                bestScore = -getBestMove(depth - 1, -beta, -alpha, null);
+                bestScore = -getBestMove(depth - 1, -beta, alpha, null);
                 this.setNextPlayer();
             }
+            this.bestMove = BestMove;
             return bestScore;
         }
 
-        public Piece[,] copyGrid(Piece[,] grid)
+        public void getMoveWithBadIa()
         {
             int score, bestScore;
             bestScore = 0;
@@ -577,10 +576,12 @@ namespace Game.ClassLibrary
                 score = evaluateGrid();
                 if (score > bestScore)
                 {
-                    res[col, lig] = this.grid[col, lig];
+                    bestScore = score;
+                    this.bestMove = p;
                 }
+                this.undoMove(p);
             }
-            return res;
+            
         }
 
 
@@ -603,7 +604,7 @@ namespace Game.ClassLibrary
             return listPiece;
         }
 
-        
+
         /// <summary>
         /// Methode to evaluate the grid with the corresponding weight
         /// </summary>
@@ -618,7 +619,7 @@ namespace Game.ClassLibrary
                     if (this.grid[col, lig] != null)
                     { // Attention je ne suis pas sur faudrai peut etre plutot vérifier si c'est a un joueur?
                         score += this.gridWeight[col, lig];
-                        
+
                     }
                 }
             }
