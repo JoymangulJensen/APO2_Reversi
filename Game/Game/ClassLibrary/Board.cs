@@ -60,14 +60,14 @@ namespace Game.ClassLibrary
         }
 
         private int[,] gridWeight = new int[8, 8] { 
-                                                { 500 , -150, 30 , 10 , 10 , 30 , -150, 500  },
-                                                { -150, -250, 0, 0, 0, 0, -250, -150 },
-                                                { 30 , 0, 1 , 2 , 2 , 1 , 0, 30  },
-                                                { 10 , 0, 2 , 16 , 16 , 2 , 0, 10  },
-                                                { 10 , 0, 2 , 16 , 16 , 2 , 0, 10  },
-                                                { 30 , 0, 1 , 2 , 2 , 1 , 0, 30  },
-                                                { -150, -250, 0, 0, 0, 0, -250, -150 },
-                                                { 500 , -150, 30 , 10 , 10 , 30 , -150, 500  },
+                                                { 4 , -3, 2 , 2 , 2 , 2 , -3, 4  },
+                                                { -3, -4, -1, -1, -1, -1, -4, -3 },
+                                                { 2 , -1, 1 , 0 , 0 , 1 , -1, 2  },
+                                                { 2 , -1, 0 , 1 , 1 , 0 , -1, 2  },
+                                                { 2 , -1, 0 , 1 , 1 , 0 , -1, 2  },
+                                                { 2 , -1, 1 , 0 , 0 , 1 , -1, 2  },
+                                                { -3, -4, -1, -1, -1, -1, -4, -3 },
+                                                { 4 , -3, 2 , 2 , 2 , 2 , -3, 4  }
                                                     };
 
 
@@ -98,7 +98,8 @@ namespace Game.ClassLibrary
             players.Add(new Player(Player.HUMAN, "Joueur"));
             players.Add(new Player(Player.COMPUTER, "Ordinateur"));
 
-            this.grid = new Piece[8, 8];        
+            this.grid = new Piece[8, 8];     
+            this.bestMove = new Piece(0,0,new Player(2));
 
             //Initialise the turonver table
             for (int i = 1; i < 9; i++)
@@ -459,13 +460,17 @@ namespace Game.ClassLibrary
                 firstPiece.Player = this.getCurrentPlayer();
                 if(bestMove != null)
                 {
-                    bestMove = firstPiece;
+                    this.bestMove = firstPiece;
                 }
+                    
                 listPiece.RemoveAt(0);
+                Piece[,] tempo = new Piece[8, 8];
+                this.copyGrid(this.Grid, tempo);
+
                 this.play(firstPiece);
-                Piece[,] tempo = this.copyGrid(this.Grid);
+                
                 bestScore = -getBestMove(depth - 1, -beta, -alpha, null);
-                this.Grid = this.copyGrid(tempo);
+                this.copyGrid(tempo, this.Grid);
                 this.setNextPlayer();
 
                 if(bestScore >= alpha )
@@ -477,15 +482,30 @@ namespace Game.ClassLibrary
                     foreach(Piece p in listPiece)
                     {
                         p.Player = this.getCurrentPlayer();
+                        Piece[,] tempo2 = new Piece[8, 8];
+                        this.copyGrid(this.Grid, tempo2);
                         this.play(p);
-                        tempo = this.copyGrid(this.Grid);
+
+
                         int score = getBestMove(depth - 1, -alpha -1, -alpha, null);
-                        this.Grid = this.copyGrid(tempo);
+
+                        
+                        this.copyGrid(tempo2, this.Grid);
+
+
+
+
+
+                        score = getBestMove(depth - 1, -beta, -alpha, null);
                         this.setNextPlayer();
                         if(score > bestScore)
                         {
-                            bestScore = score;
-                            bestMove = p;
+                            if (bestMove != null)
+                            {
+                                this.bestMove = p;
+                            }
+
+
                             if(bestScore > alpha)
                             {
                                 alpha = score;
@@ -507,17 +527,22 @@ namespace Game.ClassLibrary
             return bestScore;
         }
 
-        public Piece[,] copyGrid(Piece[,] grid)
+        public void copyGrid(Piece[,] source, Piece[,] destination)
         {
-            Piece[,] res = new Piece[8,8];
             for(int col=0; col <8; col++)
             {
                 for(int lig=0; lig<8;lig++)
                 {
-                    res[col, lig] = this.grid[col, lig];
+                    if (source[col, lig] == null)
+                        destination[col, lig] = null;
+                    else
+                    {
+                        int playnum = source[col, lig].Player.Owner;
+                        Player player = new Player(playnum);
+                        destination[col, lig] = new Piece(col, lig, player);
+                    }    
                 }
             }
-            return res;
         }
 
 
@@ -561,6 +586,23 @@ namespace Game.ClassLibrary
             }
 
             return score;
+        }
+
+        public String GridString(Piece[,] grid)
+        {
+            String printgrid = " ";
+            for (int col = 0; col < 8; col++)
+            {
+                for (int lig = 0; lig < 8; lig++)
+                {
+                    if (this.Grid[col, lig] != null)
+                        printgrid += " " + grid[col, lig].Player.Owner;
+                    else
+                        printgrid += " 0";
+                }
+                printgrid += "\n";
+            }
+            return printgrid;
         }
         #endregion
     }

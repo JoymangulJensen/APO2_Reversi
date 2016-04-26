@@ -184,8 +184,8 @@ namespace Game
             }
             
             this.but_Undo.Enabled = true;
-            int score = this.board.getBestMove(1, 50, - 50, this.board.BestMove);
-            //this.board.play(this.board.BestMove);
+            int score = this.board.getBestMove(5, 50000, -50000, this.board.BestMove);
+            this.board.play(this.board.BestMove);
 
             //this.board.getMoveWithBadIa();
             //this.board.play(this.board.BestMove);

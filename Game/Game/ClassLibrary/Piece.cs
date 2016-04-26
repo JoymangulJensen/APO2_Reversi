@@ -66,6 +66,13 @@ namespace Game.ClassLibrary
             }
         }
 
+        public Piece copyPiece(Piece p)
+        {
+            Piece res = new Piece(p.X, p.Y);
+            res.player = new Player(p.Player.Owner);
+            return res;
+        }
+
         override
         public String ToString()
         {
