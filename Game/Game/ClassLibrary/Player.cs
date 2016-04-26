@@ -29,7 +29,7 @@ namespace Game.ClassLibrary
         /// <summary>
         /// Num of the player (1 or 2)
         /// </summary>
-        private int owner;
+        public int owner;
 
         public int Owner
         {

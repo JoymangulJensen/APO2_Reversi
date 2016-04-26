@@ -59,7 +59,7 @@ namespace Game.ClassLibrary
             set { grid = value; }
         }
 
-        private int[,] gridWeight = new int[8, 8] { 
+        private int[,] gridWeightBis = new int[8, 8] { 
                                                 { 4 , -3, 2 , 2 , 2 , 2 , -3, 4  },
                                                 { -3, -4, -1, -1, -1, -1, -4, -3 },
                                                 { 2 , -1, 1 , 0 , 0 , 1 , -1, 2  },
@@ -70,6 +70,16 @@ namespace Game.ClassLibrary
                                                 { 4 , -3, 2 , 2 , 2 , 2 , -3, 4  }
                                                     };
 
+        private int[,] gridWeight = new int[8, 8] {
+                                                { 1000 , -250, 10 , 20 , 20 , 10 , -250, 1000  },
+                                                { -250, -400, -20, -10, -10, -20, -400, -250 },
+                                                { 10 , -20, -5 , 0 , 0 , -5 , -20, 10  },
+                                                { 20 , -10, 0 , 0 , 0 , 0 , -10, 20  },
+                                                { 20 , -10, 0 , 0 , 0 , 0 , -10, 2  },
+                                                { 10 , -20, -5 , 0 , 0 , -5 , -20, 2  },
+                                                { -250, -400, -20, -10, -10, -20, -400, -250 },
+                                                { 1000 , -250, 10 , 20 , 20 , 10 , -250, 1000  }
+                                                    };
 
         private Piece bestMove;
         internal Piece BestMove
@@ -624,6 +634,49 @@ namespace Game.ClassLibrary
         /// </summary>
         /// <returns></returns>
         public int evaluateGrid()
+        {
+            int nbCurrent, nbNext, mobility;
+            int res = 0;
+            nbCurrent = getCurrentPlayer().Score;
+            this.setNextPlayer();
+            nbNext = getCurrentPlayer().Score;
+            this.setNextPlayer();
+            mobility = getAllLegalMoves().Capacity;
+            int score, scoreIA = 0;
+            score = 0;
+            for (int col = 0; col < 8; col++)
+            {
+                for (int lig = 0; lig < 8; lig++)
+                {
+                    if (this.grid[col, lig] != null && this.grid[col, lig].Player.Owner == 1)
+                    { // Si c'est la machine alors on calcule combien de point il a
+                        scoreIA += this.gridWeight[col, lig];
+                    }else if (this.grid[col, lig] != null && this.grid[col, lig].Player.Owner == 2)
+                    {
+                        score += this.gridWeight[col, lig];
+                    }
+                }
+            }
+            if(nbCurrent+ nbNext <= 15)//Begining
+            {
+                res = 1 * (nbCurrent-nbNext) + (scoreIA - score) * 1 + mobility * (-2);
+            }
+            else if (nbCurrent + nbNext <= 40)//middle
+            {
+                res = 1 * (nbCurrent - nbNext) + (scoreIA - score) * 2 + mobility * 2;
+            }
+            else//end
+            {
+                res = 1 * (nbCurrent - nbNext) + (scoreIA - score) * 1 + mobility * 2;
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// Methode to evaluate the grid with the corresponding weight
+        /// </summary>
+        /// <returns></returns>
+        public int evaluateGridBis()
         {
             int score = 0;
             for (int col = 0; col < 8; col++)
