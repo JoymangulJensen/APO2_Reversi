@@ -95,7 +95,7 @@ namespace Game
 
                     if (this.board.Grid[col, row] != null)
                     {
-                        // If there is a piece
+                        // If there is a piece    
 
                         if (this.board.Grid[col, row].Player.Owner == Player.HUMAN)
                         {
@@ -183,13 +183,8 @@ namespace Game
             }
             
             this.but_Undo.Enabled = true;
-
-            //int score = this.board.getBestMove(1, 50, - 50, null);
+            int score = this.board.getBestMove(1, 50, - 50, this.board.BestMove);
             //this.board.play(this.board.BestMove);
-
-            this.board.getMoveWithBadIa();
-            this.board.play(this.board.BestMove);
-
             if (!this.board.canPlay())
             {
                 this.board.setNextPlayer();
