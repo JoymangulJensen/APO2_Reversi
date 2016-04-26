@@ -134,7 +134,7 @@
             // easyItem
             // 
             this.easyItem.Name = "easyItem";
-            this.easyItem.Size = new System.Drawing.Size(152, 22);
+            this.easyItem.Size = new System.Drawing.Size(114, 22);
             this.easyItem.Text = "Facile";
             this.easyItem.Click += new System.EventHandler(this.menuItemDifficulty_Click);
             // 
@@ -143,14 +143,14 @@
             this.mediumItem.Checked = true;
             this.mediumItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mediumItem.Name = "mediumItem";
-            this.mediumItem.Size = new System.Drawing.Size(152, 22);
+            this.mediumItem.Size = new System.Drawing.Size(114, 22);
             this.mediumItem.Text = "Moyen";
             this.mediumItem.Click += new System.EventHandler(this.menuItemDifficulty_Click);
             // 
             // hardItem
             // 
             this.hardItem.Name = "hardItem";
-            this.hardItem.Size = new System.Drawing.Size(152, 22);
+            this.hardItem.Size = new System.Drawing.Size(114, 22);
             this.hardItem.Text = "Difficile";
             this.hardItem.Click += new System.EventHandler(this.menuItemDifficulty_Click);
             // 
@@ -165,8 +165,6 @@
             // 
             // pvpItem
             // 
-            this.pvpItem.Checked = true;
-            this.pvpItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.pvpItem.Name = "pvpItem";
             this.pvpItem.Size = new System.Drawing.Size(161, 22);
             this.pvpItem.Text = "Joueur vs Joueur";
@@ -174,6 +172,8 @@
             // 
             // pveItem
             // 
+            this.pveItem.Checked = true;
+            this.pveItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.pveItem.Name = "pveItem";
             this.pveItem.Size = new System.Drawing.Size(161, 22);
             this.pveItem.Text = "Joueur vs IA";

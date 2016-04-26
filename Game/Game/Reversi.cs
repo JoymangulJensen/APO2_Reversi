@@ -75,6 +75,7 @@ namespace Game
             this.labels.Add(board.Players[1], this.labelScore2);
             this.refreshBoard();
             this.refreshScore();
+            this.board.IA_ON = this.pveItem.Checked;
         }
 
         #endregion
@@ -186,9 +187,6 @@ namespace Game
 
             //int score = this.board.getBestMove(1, 50, - 50, null);
             //this.board.play(this.board.BestMove);
-
-            this.board.getMoveWithBadIa();
-            this.board.play(this.board.BestMove);
 
             if (!this.board.canPlay())
             {
@@ -309,6 +307,8 @@ namespace Game
         {
             ToolStripMenuItem tsmi = (ToolStripMenuItem)sender;
             this.manageCheck(tsmi, modeItem);
+            this.board.IA_ON = this.pvpItem.Checked;
+            this.init();
         }
 
         /// <summary>
