@@ -204,6 +204,59 @@ namespace Game.ClassLibrary
 
         #endregion
 
+        #region Manage end of the game & winners
+
+        /// <summary>
+        /// If none of the players can play
+        /// </summary>
+        /// <returns>true if none of the players can play</returns>
+        public Boolean gameFinished()
+        {
+            /*
+            foreach (Player p in players)
+            {
+                if (this.getAllLegalMoves(p).Count >= 0) // if p can play
+                    return false;
+            }
+            return true;
+             */
+            int sumScore = 0;
+            foreach (Player p in players)
+            {
+                sumScore += p.Score;
+                if (p.Score == 0)
+                    return true;
+            }
+            return (sumScore == 64);
+        }
+
+        /// <summary>
+        /// Return the winner(s) : players with the maximum score
+        /// </summary>
+        /// <returns>The winners (players with the maximum score)</returns>
+        public List<Player> getWinners()
+        {
+            List<Player> winners = new List<Player>();
+            Player currentWinner = players[0];
+            foreach (Player p in players)
+            {
+
+                if (p.Score > currentWinner.Score)
+                {
+                    currentWinner = p;
+                    winners.Clear();
+                    winners.Add(p);
+                }
+                else if (p.Score == currentWinner.Score)
+                {
+                    winners.Add(p);
+                }
+            }
+            return winners;
+        }
+
+        #endregion
+
         #region Play
 
         /// <summary>
