@@ -44,16 +44,6 @@ namespace Game.ClassLibrary
         private Stack<Piece> savePieces = new Stack<Piece>();
 
 
-        /// <summary>
-        /// The number od value in each direction
-        /// Key : direction [1-8]
-        /// Value : the number of value
-        /// </summary>
-        //public Dictionary<int, int> turnover = new Dictionary<int, int>();
-        /// <summary>
-        /// Save the value table for the last played piece
-        /// </summary>
-        //public Dictionary<int, int> saveTurnover = new Dictionary<int, int>();
 
         internal List<Player> Players
         {
@@ -313,6 +303,7 @@ namespace Game.ClassLibrary
         /// Try to play the given Piece
         /// </summary>
         /// <param name="p">Piece to play</param>
+        /// <param name="save">If true save the move else does not save the move</param>
         /// <returns>True if the move is legal</returns>
         public bool play(Piece p, Boolean save)
         {
@@ -328,6 +319,7 @@ namespace Game.ClassLibrary
                     piece.Player = this.getCurrentPlayer();
                     this.grid[piece.X, piece.Y] = piece;
                 }
+
                 if(save)
                 {
                     this.SavePieces.Push(p);
@@ -358,11 +350,20 @@ namespace Game.ClassLibrary
             return false;
         }
 
+        /// <summary>
+        /// Test if the current player can play
+        /// </summary>
+        /// <returns></returns>
         public Boolean canPlay()
         {
             return this.canPlay(this.getCurrentPlayer());
         }
 
+        /// <summary>
+        /// Test if a player can play
+        /// </summary>
+        /// <param name="player">The player to test if he can play</param>
+        /// <returns></returns>
         public Boolean canPlay(Player player)
         {
             Boolean res = false; //by default we cannot play
@@ -383,7 +384,11 @@ namespace Game.ClassLibrary
         #endregion
 
         #region return all legal move
-
+        /// <summary>
+        /// According to the piece i parameter it returns the list piece can has to be turned over
+        /// </summary>
+        /// <param name="p">The piece where we pla</param>
+        /// <returns>List of pieces to be turned over</returns>
         public List<Piece> listeMove(Piece p)
         {
             List<Piece> listePiece = new List<Piece>();
@@ -616,7 +621,11 @@ namespace Game.ClassLibrary
             }
         }
    
-
+        /// <summary>
+        /// Copy the playing grid
+        /// </summary>
+        /// <param name="source">The grid to be copied</param>
+        /// <param name="destination">Where the grid is stored</param>
         public void copyGrid(Piece[,] source, Piece[,] destination)
         {
             for (int col = 0; col < 8; col++)
