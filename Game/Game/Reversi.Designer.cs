@@ -92,7 +92,6 @@
             // 
             // but_Undo
             // 
-            this.but_Undo.Enabled = false;
             this.but_Undo.Location = new System.Drawing.Point(215, 492);
             this.but_Undo.Name = "but_Undo";
             this.but_Undo.Size = new System.Drawing.Size(75, 23);
