@@ -40,6 +40,7 @@ namespace Game.ClassLibrary
         /// Save the turnover table for the last played piece
         /// </summary>
         public Dictionary<int, int> saveTurnover = new Dictionary<int, int>();
+        Stack<int> stack = new Stack<int>();
         internal List<Player> Players
         {
             get { return players; }
@@ -394,7 +395,7 @@ namespace Game.ClassLibrary
                     turnover = turnover - 1;
                 }
             }
-            this.setNextPlayer();        //Make the player that wanted an undo plat again
+            this.setNextPlayer();        //Make the player that wanted an undo play again
             this.updateScoresByCounting();
         }
 
@@ -525,12 +526,17 @@ namespace Game.ClassLibrary
                 {
                     p.Player = this.getCurrentPlayer();
                     Piece[,] tempo = new Piece[8, 8];
+                    List<Player> tempoPlayers = new List<Player>();
                     this.copyGrid(this.Grid, tempo);
+                    int scoreHumain = this.Players[0].Score;
+                    int scoreComputer = this.Players[1].Score;
 
                     this.play(p);
 
                     double score = aplhaBeta(depth - 1, alpha, beta, 2);
                     this.copyGrid(tempo, this.Grid);
+                    this.Players[0].Score = scoreHumain;
+                    this.Players[1].Score = scoreComputer;
                     this.setNextPlayer();
                     if(score> alpha)
                     {
@@ -550,12 +556,16 @@ namespace Game.ClassLibrary
                 {
                     p.Player = this.getCurrentPlayer();
                     Piece[,] tempo = new Piece[8, 8];
+                    List<Player> tempoPlayers = new List<Player>();
                     this.copyGrid(this.Grid, tempo);
-
+                    int scoreHumain = this.Players[0].Score;
+                    int scoreComputer = this.Players[1].Score;
                     this.play(p);
 
                     double score = aplhaBeta(depth - 1, alpha, beta, 2);
                     this.copyGrid(tempo, this.Grid);
+                    this.Players[0].Score = scoreHumain;
+                    this.Players[1].Score = scoreComputer;
                     this.setNextPlayer();
                     if (score < beta)
                     {
@@ -570,87 +580,7 @@ namespace Game.ClassLibrary
                 return beta;
             }
         }
-
-        public int getBestMove(int depth, int alpha, int beta, Piece bestMove)
-        {
-            int bestScore;
-            if (depth == 0 || this.gameEnd())
-            {
-                return this.evaluateGrid();
-            }
-            if (this.canPlay())
-            {
-                List<Piece> listPiece = this.getAllLegalMoves();
-                Piece firstPiece = listPiece[0];
-                firstPiece.Player = this.getCurrentPlayer();
-                if (bestMove != null)
-                {
-                    this.bestMove = firstPiece;
-                }
-
-                listPiece.RemoveAt(0);
-                Piece[,] tempo = new Piece[8, 8];
-                this.copyGrid(this.Grid, tempo);
-
-                this.play(firstPiece);
-
-                bestScore = -getBestMove(depth - 1, -beta, -alpha, null);
-                this.copyGrid(tempo, this.Grid);
-                this.setNextPlayer();
-
-                if (bestScore >= alpha)
-                {
-                    alpha = bestScore;
-                }
-                if (bestScore < beta)
-                {
-                    foreach (Piece p in listPiece)
-                    {
-                        p.Player = this.getCurrentPlayer();
-                        Piece[,] tempo2 = new Piece[8, 8];
-                        this.copyGrid(this.Grid, tempo2);
-                        this.play(p);
-
-
-                        int score = getBestMove(depth - 1, -alpha - 1, -alpha, null);
-
-
-                        this.copyGrid(tempo2, this.Grid);
-
-
-
-
-
-                        score = getBestMove(depth - 1, -beta, -alpha, null);
-                        this.setNextPlayer();
-                        if (score > bestScore)
-                        {
-                            if (bestMove != null)
-                            {
-                                this.bestMove = p;
-                            }
-
-
-                            if (bestScore > alpha)
-                            {
-                                alpha = score;
-                                if (bestScore > beta)
-                                {
-                                    return bestScore;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                this.setNextPlayer();
-                bestScore = -getBestMove(depth - 1, -beta, -alpha, null);
-                this.setNextPlayer();
-            }
-            return bestScore;
-        }
+   
 
         public void copyGrid(Piece[,] source, Piece[,] destination)
         {
@@ -755,23 +685,7 @@ namespace Game.ClassLibrary
 
             return score;
         }
-
-        public String GridString(Piece[,] grid)
-        {
-            String printgrid = " ";
-            for (int col = 0; col < 8; col++)
-            {
-                for (int lig = 0; lig < 8; lig++)
-                {
-                    if (this.Grid[col, lig] != null)
-                        printgrid += " " + grid[col, lig].Player.Owner;
-                    else
-                        printgrid += " 0";
-                }
-                printgrid += "\n";
-            }
-            return printgrid;
-        }
+  
         #endregion
     }
 }
