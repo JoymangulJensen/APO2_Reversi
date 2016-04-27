@@ -205,10 +205,10 @@ namespace Game
 
             if (!this.board.canPlay())
             {
-                if (!board.IA_ON)
-                    this.skipRoundOfCurrentPlayer();
-                if (this.board.gameEnd())
+                if (this.board.gameFinished())
                     gameFinished = true;
+                if (!board.IA_ON && ! gameFinished)
+                    this.skipRoundOfCurrentPlayer();
             }
 
             this.refreshBoard();
@@ -235,7 +235,7 @@ namespace Game
                     this.board.play(this.board.BestMove);
                     this.disableEvents(this.board.BestMove);
                     // this.board.setNextPlayer();
-                } while (! this.board.canPlay(this.board.Players[0]) && (iACanPlay = this.board.canPlay(this.board.Players[1])));
+                } while (! this.board.canPlay(this.board.getPlayer(Player.HUMAN)) && (iACanPlay = this.board.canPlay(this.board.getPlayer(Player.COMPUTER))));
 
                 if (!iACanPlay)
                     gameFinished = true;
@@ -366,6 +366,7 @@ namespace Game
             this.refreshScore();
             previousPlay = null;
             this.but_Undo.Enabled = false;
+            this.gameFinished = false;
         }
 
         /// <summary>

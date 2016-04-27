@@ -30,17 +30,6 @@ namespace Game.ClassLibrary
         /// List of the players
         /// </summary>
         List<Player> players;
-        /// <summary>
-        /// The number od turnover in each direction
-        /// Key : direction [1-8]
-        /// Value : the number of turnover
-        /// </summary>
-        public Dictionary<int, int> turnover = new Dictionary<int, int>();
-        /// <summary>
-        /// Save the turnover table for the last played piece
-        /// </summary>
-        public Dictionary<int, int> saveTurnover = new Dictionary<int, int>();
-        Stack<int> stack = new Stack<int>();
         internal List<Player> Players
         {
             get { return players; }
@@ -48,12 +37,24 @@ namespace Game.ClassLibrary
         }
 
         /// <summary>
+        /// The number od turnover in each direction
+        /// Key : direction [1-8]
+        /// Value : the number of turnover
+        /// </summary>
+        public Dictionary<int, int> turnover = new Dictionary<int, int>();
+        
+        /// <summary>
+        /// Save the turnover table for the last played piece
+        /// </summary>
+        public Dictionary<int, int> saveTurnover = new Dictionary<int, int>();
+
+        Stack<int> stack = new Stack<int>();
+        
+
+        /// <summary>
         /// Grid of the game : 2d Array of Pieces
         /// </summary>
         private Piece[,] grid;
-
-
-
         internal Piece[,] Grid
         {
             get { return grid; }
@@ -89,11 +90,6 @@ namespace Game.ClassLibrary
             {
                 return bestMove;
             }
-
-            set
-            {
-                bestMove = value;
-            }
         }
 
         private List<Piece> initPieces = new List<Piece>();
@@ -119,22 +115,22 @@ namespace Game.ClassLibrary
             players.Add(new Player(Player.COMPUTER, "Ordinateur"));
 
             this.grid = new Piece[8, 8];
-            this.bestMove = new Piece(0, 0, new Player(2));
+            this.bestMove = new Piece(0, 0, this.getPlayer(Player.COMPUTER));
 
             //Initialise the turonver table
             for (int i = 1; i < 9; i++)
                 this.turnover.Add(i, 0);
 
-            this.InitPieces.Add(this.grid[3, 3] = new Piece(3, 3, players[1]));
-            this.InitPieces.Add(this.grid[3, 4] = new Piece(3, 4, players[0]));
-            this.InitPieces.Add(this.grid[4, 3] = new Piece(4, 3, players[0]));
-            this.InitPieces.Add(this.grid[4, 4] = new Piece(4, 4, players[1]));
+            this.InitPieces.Add(this.grid[3, 3] = new Piece(3, 3, this.getPlayer(Player.COMPUTER)));
+            this.InitPieces.Add(this.grid[3, 4] = new Piece(3, 4, this.getPlayer(Player.HUMAN)));
+            this.InitPieces.Add(this.grid[4, 3] = new Piece(4, 3, this.getPlayer(Player.HUMAN)));
+            this.InitPieces.Add(this.grid[4, 4] = new Piece(4, 4, this.getPlayer(Player.COMPUTER)));
 
             this.updateScoresByCounting();
         }
 
         /// <summary>
-        /// Reinitialise the table of turonvers
+        /// Reinitialize the table of turnovers
         /// </summary>
         public void reInitTurnover()
         {
@@ -156,6 +152,22 @@ namespace Game.ClassLibrary
         }
 
         /// <summary>
+        /// Get the player matching the num given
+        /// </summary>
+        /// <param name="numPlayer"></param>
+        /// <returns>The player matching the given number</returns>
+        public Player getPlayer(int numPlayer)
+        {
+            foreach (Player p in players)
+            {
+                if (p.Owner == numPlayer)
+                    return p;
+            }
+            // Shouldn't reach this point
+            return players[0];
+        }
+
+        /// <summary>
         /// Update the next player
         /// </summary>
         public void setNextPlayer()
@@ -170,6 +182,10 @@ namespace Game.ClassLibrary
             }
 
         }
+
+        #endregion
+
+        #region Scores Management
 
         /// <summary>
         /// Update the score of the players
@@ -232,22 +248,7 @@ namespace Game.ClassLibrary
         /// <returns>true if none of the players can play</returns>
         public Boolean gameFinished()
         {
-            /*
-            foreach (Player p in players)
-            {
-                if (this.getAllLegalMoves(p).Count >= 0) // if p can play
-                    return false;
-            }
-            return true;
-             */
-            int sumScore = 0;
-            foreach (Player p in players)
-            {
-                sumScore += p.Score;
-                if (p.Score == 0)
-                    return true;
-            }
-            return (sumScore == 64);
+            return (!this.canPlay(this.getPlayer(Player.COMPUTER)) && !this.canPlay(this.getPlayer(Player.HUMAN)));
         }
 
         /// <summary>
@@ -314,14 +315,7 @@ namespace Game.ClassLibrary
 
         #endregion
 
-        #region Test if a player have a legal move remaining and if a game ends
-
-        public Boolean gameEnd()
-        {
-            if (!this.canPlay(new Player(Player.COMPUTER)) && !this.canPlay(new Player(Player.HUMAN)))
-                return true;
-            return false;
-        }
+        #region Test if a player have a legal move remaining
 
         public Boolean canPlay()
         {
@@ -515,7 +509,7 @@ namespace Game.ClassLibrary
         //Prog ou Adver
         public double aplhaBeta(int depth, double alpha, double beta, int noeud)
         {
-            if(depth <= 0 || this.gameEnd())
+            if(depth <= 0 || this.gameFinished())
             {
                 return this.evaluateGrid();
             }
@@ -528,20 +522,20 @@ namespace Game.ClassLibrary
                     Piece[,] tempo = new Piece[8, 8];
                     List<Player> tempoPlayers = new List<Player>();
                     this.copyGrid(this.Grid, tempo);
-                    int scoreHumain = this.Players[0].Score;
-                    int scoreComputer = this.Players[1].Score;
+                    int scoreHumain = this.getPlayer(Player.HUMAN).Score;
+                    int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
 
                     this.play(p);
 
                     double score = aplhaBeta(depth - 1, alpha, beta, 2);
                     this.copyGrid(tempo, this.Grid);
-                    this.Players[0].Score = scoreHumain;
-                    this.Players[1].Score = scoreComputer;
+                    this.getPlayer(Player.HUMAN).Score = scoreHumain;
+                    this.getPlayer(Player.COMPUTER).Score = scoreComputer;
                     this.setNextPlayer();
                     if(score> alpha)
                     {
                         alpha = score;
-                        this.BestMove = p;
+                        this.bestMove = p;
                         if (alpha >= beta)
                         {
                             break;
@@ -558,19 +552,19 @@ namespace Game.ClassLibrary
                     Piece[,] tempo = new Piece[8, 8];
                     List<Player> tempoPlayers = new List<Player>();
                     this.copyGrid(this.Grid, tempo);
-                    int scoreHumain = this.Players[0].Score;
-                    int scoreComputer = this.Players[1].Score;
+                    int scoreHumain = this.getPlayer(Player.HUMAN).Score;
+                    int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
                     this.play(p);
 
                     double score = aplhaBeta(depth - 1, alpha, beta, 2);
                     this.copyGrid(tempo, this.Grid);
-                    this.Players[0].Score = scoreHumain;
-                    this.Players[1].Score = scoreComputer;
+                    this.getPlayer(Player.HUMAN).Score = scoreHumain;
+                    this.getPlayer(Player.COMPUTER).Score = scoreComputer;
                     this.setNextPlayer();
                     if (score < beta)
                     {
                         beta = score;
-                        this.BestMove = p;
+                        this.bestMove = p;
                         if (alpha >= beta)
                         {
                             break;
@@ -592,9 +586,12 @@ namespace Game.ClassLibrary
                         destination[col, lig] = null;
                     else
                     {
+
+                        /*
                         int playnum = source[col, lig].Player.Owner;
-                        Player player = new Player(playnum);
-                        destination[col, lig] = new Piece(col, lig, player);
+                        Player player = this.getPlayer(playnum);
+                        */
+                        destination[col, lig] = new Piece(col, lig, source[col, lig].Player);
                     }
                 }
             }
