@@ -187,18 +187,18 @@ namespace Game
             //int score = this.board.getBestMove(1, 500, -500, this.board.BestMove);
             //this.board.play(this.board.BestMove);
 
-            if (this.board.IA_ON)
-            {
-                int score = this.board.aplhaBeta(2, -500, 500, 2);
-            this.board.play(this.board.BestMove);
-            }
-
             if (!this.board.canPlay())
             {
                 this.board.setNextPlayer();
                 if (this.board.gameEnd())
                     this.manageEnd();
 
+            }
+
+            if (this.board.IA_ON)
+            {
+                this.board.aplhaBeta(4, double.NegativeInfinity, double.PositiveInfinity, 2); // TODO : Manage players here
+                this.board.play(this.board.BestMove);
             }
             
             this.refreshBoard();

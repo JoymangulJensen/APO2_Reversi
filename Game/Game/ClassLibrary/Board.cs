@@ -510,7 +510,7 @@ namespace Game.ClassLibrary
 
         #region AI
         //Prog ou Adver
-        public int aplhaBeta(int depth, int alpha, int beta, int noeud)
+        public double aplhaBeta(int depth, double alpha, double beta, int noeud)
         {
             if(depth <= 0 || this.gameEnd())
             {
@@ -527,7 +527,7 @@ namespace Game.ClassLibrary
 
                     this.play(p);
 
-                    int score = aplhaBeta(depth - 1, alpha, beta, 2);
+                    double score = aplhaBeta(depth - 1, alpha, beta, 2);
                     this.copyGrid(tempo, this.Grid);
                     this.setNextPlayer();
                     if(score> alpha)
@@ -552,7 +552,7 @@ namespace Game.ClassLibrary
 
                     this.play(p);
 
-                    int score = aplhaBeta(depth - 1, alpha, beta, 2);
+                    double score = aplhaBeta(depth - 1, alpha, beta, 2);
                     this.copyGrid(tempo, this.Grid);
                     this.setNextPlayer();
                     if (score < beta)
