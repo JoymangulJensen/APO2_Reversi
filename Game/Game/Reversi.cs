@@ -1,28 +1,37 @@
 ﻿using Game.ClassLibrary;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Game
 {
     public partial class Reversi : Form
     {
+
+        #region Attributes
+
+        /// <summary>
+        /// Piece used to record the last play
+        /// </summary>
         private Piece previousPlay;
 
-        private bool gameFinished;
+        /// <summary>
+        /// Flag used to indicate if the game is finished
+        /// </summary>
+        private bool gameFinished = false;
 
+        /// <summary>
+        /// Dictionnary : a label is assigned to each player
+        /// </summary>
         private Dictionary<Player, Label> labels;
 
         /// <summary>
         /// Board
         /// </summary>
         private Board board;
+
+        #endregion
 
         public Reversi()
         {
@@ -71,10 +80,15 @@ namespace Game
         private void init()
         {
             gameFinished = false;
+            previousPlay = null;
+            this.but_Undo.Enabled = false;
+
             Player.CurrentPlayer = Player.HUMAN;
             this.board = new Board();
+            this.board.IA_ON = this.pveItem.Checked;
 
-            foreach(Piece p in this.board.InitPieces)
+            // Disable the events of the first 4 pieces
+            foreach (Piece p in this.board.InitPieces)
             {
                 this.disableEvents(p);
             }
@@ -83,11 +97,8 @@ namespace Game
             this.labels.Add(board.Players[0], this.labelScore1);
             this.labels.Add(board.Players[1], this.labelScore2);
 
-
-
             this.refreshBoard();
             this.refreshScore();
-            this.board.IA_ON = this.pveItem.Checked;
         }
 
         #endregion
@@ -95,7 +106,7 @@ namespace Game
         #region Refresh of display
 
         /// <summary>
-        /// Actualise l'affichage de la grille selon board
+        /// Refresh the grid (boardGUI) according to the content of the board
         /// </summary>
         private void refreshBoard()
         {
@@ -103,7 +114,6 @@ namespace Game
             {
                 for (int row = 0; row < boardGUI.RowCount; row++)
                 {
-
                     PictureBox p = (PictureBox)boardGUI.GetControlFromPosition(col, row);
 
                     if (this.board.Grid[col, row] != null)
@@ -147,7 +157,7 @@ namespace Game
 
         /// <summary>
         /// Update the labels according to the current player
-        /// Set in Bold the next player
+        /// Set in Bold the current player
         /// </summary>
         private void refreshCurrentPlayer()
         {
@@ -155,15 +165,7 @@ namespace Game
             Font regular = new Font(this.labelScore1.Font, FontStyle.Regular);
             foreach (Player p in board.Players)
             {
-                if (board.getCurrentPlayer() == p)
-                {
-                    this.labels[p].Font = bold;
-                }
-                else
-                {
-                    this.labels[p].Font = regular;
-                    // new Font(this.labels[p].Font, FontStyle.Regular);
-                }
+                this.labels[p].Font = (board.getCurrentPlayer() == p) ? bold : regular;
             }
         }
 
@@ -171,22 +173,13 @@ namespace Game
 
         #region Events
 
-        private void disableEvents(Piece p)
-        {
-            PictureBox picture = (PictureBox)this.boardGUI.GetControlFromPosition(p.X, p.Y);
-            picture.Click -= pictureBox_Click;
-            picture.MouseEnter -= pictureBox_HoverIn;
-            picture.MouseLeave -= pictureBox_HoverOut;
-        }
-
         /// <summary>
-        /// Click on PictureBox
+        /// Click on PictureBox : play the piece on the position selected if possible
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void pictureBox_Click(object sender, EventArgs e)
         {
-            // PictureBox p = (PictureBox)sender;
             TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl((Control) sender);
             int x = position.Column, y = position.Row;
             Piece pieceToPlay = new Piece(x, y);
@@ -196,10 +189,13 @@ namespace Game
                 // If the move was played
                 this.disableEvents(pieceToPlay);
                 previousPlay = this.board.Grid[x, y];
-                this.but_Undo.Enabled = true;
                 if (this.board.IA_ON)
                 {
                     playIA();
+                }
+                else
+                {
+                    this.but_Undo.Enabled = true;
                 }
             }
             else
@@ -223,15 +219,6 @@ namespace Game
                 this.manageEnd();
             }
 
-        }
-
-        /// <summary>
-        /// Skip the round of the current player because this one can't play !
-        /// </summary>
-        private void skipRoundOfCurrentPlayer()
-        {
-            MessageBox.Show(this.board.getCurrentPlayer().Name + " ne peut pas jouer");
-            this.board.setNextPlayer();
         }
 
         /// <summary>
@@ -259,6 +246,80 @@ namespace Game
             }
         }
 
+
+        /// <summary>
+        /// Hover on PictureBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// 
+        private void pictureBox_HoverIn(object sender, EventArgs e)
+        {
+            PictureBox p = (PictureBox)sender;
+            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
+            int x = position.Column, y = position.Row;
+
+            Piece pieceSim = new Piece(x, y);
+            if (board.canMove(pieceSim))
+            {
+                List<Piece> pieces = board.listeMove(pieceSim);
+                foreach (Piece piece in pieces)
+                {
+                    PictureBox pic = (PictureBox)this.boardGUI.GetControlFromPosition(piece.X, piece.Y);
+                    if (piece.X == x && piece.Y == y)
+                    {
+                        if (this.board.getCurrentPlayer() == this.board.Players[0])
+                        {
+                            pic.Image = Image.FromFile("../../Resources/black.png");
+                        }
+                        else
+                        {
+                            pic.Image = Image.FromFile("../../Resources/white.png");
+                        }
+                    }
+                    else
+                    {
+                        pic.Image = Image.FromFile("../../Resources/dark_grey_small.png");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Hover out PictureBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pictureBox_HoverOut(object sender, EventArgs e)
+        {
+            PictureBox p = (PictureBox)sender;
+            p.Image = null;
+            this.refreshBoard();
+        }
+
+        /// <summary>
+        /// Disable all the events linked to the picture of the piece
+        /// </summary>
+        /// <param name="p"></param>
+        private void disableEvents(Piece p)
+        {
+            try
+            {
+                PictureBox picture = (PictureBox)this.boardGUI.GetControlFromPosition(p.X, p.Y);
+                picture.Click -= pictureBox_Click;
+                picture.MouseEnter -= pictureBox_HoverIn;
+                picture.MouseLeave -= pictureBox_HoverOut;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Disable events on " + p.ToString() + " failed");
+            }
+        }
+
+        #endregion
+
+        #region Utils
+
         /// <summary>
         /// Manage the display of the end of the game
         /// </summary>
@@ -280,66 +341,26 @@ namespace Game
         }
 
         /// <summary>
-        /// Hover on PictureBox
+        /// Skip the round of the current player because this one can't play !
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// 
-        private void pictureBox_HoverIn(object sender, EventArgs e)
+        private void skipRoundOfCurrentPlayer()
         {
-            PictureBox p = (PictureBox)sender;
-            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
-            int x = position.Column;
-            int y = position.Row;
-            // MessageBox.Show(board.testNeighbour(board.Grid[y, x]).ToString());
-
-
-            Piece pi = new Piece(x, y);
-            if (board.canMove(pi))
-            {
-                // p.Image = Image.FromFile("../../Resources/grey.png");
-                List<Piece> pieces = board.listeMove(pi);
-                foreach (Piece piece in pieces)
-                {
-                    PictureBox pic = (PictureBox)this.boardGUI.GetControlFromPosition(piece.X, piece.Y);
-                    if (piece.X == x && piece.Y == y)
-                    {
-                        if (this.board.getCurrentPlayer() == this.board.Players[0])
-                        {
-                            pic.Image = Image.FromFile("../../Resources/black.png");
-                        }
-                        else
-                        {
-                            pic.Image = Image.FromFile("../../Resources/white.png");
-                        }
-                    }
-                    else
-                    {
-                        pic.Image = Image.FromFile("../../Resources/dark_grey_small.png");
-                    }
-                }
-            }
-
+            MessageBox.Show(this.board.getCurrentPlayer().Name + " ne peut pas jouer");
+            this.board.setNextPlayer();
         }
 
+        #endregion
+
+        #region Buttons
         /// <summary>
-        /// Hover out PictureBox
+        /// Button Undo Click Event : Undo the last move
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void pictureBox_HoverOut(object sender, EventArgs e)
-        {
-            PictureBox p = (PictureBox)sender;
-            p.Image = null;
-            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
-            int x = position.Column;
-            int y = position.Row;
-            this.refreshBoard();
-        }
-
-
         private void but_Undo_Click(object sender, EventArgs e)
         {
+            if (previousPlay == null)
+                return;
             board.undoMove(previousPlay);
             this.refreshBoard();
             this.refreshScore();
@@ -347,6 +368,11 @@ namespace Game
             this.but_Undo.Enabled = false;
         }
 
+        /// <summary>
+        /// Button restart : Restart the game
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void but_restart_Click(object sender, EventArgs e)
         {
             this.init();
@@ -386,8 +412,8 @@ namespace Game
         {
             ToolStripMenuItem tsmi = (ToolStripMenuItem)sender;
             this.manageCheck(tsmi, modeItem);
-            this.board.IA_ON = this.pvpItem.Checked;
-            this.init();
+            this.difficultyItem.Enabled = (this.board.IA_ON = !this.pvpItem.Checked);
+            // this.init();
         }
 
         /// <summary>
@@ -399,14 +425,7 @@ namespace Game
         {
             foreach (ToolStripMenuItem ts in parent.DropDownItems)
             {
-                if (clicked == ts)
-                {
-                    clicked.Checked = true;
-                }
-                else
-                {
-                    ts.Checked = false;
-                }
+                if (clicked == ts) clicked.Checked = true; else ts.Checked = false;
             }
         }
         #endregion
