@@ -186,20 +186,15 @@ namespace Game
         /// <param name="e"></param>
         private void pictureBox_Click(object sender, EventArgs e)
         {
-            PictureBox p = (PictureBox)sender;
-            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl(p);
-            int x = position.Column;
-            int y = position.Row;
+            // PictureBox p = (PictureBox)sender;
+            TableLayoutPanelCellPosition position = boardGUI.GetPositionFromControl((Control) sender);
+            int x = position.Column, y = position.Row;
+            Piece pieceToPlay = new Piece(x, y);
 
-            if (!this.board.play(new Piece(x, y)))
+            if (this.board.play(pieceToPlay))
             {
-                MessageBox.Show("Vous ne pouvez pas jouer ici !");
-            }
-            else
-            {
-                p.Click -= pictureBox_Click;
-                p.MouseEnter -= pictureBox_HoverIn;
-                p.MouseLeave -= pictureBox_HoverOut;
+                // If the move was played
+                this.disableEvents(pieceToPlay);
                 previousPlay = this.board.Grid[x, y];
                 this.but_Undo.Enabled = true;
                 if (this.board.IA_ON)
@@ -207,12 +202,15 @@ namespace Game
                     playIA();
                 }
             }
-            
-            //int score = this.board.getBestMove(1, 500, -500, this.board.BestMove);
-            //this.board.play(this.board.BestMove);
+            else
+            {
+                MessageBox.Show("Vous ne pouvez pas jouer ici !");
+            }
 
             if (!this.board.canPlay())
             {
+                if (!board.IA_ON)
+                    this.skipRoundOfCurrentPlayer();
                 if (this.board.gameEnd())
                     gameFinished = true;
             }
@@ -225,6 +223,15 @@ namespace Game
                 this.manageEnd();
             }
 
+        }
+
+        /// <summary>
+        /// Skip the round of the current player because this one can't play !
+        /// </summary>
+        private void skipRoundOfCurrentPlayer()
+        {
+            MessageBox.Show(this.board.getCurrentPlayer().Name + " ne peut pas jouer");
+            this.board.setNextPlayer();
         }
 
         /// <summary>
@@ -248,7 +255,7 @@ namespace Game
             }
             else
             {
-                this.board.setNextPlayer();
+                this.skipRoundOfCurrentPlayer();
             }
         }
 
