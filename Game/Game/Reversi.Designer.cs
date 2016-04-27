@@ -57,6 +57,7 @@
             this.boardGUI.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
             this.boardGUI.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
             this.boardGUI.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
+            this.boardGUI.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
             this.boardGUI.Location = new System.Drawing.Point(85, 54);
             this.boardGUI.Name = "boardGUI";
             this.boardGUI.RowCount = 8;

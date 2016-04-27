@@ -15,6 +15,8 @@ namespace Game
     {
         private Piece previousPlay;
 
+        private bool gameFinished;
+
         private Dictionary<Player, Label> labels;
 
         /// <summary>
@@ -68,11 +70,21 @@ namespace Game
         /// </summary>
         private void init()
         {
+            gameFinished = false;
             Player.CurrentPlayer = Player.HUMAN;
             this.board = new Board();
+
+            foreach(Piece p in this.board.InitPieces)
+            {
+                this.disableEvents(p);
+            }
+
             this.labels = new Dictionary<Player, Label>();
             this.labels.Add(board.Players[0], this.labelScore1);
             this.labels.Add(board.Players[1], this.labelScore2);
+
+
+
             this.refreshBoard();
             this.refreshScore();
             this.board.IA_ON = this.pveItem.Checked;
@@ -159,6 +171,14 @@ namespace Game
 
         #region Events
 
+        private void disableEvents(Piece p)
+        {
+            PictureBox picture = (PictureBox)this.boardGUI.GetControlFromPosition(p.X, p.Y);
+            picture.Click -= pictureBox_Click;
+            picture.MouseEnter -= pictureBox_HoverIn;
+            picture.MouseLeave -= pictureBox_HoverOut;
+        }
+
         /// <summary>
         /// Click on PictureBox
         /// </summary>
@@ -181,28 +201,55 @@ namespace Game
                 p.MouseEnter -= pictureBox_HoverIn;
                 p.MouseLeave -= pictureBox_HoverOut;
                 previousPlay = this.board.Grid[x, y];
+                this.but_Undo.Enabled = true;
+                if (this.board.IA_ON)
+                {
+                    playIA();
+                }
             }
             
-            this.but_Undo.Enabled = true;
             //int score = this.board.getBestMove(1, 500, -500, this.board.BestMove);
             //this.board.play(this.board.BestMove);
 
             if (!this.board.canPlay())
             {
-                this.board.setNextPlayer();
                 if (this.board.gameEnd())
-                    this.manageEnd();
-
+                    gameFinished = true;
             }
 
-            if (this.board.IA_ON)
-            {
-                this.board.aplhaBeta(4, double.NegativeInfinity, double.PositiveInfinity, 2); // TODO : Manage players here
-                this.board.play(this.board.BestMove);
-            }
-            
             this.refreshBoard();
             this.refreshScore();
+
+            if (gameFinished)
+            {
+                this.manageEnd();
+            }
+
+        }
+
+        /// <summary>
+        /// The player has played, it's the IA round now
+        /// </summary>
+        private void playIA()
+        {
+            bool iACanPlay = true;
+            if (this.board.canPlay())
+            {
+                do
+                {
+                    this.board.aplhaBeta(3, double.NegativeInfinity, double.PositiveInfinity, 2); // TODO : Manage players here
+                    this.board.play(this.board.BestMove);
+                    this.disableEvents(this.board.BestMove);
+                    // this.board.setNextPlayer();
+                } while (! this.board.canPlay(this.board.Players[0]) && (iACanPlay = this.board.canPlay(this.board.Players[1])));
+
+                if (!iACanPlay)
+                    gameFinished = true;
+            }
+            else
+            {
+                this.board.setNextPlayer();
+            }
         }
 
         /// <summary>

@@ -95,6 +95,15 @@ namespace Game.ClassLibrary
             }
         }
 
+        private List<Piece> initPieces = new List<Piece>();
+        internal List<Piece> InitPieces
+        {
+            get
+            {
+                return initPieces;
+            }
+        }
+
         #endregion
 
         #region Constructor and Initialization
@@ -115,10 +124,10 @@ namespace Game.ClassLibrary
             for (int i = 1; i < 9; i++)
                 this.turnover.Add(i, 0);
 
-            this.grid[3, 3] = new Piece(3, 3, players[1]);
-            this.grid[3, 4] = new Piece(3, 4, players[0]);
-            this.grid[4, 3] = new Piece(4, 3, players[0]);
-            this.grid[4, 4] = new Piece(4, 4, players[1]);
+            this.InitPieces.Add(this.grid[3, 3] = new Piece(3, 3, players[1]));
+            this.InitPieces.Add(this.grid[3, 4] = new Piece(3, 4, players[0]));
+            this.InitPieces.Add(this.grid[4, 3] = new Piece(4, 3, players[0]));
+            this.InitPieces.Add(this.grid[4, 4] = new Piece(4, 4, players[1]));
 
             this.updateScoresByCounting();
         }
@@ -293,15 +302,8 @@ namespace Game.ClassLibrary
                     saveTurnover[i] = turnover[i];
 
                 // Respect the orders of the call of the two next methods
-                this.updateScoresByCounting();
+                this.updateScoresOp(changedPieces);
                 this.setNextPlayer();
-
-                // playIA
-                /*if (IA_ON)
-                {
-                    this.getMoveWithBadIa();
-                    this.play(this.BestMove);
-                }*/
 
                 return true;
             }
