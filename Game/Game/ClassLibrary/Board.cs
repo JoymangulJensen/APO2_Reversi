@@ -31,16 +31,30 @@ namespace Game.ClassLibrary
         /// </summary>
         List<Player> players;
         /// <summary>
-        /// The number od turnover in each direction
-        /// Key : direction [1-8]
-        /// Value : the number of turnover
+        /// Store the current turonver, use to preview a move
         /// </summary>
-        public Dictionary<int, int> turnover = new Dictionary<int, int>();
+        private Turnover currentTurnover;
         /// <summary>
-        /// Save the turnover table for the last played piece
+        /// Save all the turnovers of all played piece
         /// </summary>
-        public Dictionary<int, int> saveTurnover = new Dictionary<int, int>();
-        Stack<int> stack = new Stack<int>();
+        private Stack<Turnover> saveTurnover = new Stack<Turnover>();
+        /// <summary>
+        /// Save all the playes piece
+        /// </summary>
+        private Stack<Piece> savePieces = new Stack<Piece>();
+
+
+        /// <summary>
+        /// The number od value in each direction
+        /// Key : direction [1-8]
+        /// Value : the number of value
+        /// </summary>
+        //public Dictionary<int, int> turnover = new Dictionary<int, int>();
+        /// <summary>
+        /// Save the value table for the last played piece
+        /// </summary>
+        //public Dictionary<int, int> saveTurnover = new Dictionary<int, int>();
+
         internal List<Player> Players
         {
             get { return players; }
@@ -105,6 +119,32 @@ namespace Game.ClassLibrary
             }
         }
 
+        internal Stack<Piece> SavePieces
+        {
+            get
+            {
+                return savePieces;
+            }
+
+            set
+            {
+                savePieces = value;
+            }
+        }
+
+        internal Stack<Turnover> SaveTurnover
+        {
+            get
+            {
+                return saveTurnover;
+            }
+
+            set
+            {
+                saveTurnover = value;
+            }
+        }
+
         #endregion
 
         #region Constructor and Initialization
@@ -121,9 +161,7 @@ namespace Game.ClassLibrary
             this.grid = new Piece[8, 8];
             this.bestMove = new Piece(0, 0, new Player(2));
 
-            //Initialise the turonver table
-            for (int i = 1; i < 9; i++)
-                this.turnover.Add(i, 0);
+            this.currentTurnover = new Turnover();
 
             this.InitPieces.Add(this.grid[3, 3] = new Piece(3, 3, players[1]));
             this.InitPieces.Add(this.grid[3, 4] = new Piece(3, 4, players[0]));
@@ -133,14 +171,6 @@ namespace Game.ClassLibrary
             this.updateScoresByCounting();
         }
 
-        /// <summary>
-        /// Reinitialise the table of turonvers
-        /// </summary>
-        public void reInitTurnover()
-        {
-            for (int i = 1; i < 9; i++)
-                this.turnover[i] = 0;
-        }
 
         #endregion
 
@@ -284,7 +314,7 @@ namespace Game.ClassLibrary
         /// </summary>
         /// <param name="p">Piece to play</param>
         /// <returns>True if the move is legal</returns>
-        public bool play(Piece p)
+        public bool play(Piece p, Boolean save)
         {
             if (this.canMove(p)) // Can play
             {
@@ -298,9 +328,14 @@ namespace Game.ClassLibrary
                     piece.Player = this.getCurrentPlayer();
                     this.grid[piece.X, piece.Y] = piece;
                 }
-                //Copy the turnover table for the played piece(used for undoing a move)
-                for (int i = 1; i < 9; i++)
-                    saveTurnover[i] = turnover[i];
+                if(save)
+                {
+                    this.SavePieces.Push(p);
+                    Turnover temp = new Turnover();
+                    temp.clone(this.currentTurnover);
+                    this.SaveTurnover.Push(temp);
+                }
+
 
                 // Respect the orders of the call of the two next methods
                 this.updateScoresOp(changedPieces);
@@ -356,7 +391,7 @@ namespace Game.ClassLibrary
             for (int direction = 1; direction < 9; direction++)
             {
                 Piece next = this.getNext(direction, p);
-                int retournement = this.turnover[direction];
+                int retournement = this.currentTurnover.Value[direction];
                 while (retournement > 0)
                 {
                     listePiece.Add(next);
@@ -376,7 +411,7 @@ namespace Game.ClassLibrary
         /// The grid return to its previous state
         /// </summary>
         /// <param name="p">The piece to be undone</param>
-        public void undoMove(Piece p)
+        public void undoMove(Piece p, Turnover p_turonver)
         {
             this.grid[p.X, p.Y] = null;  //delete the piece
             this.canMove(p);
@@ -385,7 +420,7 @@ namespace Game.ClassLibrary
             for (int direction = 1; direction < 9; direction++)
             {
                 Piece next = this.getNext(direction, p); //get next move of the current piece
-                int turnover = this.saveTurnover[direction];  //get the turnonver for a specific direction
+                int turnover = p_turonver.Value[direction];  //get the turnonver for a specific direction
 
                 while (turnover > 0)
                 {
@@ -409,14 +444,14 @@ namespace Game.ClassLibrary
         }
         /// <summary>
         /// Methode to test if a player can play in a specific compartiment
-        /// this method also update the turonver table to get the number of turnover possible in a specific direction
+        /// this method also update the turonver table to get the number of value possible in a specific direction
         /// </summary>
         /// <param name="p">Piece which the player want to play</param>
         /// <returns>true: can play piece</returns>
         public Boolean canMove(Piece p, Player player)
         {
             Boolean res = false;    //By default a move is illegal
-            this.reInitTurnover();  //reinitiliase all the turnovers
+            this.currentTurnover.reinitialiase();  //reinitialiase all the turnovers
 
             if (grid[p.X, p.Y] != null) //If the current compartiment already contain a player
                 return res = false;
@@ -449,12 +484,12 @@ namespace Game.ClassLibrary
                 {
                     res = true;
                     //update the turonver table for that specific direction
-                    this.turnover[direction] = turnover;
+                    this.currentTurnover.Value[direction] = turnover;
 
                 }
                 else
                 {
-                    this.turnover[direction] = 0;
+                    this.currentTurnover.Value[direction] = 0;
                 }
             }
             return res;
@@ -531,7 +566,7 @@ namespace Game.ClassLibrary
                     int scoreHumain = this.Players[0].Score;
                     int scoreComputer = this.Players[1].Score;
 
-                    this.play(p);
+                    this.play(p,false);
 
                     double score = aplhaBeta(depth - 1, alpha, beta, 2);
                     this.copyGrid(tempo, this.Grid);
@@ -560,7 +595,7 @@ namespace Game.ClassLibrary
                     this.copyGrid(this.Grid, tempo);
                     int scoreHumain = this.Players[0].Score;
                     int scoreComputer = this.Players[1].Score;
-                    this.play(p);
+                    this.play(p, false);
 
                     double score = aplhaBeta(depth - 1, alpha, beta, 2);
                     this.copyGrid(tempo, this.Grid);

@@ -81,7 +81,6 @@ namespace Game
         {
             gameFinished = false;
             previousPlay = null;
-            this.but_Undo.Enabled = false;
 
             Player.CurrentPlayer = Player.HUMAN;
             this.board = new Board();
@@ -141,6 +140,14 @@ namespace Game
                     }
                 }
             }
+            if(this.board.SavePieces.Count == 0)
+            {
+                this.but_Undo.Enabled = false;
+            }
+            else
+            {
+                this.but_Undo.Enabled = true;
+            }
         }
 
         /// <summary>
@@ -184,7 +191,7 @@ namespace Game
             int x = position.Column, y = position.Row;
             Piece pieceToPlay = new Piece(x, y);
 
-            if (this.board.play(pieceToPlay))
+            if (this.board.play(pieceToPlay, true))
             {
                 // If the move was played
                 this.disableEvents(pieceToPlay);
@@ -232,7 +239,7 @@ namespace Game
                 do
                 {
                     this.board.aplhaBeta(4, double.NegativeInfinity, double.PositiveInfinity, 2); // TODO : Manage players here
-                    this.board.play(this.board.BestMove);
+                    this.board.play(this.board.BestMove, true);
                     this.disableEvents(this.board.BestMove);
                     // this.board.setNextPlayer();
                 } while (! this.board.canPlay(this.board.Players[0]) && (iACanPlay = this.board.canPlay(this.board.Players[1])));
@@ -359,13 +366,12 @@ namespace Game
         /// <param name="e"></param>
         private void but_Undo_Click(object sender, EventArgs e)
         {
-            if (previousPlay == null)
-                return;
-            board.undoMove(previousPlay);
+            board.undoMove(this.board.SavePieces.Pop(), this.board.SaveTurnover.Pop());
+            board.undoMove(this.board.SavePieces.Pop(), this.board.SaveTurnover.Pop());
             this.refreshBoard();
             this.refreshScore();
             previousPlay = null;
-            this.but_Undo.Enabled = false;
+            //this.but_Undo.Enabled = false;
         }
 
         /// <summary>
