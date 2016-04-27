@@ -190,7 +190,7 @@ namespace Game
             if (this.board.IA_ON)
             {
                 int score = this.board.aplhaBeta(2, -500, 500, 2);
-                this.board.play(this.board.BestMove);
+            this.board.play(this.board.BestMove);
             }
 
             if (!this.board.canPlay())
