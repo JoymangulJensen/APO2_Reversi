@@ -187,14 +187,17 @@ namespace Game
             //int score = this.board.getBestMove(1, 500, -500, this.board.BestMove);
             //this.board.play(this.board.BestMove);
 
-            int score = this.board.aplhaBeta(2, -500, 500, 2);
-            this.board.play(this.board.BestMove);
+            if (this.board.IA_ON)
+            {
+                int score = this.board.aplhaBeta(2, -500, 500, 2);
+                this.board.play(this.board.BestMove);
+            }
 
             if (!this.board.canPlay())
             {
                 this.board.setNextPlayer();
                 if (this.board.gameEnd())
-                    MessageBox.Show("Jeux Terminé");
+                    this.manageEnd();
 
             }
             
@@ -202,7 +205,9 @@ namespace Game
             this.refreshScore();
         }
 
-        /*
+        /// <summary>
+        /// Manage the display of the end of the game
+        /// </summary>
         private void manageEnd()
         {
             List<Player> winners = this.board.getWinners();
@@ -219,7 +224,6 @@ namespace Game
                 MessageBox.Show("Pas de gagnant");
             }
         }
-         */ 
 
         /// <summary>
         /// Hover on PictureBox
