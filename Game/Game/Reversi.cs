@@ -143,7 +143,7 @@ namespace Game
             if(this.board.SavePieces.Count == 0)
             {
                 this.but_Undo.Enabled = false;
-            }
+        }
             else
             {
                 this.but_Undo.Enabled = true;
@@ -212,10 +212,10 @@ namespace Game
 
             if (!this.board.canPlay())
             {
-                if (!board.IA_ON)
-                    this.skipRoundOfCurrentPlayer();
-                if (this.board.gameEnd())
+                if (this.board.gameFinished())
                     gameFinished = true;
+                if (!board.IA_ON && ! gameFinished)
+                    this.skipRoundOfCurrentPlayer();
             }
 
             this.refreshBoard();
@@ -242,7 +242,7 @@ namespace Game
                     this.board.play(this.board.BestMove, true);
                     this.disableEvents(this.board.BestMove);
                     // this.board.setNextPlayer();
-                } while (! this.board.canPlay(this.board.Players[0]) && (iACanPlay = this.board.canPlay(this.board.Players[1])));
+                } while (! this.board.canPlay(this.board.getPlayer(Player.HUMAN)) && (iACanPlay = this.board.canPlay(this.board.getPlayer(Player.COMPUTER))));
 
                 if (!iACanPlay)
                     gameFinished = true;
@@ -367,10 +367,12 @@ namespace Game
         private void but_Undo_Click(object sender, EventArgs e)
         {
             board.undoMove(this.board.SavePieces.Pop(), this.board.SaveTurnover.Pop());
-            board.undoMove(this.board.SavePieces.Pop(), this.board.SaveTurnover.Pop());
+            if (this.board.IA_ON)
+                board.undoMove(this.board.SavePieces.Pop(), this.board.SaveTurnover.Pop());
             this.refreshBoard();
             this.refreshScore();
             previousPlay = null;
+            this.gameFinished = false;
             //this.but_Undo.Enabled = false;
         }
 
