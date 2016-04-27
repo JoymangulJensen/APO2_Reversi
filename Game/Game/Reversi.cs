@@ -187,7 +187,7 @@ namespace Game
             //int score = this.board.getBestMove(1, 500, -500, this.board.BestMove);
             //this.board.play(this.board.BestMove);
 
-            int score = this.board.aplhaBeta(2, -500, 500, 2);
+            int score = this.board.aplhaBeta(5, -50000, 50000, 2);
             this.board.play(this.board.BestMove);
 
             if (!this.board.canPlay())

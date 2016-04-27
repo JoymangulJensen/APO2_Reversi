@@ -293,7 +293,7 @@ namespace Game.ClassLibrary
                     saveTurnover[i] = turnover[i];
 
                 // Respect the orders of the call of the two next methods
-                this.updateScoresOp(changedPieces);
+                this.updateScoresByCounting();
                 this.setNextPlayer();
 
                 // playIA
@@ -425,29 +425,24 @@ namespace Game.ClassLibrary
                 Piece tempo;    //temporary variable to check if next piece is not outbound
                 Boolean stop = false;    //Variable is set true when outbound
                 int turnover = 0;   //the current number of turonver for the specific direction
-                try
+
+                //Loop untill the next compartiment is different from the current player and not outbound
+                while (!stop && (this.possiblePlace(next) && Grid[next.X, next.Y] != null && Grid[next.X, next.Y].Player.Owner != player.Owner))
                 {
-                    //Loop untill the next compartiment is different from the current player and not outbound
-                    while (!stop && (Grid[next.X, next.Y] != null && Grid[next.X, next.Y].Player.Owner != player.Owner))
+                    tempo = this.getNext(direction, next);
+                    if (tempo.X < 0 || tempo.Y < 0 || tempo.X > 7 || tempo.Y > 7)  //if outbound stop the loop
                     {
-                        tempo = this.getNext(direction, next);
-                        if (tempo.X < 0 || tempo.Y < 0 || tempo.X > 7 || tempo.Y > 7)  //if outbound stop the loop
-                        {
-                            stop = true;
-                        }
-                        else
-                        {
-                            turnover++; //increment the number of turonver for that specific direction
-                            next = tempo;
-                        }
+                        stop = true;
+                    }
+                    else
+                    {
+                        turnover++; //increment the number of turonver for that specific direction
+                        next = tempo;
                     }
                 }
-                catch (Exception e)
-                {
-                    continue;
-                }
+            
                 //If the turonver is not zero and the last piece to be tested is the same as the current player
-                if (Grid[next.X, next.Y] != null && turnover != 0 && Grid[next.X, next.Y].Player.Owner == player.Owner)
+                if (this.possiblePlace(next) && Grid[next.X, next.Y] != null && turnover != 0 && Grid[next.X, next.Y].Player.Owner == player.Owner)
                 {
                     res = true;
                     //update the turonver table for that specific direction
@@ -460,6 +455,11 @@ namespace Game.ClassLibrary
                 }
             }
             return res;
+        }
+
+        public Boolean possiblePlace(Piece p)
+        {
+            return (p.X >= 0 && p.Y >= 0 && p.X < 8 && p.Y < 8);
         }
 
         /// <summary>
