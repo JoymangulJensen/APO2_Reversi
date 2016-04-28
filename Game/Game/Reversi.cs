@@ -391,9 +391,10 @@ namespace Game
             board.undoMove(this.board.SavePieces.Pop(), this.board.SaveTurnover.Pop());
             if (this.board.IA_ON)
                 board.undoMove(this.board.SavePieces.Pop(), this.board.SaveTurnover.Pop());
+
+            previousPlay = this.board.SavePieces.Count > 0 ? this.board.SavePieces.Peek() : null;
             this.refreshBoard();
             this.refreshScore();
-            previousPlay = null;
             this.gameFinished = false;
             //this.but_Undo.Enabled = false;
         }
