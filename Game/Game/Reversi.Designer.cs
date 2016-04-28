@@ -75,6 +75,7 @@
             // labelScore1
             // 
             this.labelScore1.AutoSize = true;
+            this.labelScore1.BackColor = System.Drawing.Color.OrangeRed;
             this.labelScore1.Location = new System.Drawing.Point(227, 29);
             this.labelScore1.Name = "labelScore1";
             this.labelScore1.Size = new System.Drawing.Size(63, 13);
