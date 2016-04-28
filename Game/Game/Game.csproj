@@ -96,9 +96,11 @@
     <None Include="Resources\white.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\black_triggered.png" />
     <Content Include="Resources\dark_grey_small.png" />
     <Content Include="Resources\grey.png" />
     <Content Include="Resources\light_grey_small.png" />
+    <Content Include="Resources\white_triggered.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -109,25 +109,24 @@ namespace Game
         /// </summary>
         private void refreshBoard()
         {
+            Piece piece;
             for (int col = 0; col < boardGUI.ColumnCount; col++)
             {
                 for (int row = 0; row < boardGUI.RowCount; row++)
                 {
                     PictureBox p = (PictureBox)boardGUI.GetControlFromPosition(col, row);
 
-                    if (this.board.Grid[col, row] != null)
+                    if ((piece = this.board.Grid[col, row]) != null)
                     {
                         // If there is a piece
 
-                        if (this.board.Grid[col, row].Player.Owner == Player.HUMAN)
+                        if (previousPlay != null && piece.X == previousPlay.X && piece.Y == previousPlay.Y)
                         {
-                            // Human : Display Black
-                            p.Image = Image.FromFile("../../Resources/black.png");
+                            this.setImageAccordingToPlayer(p, piece.Player, true);
                         }
                         else
                         {
-                            // AI : Display White
-                            p.Image = Image.FromFile("../../Resources/white.png");
+                            this.setImageAccordingToPlayer(p, piece.Player, false);
                         }
                     }
                     else if(p.Image != null)
@@ -140,13 +139,33 @@ namespace Game
                     }
                 }
             }
-            if(this.board.SavePieces.Count == 0)
-            {
-                this.but_Undo.Enabled = false;
+
+            this.but_Undo.Enabled = !(this.board.SavePieces.Count == 0);
         }
+
+        private void setImageAccordingToPlayer(PictureBox image, Player player, bool triggered = false)
+        {
+            if (player == this.board.getPlayer(Player.HUMAN))
+            {
+                if (triggered)
+                {
+                    image.Image = Image.FromFile("../../Resources/black_triggered.png");
+                }
+                else
+                {
+                    image.Image = Image.FromFile("../../Resources/black.png");
+                }
+            }
             else
             {
-                this.but_Undo.Enabled = true;
+                if (triggered)
+                {
+                    image.Image = Image.FromFile("../../Resources/white_triggered.png");
+                }
+                else
+                {
+                    image.Image = Image.FromFile("../../Resources/white.png");
+                }
             }
         }
 
@@ -173,6 +192,7 @@ namespace Game
             foreach (Player p in board.Players)
             {
                 this.labels[p].Font = (board.getCurrentPlayer() == p) ? bold : regular;
+                this.labels[p].BackColor = (board.getCurrentPlayer() == p) ? Color.OrangeRed : SystemColors.Control;
             }
         }
 
@@ -240,6 +260,7 @@ namespace Game
                 {
                     this.board.aplhaBeta(4, double.NegativeInfinity, double.PositiveInfinity, 2); // TODO : Manage players here
                     this.board.play(this.board.BestMove, true);
+                    this.previousPlay = this.board.BestMove;
                     this.disableEvents(this.board.BestMove);
                     // this.board.setNextPlayer();
                 } while (! this.board.canPlay(this.board.getPlayer(Player.HUMAN)) && (iACanPlay = this.board.canPlay(this.board.getPlayer(Player.COMPUTER))));
@@ -421,6 +442,17 @@ namespace Game
             ToolStripMenuItem tsmi = (ToolStripMenuItem)sender;
             this.manageCheck(tsmi, modeItem);
             this.difficultyItem.Enabled = (this.board.IA_ON = !this.pvpItem.Checked);
+            if (this.board.IA_ON)
+            {
+                this.board.Players[0].Name = "Joueur";
+                this.board.Players[1].Name = "Ordinateur";
+            }
+            else
+            {
+                this.board.Players[0].Name = "Joueur 1";
+                this.board.Players[1].Name = "Joueur 2";
+            }
+            this.refreshScore();
             // this.init();
         }
 
