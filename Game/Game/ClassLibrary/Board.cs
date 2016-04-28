@@ -74,16 +74,25 @@ namespace Game.ClassLibrary
                                                     };
 
         private int[,] gridWeight = new int[8, 8] {
-                                                { 1000 , -250, 10 , 20 , 20 , 10 , -250, 1000  },
-                                                { -250, -400, -20, -10, -10, -20, -400, -250 },
-                                                { 10 , -20, -5 , 0 , 0 , -5 , -20, 10  },
-                                                { 20 , -10, 0 , 0 , 0 , 0 , -10, 20  },
-                                                { 20 , -10, 0 , 0 , 0 , 0 , -10, 2  },
-                                                { 10 , -20, -5 , 0 , 0 , -5 , -20, 2  },
-                                                { -250, -400, -20, -10, -10, -20, -400, -250 },
-                                                { 1000 , -250, 10 , 20 , 20 , 10 , -250, 1000  }
+                                                { 1000 , 50, 200 , 200 , 200 , 200 , 50, 1000  },
+                                                { 50, 0, 100, 100, 100, 100, 0, 50 },
+                                                { 200 , 100, 150 , 150 , 150 , 150 , 100, 200  },
+                                                { 200 , 100, 150 , 150 , 150 , 150 , 100, 200  },
+                                                { 200 , 100, 150 , 150 , 150 , 150 , 100, 200  },
+                                                { 200 , 100, 150 , 150 , 150 , 150 , 100, 200  },
+                                                { 50, 0, 100, 100, 100, 100, 0, 50 },
+                                                { 1000 , 50, 200 , 200 , 200 , 200 , 50, 1000  },
                                                     };
-
+        private int[,] gridWeightBisBis = new int[8, 8] {
+                                                { 500 , -250, 20 , 20 , 20 , 20 , -250, 500  },
+                                                { -250, -400, -20, -20, -20, -20, -400, -250 },
+                                                { 20 , -20, 0 , 0 , 0 , 0 , -20, 20  },
+                                                { 20 , -20, 0 , 5 , 5 , 0 , -20, 20  },
+                                                { 20 , -20, 0 , 5 , 5 , 0 , -20, 20  },
+                                                { 20 , -20, 0 , 0 , 0 , 0 , -20, 20  },
+                                                { -250, -400, -20, -20, -20, -20, -400, -250 },
+                                                { 500 , -250, 20 , 20 , 20 , 20 , -250, 500  },
+                                                    };
         private Piece bestMove;
         internal Piece BestMove
         {
@@ -544,7 +553,7 @@ namespace Game.ClassLibrary
 
         #region AI
         //Prog ou Adver
-        public double aplhaBeta(int depth, double alpha, double beta, int noeud)
+        public double aplhaBeta(int depth, double beta, double alpha, int noeud)
         {
             if(depth <= 0 || this.gameFinished())
             {
@@ -569,14 +578,12 @@ namespace Game.ClassLibrary
                     this.getPlayer(Player.HUMAN).Score = scoreHumain;
                     this.getPlayer(Player.COMPUTER).Score = scoreComputer;
                     this.setNextPlayer();
-                    if(score> alpha)
+                    //MessageBox.Show(score+"");
+                    if(score <= alpha)
                     {
                         alpha = score;
                         this.bestMove = p;
-                        if (alpha >= beta)
-                        {
-                            break;
-                        }
+
                     }
                 }
                 return alpha;
@@ -593,19 +600,17 @@ namespace Game.ClassLibrary
                     int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
                     this.play(p, false);
 
-                    double score = aplhaBeta(depth - 1, alpha, beta, 2);
+                    double score = aplhaBeta(depth - 1, alpha, beta, 1);
                     this.copyGrid(tempo, this.Grid);
                     this.getPlayer(Player.HUMAN).Score = scoreHumain;
                     this.getPlayer(Player.COMPUTER).Score = scoreComputer;
                     this.setNextPlayer();
-                    if (score < beta)
+                    //MessageBox.Show(score + "");
+                    if (score >= beta)
                     {
+                        
                         beta = score;
                         this.bestMove = p;
-                        if (alpha >= beta)
-                        {
-                            break;
-                        }
                     }
                 }
                 return beta;
@@ -671,33 +676,34 @@ namespace Game.ClassLibrary
             this.setNextPlayer();
             nbNext = getCurrentPlayer().Score;
             this.setNextPlayer();
-            mobility = getAllLegalMoves().Capacity;
-            int score, scoreIA = 0;
-            score = 0;
+            int scoreCurrent, scoreNext = 0;
+            scoreCurrent = 0;
+            mobility = this.getAllLegalMoves().Capacity;
+
             for (int col = 0; col < 8; col++)
             {
                 for (int lig = 0; lig < 8; lig++)
                 {
-                    if (this.grid[col, lig] != null && this.grid[col, lig].Player.Owner == 1)
+                    if (this.grid[col, lig] != null && this.grid[col, lig].Player.Owner == this.getCurrentPlayer().Owner)
                     { // Si c'est la machine alors on calcule combien de point il a
-                        scoreIA += this.gridWeight[col, lig];
-                    }else if (this.grid[col, lig] != null && this.grid[col, lig].Player.Owner == 2)
+                        scoreCurrent += this.gridWeightBisBis[col, lig];
+                    }else if (this.grid[col, lig] != null)
                     {
-                        score += this.gridWeight[col, lig];
+                        scoreNext += this.gridWeightBisBis[col, lig];
                     }
                 }
             }
             if(nbCurrent+ nbNext <= 15)//Begining
             {
-                res = -3 * (nbCurrent-nbNext) + (scoreIA - score) * 1 + mobility * (-2);
+                res = 1 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 5;
             }
             else if (nbCurrent + nbNext <= 40)//middle
             {
-                res = 1 * (nbCurrent - nbNext) + (scoreIA - score) * 2 + mobility * 2;
+                res = 1 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 10 + mobility * 1;
             }
             else//end
             {
-                res = 1 * (nbCurrent - nbNext) + (scoreIA - score) * 1 + mobility * 2;
+                res = 200 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 1;
             }
             return res;
         }
