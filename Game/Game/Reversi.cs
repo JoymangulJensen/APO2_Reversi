@@ -238,7 +238,7 @@ namespace Game
             {
                 do
                 {
-                    this.board.aplhaBeta(4, double.NegativeInfinity, double.PositiveInfinity, 2); // TODO : Manage players here
+                    this.board.aplhaBeta(4, double.PositiveInfinity, double.NegativeInfinity); // TODO : Manage players here
                     this.board.play(this.board.BestMove, true);
                     this.disableEvents(this.board.BestMove);
                     // this.board.setNextPlayer();

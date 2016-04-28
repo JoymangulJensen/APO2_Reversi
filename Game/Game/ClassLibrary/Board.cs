@@ -553,14 +553,14 @@ namespace Game.ClassLibrary
 
         #region AI
         //Prog ou Adver
-        public double aplhaBeta(int depth, double beta, double alpha, int noeud)
+        public double aplhaBeta(int depth, double beta, double alpha)
         {
             if(depth <= 0 || this.gameFinished())
             {
                 return this.evaluateGrid();
             }
             List<Piece> listPiece = this.getAllLegalMoves();
-            if (noeud == 1)//Appeller a 1 commence programme
+            if (getCurrentPlayer().Owner== Player.HUMAN)//Appeller a 1 commence programme
             {
                 foreach (Piece p in listPiece)
                 {
@@ -573,13 +573,13 @@ namespace Game.ClassLibrary
 
                     this.play(p,false);
 
-                    double score = aplhaBeta(depth - 1, alpha, beta, 2);
+                    double score = aplhaBeta(depth - 1, alpha, beta);
                     this.copyGrid(tempo, this.Grid);
                     this.getPlayer(Player.HUMAN).Score = scoreHumain;
                     this.getPlayer(Player.COMPUTER).Score = scoreComputer;
                     this.setNextPlayer();
                     //MessageBox.Show(score+"");
-                    if(score <= alpha)
+                    if(score >= alpha)
                     {
                         alpha = score;
                         this.bestMove = p;
@@ -600,13 +600,13 @@ namespace Game.ClassLibrary
                     int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
                     this.play(p, false);
 
-                    double score = aplhaBeta(depth - 1, alpha, beta, 1);
+                    double score = aplhaBeta(depth - 1, alpha, beta);
                     this.copyGrid(tempo, this.Grid);
                     this.getPlayer(Player.HUMAN).Score = scoreHumain;
                     this.getPlayer(Player.COMPUTER).Score = scoreComputer;
                     this.setNextPlayer();
                     //MessageBox.Show(score + "");
-                    if (score >= beta)
+                    if (score <= beta)
                     {
                         
                         beta = score;
@@ -690,7 +690,7 @@ namespace Game.ClassLibrary
             }
             if(nbCurrent+ nbNext <= 15)//Begining
             {
-                res = 1 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 5;
+                res = 0 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 0;
             }
             else if (nbCurrent + nbNext <= 40)//middle
             {
@@ -725,6 +725,48 @@ namespace Game.ClassLibrary
             return score;
         }
   
+
+
+        public int min(int depth, Piece[,] grid)
+        {
+            if(depth <= 0 || this.gameFinished())
+            {
+                return this.evaluateGrid();
+            }
+            double min_value = Double.PositiveInfinity;
+            List<Piece> listPiece = this.getAllLegalMoves();
+            foreach (Piece p in listPiece)
+            {
+                p.Player = this.getCurrentPlayer();
+                Piece[,] tempo = new Piece[8, 8];
+                List<Player> tempoPlayers = new List<Player>();
+                this.copyGrid(this.Grid, tempo);
+                int scoreHumain = this.getPlayer(Player.HUMAN).Score;
+                int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
+
+                this.play(p,false);
+
+
+               
+            }
+        }
+
+
+
+            if (getCurrentPlayer().Owner== Player.HUMAN)//Appeller a 1 commence programme
+            {
+                
+                    
+
+                    double score = aplhaBeta(depth - 1, alpha, beta);
+                    this.copyGrid(tempo, this.Grid);
+                    this.getPlayer(Player.HUMAN).Score = scoreHumain;
+                    this.getPlayer(Player.COMPUTER).Score = scoreComputer;
+                    this.setNextPlayer();
+
+
+
+
         #endregion
     }
 }
