@@ -190,7 +190,7 @@ namespace Game.ClassLibrary
                     return p;
             }
             // Shouldn't reach this point
-            return players[0];
+            throw new Exception("No player matching " + numPlayer);
         }
 
         /// <summary>
@@ -470,7 +470,7 @@ namespace Game.ClassLibrary
                 int turnover = 0;   //the current number of turonver for the specific direction
 
                 //Loop untill the next compartiment is different from the current player and not outbound
-                while (!stop && (this.possiblePlace(next) && Grid[next.X, next.Y] != null && Grid[next.X, next.Y].Player.Owner != player.Owner))
+                while (!stop && (this.possiblePlace(next) && Grid[next.X, next.Y] != null && Grid[next.X, next.Y].Player != player))
                 {
                     tempo = this.getNext(direction, next);
                     if (tempo.X < 0 || tempo.Y < 0 || tempo.X > 7 || tempo.Y > 7)  //if outbound stop the loop
@@ -485,7 +485,7 @@ namespace Game.ClassLibrary
                 }
             
                 //If the turonver is not zero and the last piece to be tested is the same as the current player
-                if (this.possiblePlace(next) && Grid[next.X, next.Y] != null && turnover != 0 && Grid[next.X, next.Y].Player.Owner == player.Owner)
+                if (this.possiblePlace(next) && Grid[next.X, next.Y] != null && turnover != 0 && Grid[next.X, next.Y].Player == player)
                 {
                     res = true;
                     //update the turonver table for that specific direction
@@ -632,11 +632,6 @@ namespace Game.ClassLibrary
                         destination[col, lig] = null;
                     else
                     {
-
-                        /*
-                        int playnum = source[col, lig].Player.Owner;
-                        Player player = this.getPlayer(playnum);
-                        */
                         destination[col, lig] = new Piece(col, lig, source[col, lig].Player);
                     }
                 }
@@ -684,7 +679,7 @@ namespace Game.ClassLibrary
             {
                 for (int lig = 0; lig < 8; lig++)
                 {
-                    if (this.grid[col, lig] != null && this.grid[col, lig].Player.Owner == this.getCurrentPlayer().Owner)
+                    if (this.grid[col, lig] != null && this.grid[col, lig].Player == this.getCurrentPlayer())
                     { // Si c'est la machine alors on calcule combien de point il a
                         scoreCurrent += this.gridWeightBisBis[col, lig];
                     }else if (this.grid[col, lig] != null)

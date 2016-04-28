@@ -93,8 +93,8 @@ namespace Game
             }
 
             this.labels = new Dictionary<Player, Label>();
-            this.labels.Add(board.Players[0], this.labelScore1);
-            this.labels.Add(board.Players[1], this.labelScore2);
+            this.labels.Add(board.getPlayer(Player.HUMAN), this.labelScore1);
+            this.labels.Add(board.getPlayer(Player.COMPUTER), this.labelScore2);
 
             this.refreshBoard();
             this.refreshScore();
@@ -275,7 +275,7 @@ namespace Game
                     PictureBox pic = (PictureBox)this.boardGUI.GetControlFromPosition(piece.X, piece.Y);
                     if (piece.X == x && piece.Y == y)
                     {
-                        if (this.board.getCurrentPlayer() == this.board.Players[0])
+                        if (this.board.getCurrentPlayer() == this.board.getPlayer(Player.HUMAN))
                         {
                             pic.Image = Image.FromFile("../../Resources/black.png");
                         }
