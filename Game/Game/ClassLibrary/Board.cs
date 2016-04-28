@@ -690,15 +690,15 @@ namespace Game.ClassLibrary
             }
             if(nbCurrent+ nbNext <= 15)//Begining
             {
-                res = 0 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 0;
+                res = 0 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 5;
             }
             else if (nbCurrent + nbNext <= 40)//middle
             {
-                res = 1 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 10 + mobility * 1;
+                res = 1 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 10 + mobility * 2;
             }
             else//end
             {
-                res = 200 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 1;
+                res = 200 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 2;
             }
             return res;
         }
@@ -709,25 +709,41 @@ namespace Game.ClassLibrary
         /// <returns></returns>
         public int evaluateGridBis()
         {
-            int score = 0;
-            for (int col = 0; col < 8; col++)
-            {
-                for (int lig = 0; lig < 8; lig++)
-                {
-                    if (this.grid[col, lig] != null)
-                    { // Attention je ne suis pas sur faudrai peut etre plutot vérifier si c'est a un joueur?
-                        score += this.gridWeight[col, lig];
 
-                    }
-                }
-            }
 
-            return score;
+            return 0;
         }
   
+        public void minmax(int depth)
+        {
+            double max_value = Double.NegativeInfinity;
+            List<Piece> listPiece = this.getAllLegalMoves();
+            foreach (Piece p in listPiece)
+            {
+                p.Player = this.getCurrentPlayer();
+                Piece[,] tempo = new Piece[8, 8];
+                List<Player> tempoPlayers = new List<Player>();
+                this.copyGrid(this.Grid, tempo);
+                int scoreHumain = this.getPlayer(Player.HUMAN).Score;
+                int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
 
+                this.play(p, false);
 
-        public int min(int depth, Piece[,] grid)
+                double val = min(depth - 1);
+
+                if(val > max_value)
+                {
+                    max_value = val;
+                    this.bestMove = p;
+                }
+                this.copyGrid(tempo, this.Grid);
+                this.getPlayer(Player.HUMAN).Score = scoreHumain;
+                this.getPlayer(Player.COMPUTER).Score = scoreComputer;
+                this.setNextPlayer();
+            }
+        }
+
+        public double min(int depth)
         {
             if(depth <= 0 || this.gameFinished())
             {
@@ -746,25 +762,53 @@ namespace Game.ClassLibrary
 
                 this.play(p,false);
 
+                double val = max(depth-1);
 
-               
+                if(val < min_value)
+                {
+                    min_value = val;
+                }
+               this.copyGrid(tempo, this.Grid);
+                this.getPlayer(Player.HUMAN).Score = scoreHumain;
+                this.getPlayer(Player.COMPUTER).Score = scoreComputer;
+                this.setNextPlayer();
             }
+            return min_value;
         }
 
 
-
-            if (getCurrentPlayer().Owner== Player.HUMAN)//Appeller a 1 commence programme
+        public double max(int depth)
+        {
+            if (depth <= 0 || this.gameFinished())
             {
-                
-                    
+                return this.evaluateGrid();
+            }
+            double max_value = Double.NegativeInfinity;
+            List<Piece> listPiece = this.getAllLegalMoves();
+            foreach (Piece p in listPiece)
+            {
+                p.Player = this.getCurrentPlayer();
+                Piece[,] tempo = new Piece[8, 8];
+                List<Player> tempoPlayers = new List<Player>();
+                this.copyGrid(this.Grid, tempo);
+                int scoreHumain = this.getPlayer(Player.HUMAN).Score;
+                int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
 
-                    double score = aplhaBeta(depth - 1, alpha, beta);
-                    this.copyGrid(tempo, this.Grid);
-                    this.getPlayer(Player.HUMAN).Score = scoreHumain;
-                    this.getPlayer(Player.COMPUTER).Score = scoreComputer;
-                    this.setNextPlayer();
+                this.play(p, false);
 
+                double val = min(depth - 1);
 
+                if (val > max_value)
+                {
+                    max_value = val;
+                }
+                this.copyGrid(tempo, this.Grid);
+                this.getPlayer(Player.HUMAN).Score = scoreHumain;
+                this.getPlayer(Player.COMPUTER).Score = scoreComputer;
+                this.setNextPlayer();
+            }
+            return max_value;
+        }
 
 
         #endregion

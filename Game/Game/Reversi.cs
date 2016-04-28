@@ -258,7 +258,8 @@ namespace Game
             {
                 do
                 {
-                    this.board.aplhaBeta(4, double.PositiveInfinity, double.NegativeInfinity); // TODO : Manage players here
+                    //this.board.minmax(2);
+                    this.board.aplhaBeta(1, double.PositiveInfinity, double.NegativeInfinity); // TODO : Manage players here
                     this.board.play(this.board.BestMove, true);
                     this.previousPlay = this.board.BestMove;
                     this.disableEvents(this.board.BestMove);
