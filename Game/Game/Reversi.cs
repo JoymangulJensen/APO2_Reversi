@@ -143,6 +143,12 @@ namespace Game
             this.but_Undo.Enabled = !(this.board.SavePieces.Count == 0);
         }
 
+        /// <summary>
+        /// Set the image properly according to the params given
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="player"></param>
+        /// <param name="triggered"></param>
         private void setImageAccordingToPlayer(PictureBox image, Player player, bool triggered = false)
         {
             if (player == this.board.getPlayer(Player.HUMAN))
@@ -253,16 +259,24 @@ namespace Game
         /// </summary>
         private void playIA()
         {
+            
             bool iACanPlay = true;
             if (this.board.canPlay())
             {
                 do
                 {
                     //this.board.minmax(2);
-                    this.board.aplhaBeta(1, double.PositiveInfinity, double.NegativeInfinity); // TODO : Manage players here
-                    this.board.play(this.board.BestMove, true);
-                    this.previousPlay = this.board.BestMove;
-                    this.disableEvents(this.board.BestMove);
+                    this.board.aplhaBeta(this.board.IA_LEVEL, double.PositiveInfinity, double.NegativeInfinity); // TODO : Manage players here
+                    if (this.board.play(this.board.BestMove, true))
+                    {
+                        this.previousPlay = this.board.BestMove;
+                        this.disableEvents(this.board.BestMove);
+                    }
+                    else
+                    {
+                        this.board.setNextPlayer();
+                    }
+                    
                     // this.board.setNextPlayer();
                 } while (! this.board.canPlay(this.board.getPlayer(Player.HUMAN)) && (iACanPlay = this.board.canPlay(this.board.getPlayer(Player.COMPUTER))));
 
@@ -422,15 +436,16 @@ namespace Game
             this.manageCheck(tsmi, difficultyItem);
             if (tsmi == easyItem)
             {
-                MessageBox.Show("Easy !");
+                this.board.IA_LEVEL = 1;
+                // MessageBox.Show("Easy !");
             }
             else if (tsmi == mediumItem)
             {
-                MessageBox.Show("Medium !");
+                this.board.IA_LEVEL = 3;  // MessageBox.Show("Medium !");
             }
             else
             {
-                MessageBox.Show("Hard !");
+                this.board.IA_LEVEL = 5; //  MessageBox.Show("Hard !");
             }
         }
 

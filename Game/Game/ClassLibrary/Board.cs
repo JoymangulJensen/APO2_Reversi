@@ -560,6 +560,8 @@ namespace Game.ClassLibrary
                 return this.evaluateGrid();
             }
             List<Piece> listPiece = this.getAllLegalMoves();
+            Random rnd = new Random();
+            listPiece = new List<Piece>(listPiece.OrderBy(b => rnd.Next()));
             if (getCurrentPlayer().Owner== Player.HUMAN)//Appeller a 1 commence programme
             {
                 foreach (Piece p in listPiece)
@@ -690,9 +692,9 @@ namespace Game.ClassLibrary
             }
             if(nbCurrent+ nbNext <= 15)//Begining
             {
-                res = 0 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 5;
+                res = -5 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 5;
             }
-            else if (nbCurrent + nbNext <= 40)//middle
+            else if (nbCurrent + nbNext <= 60)//middle
             {
                 res = 1 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 10 + mobility * 2;
             }
