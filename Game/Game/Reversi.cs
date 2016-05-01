@@ -12,6 +12,11 @@ namespace Game
         #region Attributes
 
         /// <summary>
+        /// Used to mark the "virtual pieces" indicating the possible moves of the current player
+        /// </summary>
+        private const string POSSIBLE_TAG = "possible";
+
+        /// <summary>
         /// Piece used to record the last play
         /// </summary>
         private Piece previousPlay;
@@ -84,7 +89,7 @@ namespace Game
 
             Player.CurrentPlayer = Player.HUMAN;
             this.board = new Board();
-            this.board.IA_ON = this.pveItem.Checked;
+            Board.IA_ON = this.pveItem.Checked;
 
             // Disable the events of the first 4 pieces
             foreach (Piece p in this.board.InitPieces)
@@ -129,18 +134,39 @@ namespace Game
                             this.setImageAccordingToPlayer(p, piece.Player, false);
                         }
                     }
-                    else if(p.Image != null)
+                    else if(p.Image != null && (String) p.Tag != POSSIBLE_TAG)
                     {
                         p.Click += new EventHandler(this.pictureBox_Click);
                         p.MouseEnter += new EventHandler(this.pictureBox_HoverIn);
                         p.MouseLeave += new EventHandler(this.pictureBox_HoverOut);
                         p.BackColor = Color.Transparent;
                         p.Image = null;
+                        p.Tag = null;
+                    }
+                    else if((String) p.Tag == POSSIBLE_TAG)
+                    {
+                        p.Image = null;
+                        p.Tag = null;
                     }
                 }
             }
-
+            this.displayNextPossibleMoves();
             this.but_Undo.Enabled = !(this.board.SavePieces.Count == 0);
+        }
+
+        /// <summary>
+        /// Display the possible moves as little pieces
+        /// </summary>
+        private void displayNextPossibleMoves()
+        {
+            PictureBox p;
+            List<Piece> currentMovePossible = this.board.getAllLegalMoves();
+            foreach (Piece piece in currentMovePossible)
+            {
+                p = (PictureBox)this.boardGUI.GetControlFromPosition(piece.X, piece.Y);
+                p.Tag = POSSIBLE_TAG;
+                this.setImageAccordingToPlayer(p, this.board.getCurrentPlayer(), false, true);
+            }
         }
 
         /// <summary>
@@ -149,11 +175,15 @@ namespace Game
         /// <param name="image"></param>
         /// <param name="player"></param>
         /// <param name="triggered"></param>
-        private void setImageAccordingToPlayer(PictureBox image, Player player, bool triggered = false)
+        private void setImageAccordingToPlayer(PictureBox image, Player player, bool triggered = false, bool mignature = false)
         {
             if (player == this.board.getPlayer(Player.HUMAN))
             {
-                if (triggered)
+                if (mignature && !triggered)
+                {
+                    image.Image = Image.FromFile("../../Resources/small_black.png");
+                }
+                else if (triggered)
                 {
                     image.Image = Image.FromFile("../../Resources/black_triggered.png");
                 }
@@ -164,7 +194,11 @@ namespace Game
             }
             else
             {
-                if (triggered)
+                if (mignature && !triggered)
+                {
+                    image.Image = Image.FromFile("../../Resources/small_white.png");
+                }
+                else if (triggered)
                 {
                     image.Image = Image.FromFile("../../Resources/white_triggered.png");
                 }
@@ -222,7 +256,7 @@ namespace Game
                 // If the move was played
                 this.disableEvents(pieceToPlay);
                 previousPlay = this.board.Grid[x, y];
-                if (this.board.IA_ON)
+                if (Board.IA_ON)
                 {
                     playIA();
                 }
@@ -240,7 +274,7 @@ namespace Game
             {
                 if (this.board.gameFinished())
                     gameFinished = true;
-                if (!board.IA_ON && ! gameFinished)
+                if (!Board.IA_ON && ! gameFinished)
                     this.skipRoundOfCurrentPlayer();
             }
 
@@ -337,6 +371,7 @@ namespace Game
         {
             PictureBox p = (PictureBox)sender;
             p.Image = null;
+            p.Tag = null;
             this.refreshBoard();
         }
 
@@ -352,6 +387,7 @@ namespace Game
                 picture.Click -= pictureBox_Click;
                 picture.MouseEnter -= pictureBox_HoverIn;
                 picture.MouseLeave -= pictureBox_HoverOut;
+                picture.Tag = null;
             }
             catch (Exception)
             {
@@ -403,14 +439,13 @@ namespace Game
         private void but_Undo_Click(object sender, EventArgs e)
         {
             board.undoMove(this.board.SavePieces.Pop(), this.board.SaveTurnover.Pop());
-            if (this.board.IA_ON)
+            if (Board.IA_ON)
                 board.undoMove(this.board.SavePieces.Pop(), this.board.SaveTurnover.Pop());
 
             previousPlay = this.board.SavePieces.Count > 0 ? this.board.SavePieces.Peek() : null;
             this.refreshBoard();
             this.refreshScore();
             this.gameFinished = false;
-            //this.but_Undo.Enabled = false;
         }
 
         /// <summary>
@@ -458,8 +493,8 @@ namespace Game
         {
             ToolStripMenuItem tsmi = (ToolStripMenuItem)sender;
             this.manageCheck(tsmi, modeItem);
-            this.difficultyItem.Enabled = (this.board.IA_ON = !this.pvpItem.Checked);
-            if (this.board.IA_ON)
+            this.difficultyItem.Enabled = (Board.IA_ON = !this.pvpItem.Checked);
+            if (Board.IA_ON)
             {
                 this.board.Players[0].Name = "Joueur";
                 this.board.Players[1].Name = "Ordinateur";

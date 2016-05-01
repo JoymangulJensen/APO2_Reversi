@@ -16,7 +16,7 @@ namespace Game.ClassLibrary
         /// <summary>
         /// Indicates if the IA is activated or not
         /// </summary>
-        public bool IA_ON = false;
+        public static bool IA_ON = true;
 
         /// <summary>
         /// Indicates the level of the IA : 
@@ -147,8 +147,17 @@ namespace Game.ClassLibrary
         public Board()
         {
             players = new List<Player>();
-            players.Add(new Player(Player.HUMAN, "Joueur"));
-            players.Add(new Player(Player.COMPUTER, "Ordinateur"));
+            if (IA_ON)
+            {
+                players.Add(new Player(Player.HUMAN, "Joueur"));
+                players.Add(new Player(Player.COMPUTER, "Ordinateur"));
+            }
+            else
+            {
+                players.Add(new Player(Player.HUMAN, "Joueur 1"));
+                players.Add(new Player(Player.COMPUTER, "Joueur 2")); // Warning to COMPUTER (non sense)
+            }
+            
 
             this.grid = new Piece[8, 8];
             this.bestMove = new Piece(0, 0, this.getPlayer(Player.COMPUTER));

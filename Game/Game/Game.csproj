@@ -100,6 +100,8 @@
     <Content Include="Resources\dark_grey_small.png" />
     <Content Include="Resources\grey.png" />
     <Content Include="Resources\light_grey_small.png" />
+    <Content Include="Resources\small_black.png" />
+    <Content Include="Resources\small_white.png" />
     <Content Include="Resources\white_triggered.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

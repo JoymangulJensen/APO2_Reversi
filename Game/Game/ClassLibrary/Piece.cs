@@ -54,25 +54,6 @@ namespace Game.ClassLibrary
 
         #endregion
 
-        public void switchPiece()
-        {
-            if (this.player.Owner == Player.HUMAN)
-            {
-                this.player.Owner = Player.COMPUTER;
-            }
-            else
-            {
-                this.player.Owner = Player.HUMAN;
-            }
-        }
-
-        public Piece copyPiece(Piece p)
-        {
-            Piece res = new Piece(p.X, p.Y);
-            res.player = new Player(p.Player.Owner);
-            return res;
-        }
-
         override
         public String ToString()
         {
