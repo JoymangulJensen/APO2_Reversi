@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Game
@@ -15,6 +16,16 @@ namespace Game
         /// Used to mark the "virtual pieces" indicating the possible moves of the current player
         /// </summary>
         private const string POSSIBLE_TAG = "possible";
+
+        /// <summary>
+        /// Number of seconds before stopping the IA
+        /// </summary>
+        private const int IA_TIMEOUT = 3;
+
+        /// <summary>
+        /// Boolean used to stop the IA calculation if it takes too long
+        /// </summary>
+        public static bool stopIA = false;
 
         /// <summary>
         /// Piece used to record the last play
@@ -90,6 +101,7 @@ namespace Game
             Player.CurrentPlayer = Player.HUMAN;
             this.board = new Board();
             Board.IA_ON = this.pveItem.Checked;
+            this.updateDifficulty();
 
             // Disable the events of the first 4 pieces
             foreach (Piece p in this.board.InitPieces)
@@ -299,8 +311,11 @@ namespace Game
             {
                 do
                 {
-                    //this.board.minmax(2);
-                    this.board.aplhaBeta(this.board.IA_LEVEL, double.PositiveInfinity, double.NegativeInfinity); // TODO : Manage players here
+                    if (!runWithTimeout(setBestMoveIA, TimeSpan.FromSeconds(IA_TIMEOUT)))
+                    {
+                        MessageBox.Show("IA trop longue");
+                        stopIA = false;
+                    }
                     if (this.board.play(this.board.BestMove, true))
                     {
                         this.previousPlay = this.board.BestMove;
@@ -397,6 +412,38 @@ namespace Game
 
         #endregion
 
+        #region Threads
+
+        /// <summary>
+        /// Run the method given in param, stopIA is set to true once the timeout is over
+        /// </summary>
+        /// <param name="threadStart">Thread to be started</param>
+        /// <param name="timeout">Time to let the thread live</param>
+        /// <returns>true if the thread finished by itself, false if it didn't have time</returns>
+        private static bool runWithTimeout(ThreadStart threadStart, TimeSpan timeout)
+        {
+            Thread workerThread = new Thread(threadStart);
+
+            workerThread.Start();
+
+            bool finished = workerThread.Join(timeout);
+            if (!finished)
+                stopIA = true;
+
+            return finished;
+        }
+
+        /// <summary>
+        /// Call the IA algorithm (alphabeta)
+        /// This needs to be in a separated method because we need to call it in a different thread (to stop it after X seconds)
+        /// </summary>
+        private void setBestMoveIA()
+        {
+            this.board.aplhaBeta(this.board.IA_LEVEL, double.PositiveInfinity, double.NegativeInfinity);
+        }
+
+        #endregion
+
         #region Utils
 
         /// <summary>
@@ -469,18 +516,25 @@ namespace Game
         {
             ToolStripMenuItem tsmi = (ToolStripMenuItem)sender;
             this.manageCheck(tsmi, difficultyItem);
-            if (tsmi == easyItem)
+            this.updateDifficulty();
+        }
+
+        /// <summary>
+        /// Update the difficulty according to the menu item checked
+        /// </summary>
+        private void updateDifficulty()
+        {
+            if (easyItem.Checked)
             {
                 this.board.IA_LEVEL = 1;
-                // MessageBox.Show("Easy !");
             }
-            else if (tsmi == mediumItem)
+            else if (mediumItem.Checked)
             {
-                this.board.IA_LEVEL = 3;  // MessageBox.Show("Medium !");
+                this.board.IA_LEVEL = 3;  
             }
             else
             {
-                this.board.IA_LEVEL = 5; //  MessageBox.Show("Hard !");
+                this.board.IA_LEVEL = 5; 
             }
         }
 

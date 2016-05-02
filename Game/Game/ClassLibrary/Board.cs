@@ -564,7 +564,7 @@ namespace Game.ClassLibrary
         //Prog ou Adver
         public double aplhaBeta(int depth, double beta, double alpha)
         {
-            if(depth <= 0 || this.gameFinished())
+            if(Reversi.stopIA || depth <= 0 || this.gameFinished())
             {
                 return this.evaluateGrid();
             }
