@@ -561,73 +561,6 @@ namespace Game.ClassLibrary
         #endregion
 
         #region AI
-        //Prog ou Adver
-        public double aplhaBeta(int depth, double beta, double alpha)
-        {
-            if(Reversi.stopIA || depth <= 0 || this.gameFinished())
-            {
-                return this.evaluateGrid();
-            }
-            List<Piece> listPiece = this.getAllLegalMoves();
-            Random rnd = new Random();
-            listPiece = new List<Piece>(listPiece.OrderBy(b => rnd.Next()));
-            if (getCurrentPlayer().Owner== Player.HUMAN)//Appeller a 1 commence programme
-            {
-                foreach (Piece p in listPiece)
-                {
-                    p.Player = this.getCurrentPlayer();
-                    Piece[,] tempo = new Piece[8, 8];
-                    List<Player> tempoPlayers = new List<Player>();
-                    this.copyGrid(this.Grid, tempo);
-                    int scoreHumain = this.getPlayer(Player.HUMAN).Score;
-                    int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
-
-                    this.play(p,false);
-
-                    double score = aplhaBeta(depth - 1, alpha, beta);
-                    this.copyGrid(tempo, this.Grid);
-                    this.getPlayer(Player.HUMAN).Score = scoreHumain;
-                    this.getPlayer(Player.COMPUTER).Score = scoreComputer;
-                    this.setNextPlayer();
-                    //MessageBox.Show(score+"");
-                    if(score >= alpha)
-                    {
-                        alpha = score;
-                        this.bestMove = p;
-
-                    }
-                }
-                return alpha;
-            }
-            else
-            {//Adversaire
-                foreach (Piece p in listPiece)
-                {
-                    p.Player = this.getCurrentPlayer();
-                    Piece[,] tempo = new Piece[8, 8];
-                    List<Player> tempoPlayers = new List<Player>();
-                    this.copyGrid(this.Grid, tempo);
-                    int scoreHumain = this.getPlayer(Player.HUMAN).Score;
-                    int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
-                    this.play(p, false);
-
-                    double score = aplhaBeta(depth - 1, alpha, beta);
-                    this.copyGrid(tempo, this.Grid);
-                    this.getPlayer(Player.HUMAN).Score = scoreHumain;
-                    this.getPlayer(Player.COMPUTER).Score = scoreComputer;
-                    this.setNextPlayer();
-                    //MessageBox.Show(score + "");
-                    if (score <= beta)
-                    {
-                        
-                        beta = score;
-                        this.bestMove = p;
-                    }
-                }
-                return beta;
-            }
-        }
-   
         /// <summary>
         /// Copy the playing grid
         /// </summary>
@@ -648,8 +581,7 @@ namespace Game.ClassLibrary
                 }
             }
         }
-
-
+        
         /// <summary>
         /// Methode tha return all the piece that can be placed on the grid
         /// </summary>
@@ -668,8 +600,7 @@ namespace Game.ClassLibrary
             }
             return listPiece;
         }
-
-
+        
         /// <summary>
         /// Methode to evaluate the grid with the corresponding weight
         /// </summary>
@@ -692,16 +623,16 @@ namespace Game.ClassLibrary
                 {
                     if (this.grid[col, lig] != null && this.grid[col, lig].Player == this.getCurrentPlayer())
                     { // Si c'est la machine alors on calcule combien de point il a
-                        scoreCurrent += this.gridWeightBisBis[col, lig];
+                        scoreCurrent += this.gridWeight[col, lig];
                     }else if (this.grid[col, lig] != null)
                     {
-                        scoreNext += this.gridWeightBisBis[col, lig];
+                        scoreNext += this.gridWeight[col, lig];
                     }
                 }
             }
             if(nbCurrent+ nbNext <= 15)//Begining
             {
-                res = -5 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 5;
+                res = -3 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 7 + mobility * 5;
             }
             else if (nbCurrent + nbNext <= 60)//middle
             {
@@ -712,17 +643,6 @@ namespace Game.ClassLibrary
                 res = 200 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 2;
             }
             return res;
-        }
-
-        /// <summary>
-        /// Methode to evaluate the grid with the corresponding weight
-        /// </summary>
-        /// <returns></returns>
-        public int evaluateGridBis()
-        {
-
-
-            return 0;
         }
   
         public void minmax(int depth)
@@ -740,7 +660,7 @@ namespace Game.ClassLibrary
 
                 this.play(p, false);
 
-                double val = min(depth - 1);
+                double val = min(depth);
 
                 if(val > max_value)
                 {
@@ -779,7 +699,7 @@ namespace Game.ClassLibrary
                 {
                     min_value = val;
                 }
-               this.copyGrid(tempo, this.Grid);
+                this.copyGrid(tempo, this.Grid);
                 this.getPlayer(Player.HUMAN).Score = scoreHumain;
                 this.getPlayer(Player.COMPUTER).Score = scoreComputer;
                 this.setNextPlayer();
@@ -820,7 +740,6 @@ namespace Game.ClassLibrary
             }
             return max_value;
         }
-
 
         #endregion
     }

@@ -439,7 +439,8 @@ namespace Game
         /// </summary>
         private void setBestMoveIA()
         {
-            this.board.aplhaBeta(this.board.IA_LEVEL, double.PositiveInfinity, double.NegativeInfinity);
+            this.board.minmax(this.board.IA_LEVEL);
+            //this.board.aplhaBeta(this.board.IA_LEVEL, double.PositiveInfinity, double.NegativeInfinity);
         }
 
         #endregion
