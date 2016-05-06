@@ -14,12 +14,12 @@ namespace Game.ClassLibrary
         #region Attributes
 
         /// <summary>
-        /// Indicates if the IA is activated or not
+        /// Indicates if the AI is activated or not
         /// </summary>
         public static bool IA_ON = true;
 
         /// <summary>
-        /// Indicates the level of the IA : 
+        /// Indicates the level of the AI : 
         /// 1 = Easy
         /// 2 = Medium
         /// 3 = Hard
@@ -30,96 +30,79 @@ namespace Game.ClassLibrary
         /// List of the players
         /// </summary>
         List<Player> players;
+
+        /// <summary>
+        /// Store the current turonver, use to preview a move
+        /// </summary>
+        private Turnover currentTurnover;
+
+        /// <summary>
+        /// Save all the turnovers of all played piece
+        /// </summary>
+        private Stack<Turnover> saveTurnover = new Stack<Turnover>();
+
+        /// <summary>
+        /// Save all the playes piece
+        /// </summary>
+        private Stack<Piece> savePieces = new Stack<Piece>();
+
+        /// <summary>
+        /// Grid of the game : 2d Array of Pieces
+        /// </summary>
+        private Piece[,] grid;
+        
+        /// <summary>
+        /// Store the best decided by the AI
+        /// </summary>
+        private Piece bestMove;
+
+        /// <summary>
+        /// The first four pieces that are initialised at the beginning of each game
+        /// </summary>
+        private List<Piece> initPieces = new List<Piece>();
+
+        #endregion
+
+        #region Property
+
         internal List<Player> Players
         {
             get { return players; }
             set { players = value; }
         }
 
-        /// <summary>
-        /// Store the current turonver, use to preview a move
-        /// </summary>
-        private Turnover currentTurnover;
-        /// <summary>
-        /// Save all the turnovers of all played piece
-        /// </summary>
-        private Stack<Turnover> saveTurnover = new Stack<Turnover>();
-        /// <summary>
-        /// Save all the playes piece
-        /// </summary>
-        private Stack<Piece> savePieces = new Stack<Piece>();
-
-
-
-
-        /// <summary>
-        /// Grid of the game : 2d Array of Pieces
-        /// </summary>
-        private Piece[,] grid;
         internal Piece[,] Grid
         {
             get { return grid; }
             set { grid = value; }
         }
 
-        private int[,] gridWeight = new int[8, 8] {
-                                                { 1000 , 50, 200 , 200 , 200 , 200 , 50, 1000  },
-                                                { 50, 0, 100, 100, 100, 100, 0, 50 },
-                                                { 200 , 100, 150 , 150 , 150 , 150 , 100, 200  },
-                                                { 200 , 100, 150 , 150 , 150 , 150 , 100, 200  },
-                                                { 200 , 100, 150 , 150 , 150 , 150 , 100, 200  },
-                                                { 200 , 100, 150 , 150 , 150 , 150 , 100, 200  },
-                                                { 50, 0, 100, 100, 100, 100, 0, 50 },
-                                                { 1000 , 50, 200 , 200 , 200 , 200 , 50, 1000  },
-                                                    };
-
-        private Piece bestMove;
         internal Piece BestMove
         {
-            get
-            {
-                return bestMove;
-            }
-            }
+            get { return bestMove; }
+            set { bestMove = value; }
+        }
 
-        private List<Piece> initPieces = new List<Piece>();
+        
         internal List<Piece> InitPieces
         {
-            get
-            {
-                return initPieces;
-            }
+            get { return initPieces;}
         }
 
         internal Stack<Piece> SavePieces
         {
-            get
-            {
-                return savePieces;
-            }
-
-            set
-            {
-                savePieces = value;
-            }
+            get{return savePieces;}
+            set{savePieces = value;}
         }
 
         internal Stack<Turnover> SaveTurnover
         {
-            get
-            {
-                return saveTurnover;
+            get{return saveTurnover;}
+            set{saveTurnover = value;}
         }
-
-            set
-            {
-                saveTurnover = value;
-            }
-        }
-
         #endregion
 
-        #region Constructor and Initialization
+        #region Constructor
 
         /// <summary>
         /// Constructor
@@ -138,9 +121,8 @@ namespace Game.ClassLibrary
                 players.Add(new Player(Player.COMPUTER, "Joueur 2")); // Warning to COMPUTER (non sense)
             }
             
-
             this.grid = new Piece[8, 8];
-            this.bestMove = new Piece(0, 0, this.getPlayer(Player.COMPUTER));
+            this.BestMove = new Piece(0, 0, this.getPlayer(Player.COMPUTER));
 
             this.currentTurnover = new Turnover();
 
@@ -152,6 +134,88 @@ namespace Game.ClassLibrary
             this.updateScoresByCounting();
         }
 
+
+        #endregion
+
+        #region Manage end of the game & winners
+
+        /// <summary>
+        /// If none of the players can play
+        /// </summary>
+        /// <returns>true if none of the players can play</returns>
+        public Boolean gameFinished()
+        {
+            return (!this.canPlay(this.getPlayer(Player.COMPUTER)) && !this.canPlay(this.getPlayer(Player.HUMAN)));
+        }
+
+        /// <summary>
+        /// Return the winner(s) : players with the maximum score
+        /// </summary>
+        /// <returns>The winners (players with the maximum score)</returns>
+        public List<Player> getWinners()
+        {
+            List<Player> winners = new List<Player>();
+            Player currentWinner = players[0];
+            foreach (Player p in players)
+            {
+
+                if (p.Score > currentWinner.Score)
+                {
+                    currentWinner = p;
+                    winners.Clear();
+                    winners.Add(p);
+                }
+                else if (p.Score == currentWinner.Score)
+                {
+                    winners.Add(p);
+                }
+            }
+            return winners;
+        }
+
+        #endregion
+
+        #region Play a move and update variables accordlingly
+
+        /// <summary>
+        /// Try to play the given Piece
+        /// </summary>
+        /// <param name="p">Piece to play</param>
+        /// <param name="save">If true save the move else does not save the move</param>
+        /// <returns>True if the move is legal</returns>
+        public bool play(Piece p, Boolean save)
+        {
+            if (this.canMove(p)) // Can play
+            {
+                // p.Player = this.getCurrentPlayer();
+                // grid[p.X, p.Y] = p;
+
+                List<Piece> changedPieces = this.listeMove(p);
+
+                foreach (Piece piece in changedPieces)
+                {
+                    piece.Player = this.getCurrentPlayer();
+                    this.grid[piece.X, piece.Y] = piece;
+                }
+
+                if (save)
+                {
+                    this.SavePieces.Push(p);
+                    Turnover temp = new Turnover();
+                    temp.clone(this.currentTurnover);
+                    this.SaveTurnover.Push(temp);
+                }
+
+
+                // Respect the orders of the call of the two next methods
+                this.updateScoresOp(changedPieces);
+                this.setNextPlayer();
+
+                return true;
+            }
+            else
+                return false;
+        }
 
         #endregion
 
@@ -254,89 +318,8 @@ namespace Game.ClassLibrary
         }
 
         #endregion
-
-        #region Manage end of the game & winners
-
-        /// <summary>
-        /// If none of the players can play
-        /// </summary>
-        /// <returns>true if none of the players can play</returns>
-        public Boolean gameFinished()
-        {
-            return (!this.canPlay(this.getPlayer(Player.COMPUTER)) && !this.canPlay(this.getPlayer(Player.HUMAN)));
-        }
-
-        /// <summary>
-        /// Return the winner(s) : players with the maximum score
-        /// </summary>
-        /// <returns>The winners (players with the maximum score)</returns>
-        public List<Player> getWinners()
-        {
-            List<Player> winners = new List<Player>();
-            Player currentWinner = players[0];
-            foreach (Player p in players)
-            {
-
-                if (p.Score > currentWinner.Score)
-                {
-                    currentWinner = p;
-                    winners.Clear();
-                    winners.Add(p);
-                }
-                else if (p.Score == currentWinner.Score)
-                {
-                    winners.Add(p);
-                }
-            }
-            return winners;
-        }
-
-        #endregion
-
-        #region Play
-
-        /// <summary>
-        /// Try to play the given Piece
-        /// </summary>
-        /// <param name="p">Piece to play</param>
-        /// <param name="save">If true save the move else does not save the move</param>
-        /// <returns>True if the move is legal</returns>
-        public bool play(Piece p, Boolean save)
-        {
-            if (this.canMove(p)) // Can play
-            {
-                // p.Player = this.getCurrentPlayer();
-                // grid[p.X, p.Y] = p;
-
-                List<Piece> changedPieces = this.listeMove(p);
-
-                foreach (Piece piece in changedPieces)
-                {
-                    piece.Player = this.getCurrentPlayer();
-                    this.grid[piece.X, piece.Y] = piece;
-                }
-
-                if(save)
-                {
-                    this.SavePieces.Push(p);
-                    Turnover temp = new Turnover();
-                    temp.clone(this.currentTurnover);
-                    this.SaveTurnover.Push(temp);
-                }
-
-
-                // Respect the orders of the call of the two next methods
-                this.updateScoresOp(changedPieces);
-                this.setNextPlayer();
-
-                return true;
-            }
-            else
-                return false;
-        }
-
-        #endregion
-
+           
+        #region Move management
         #region Test if a player have a legal move remaining
 
         /// <summary>
@@ -372,7 +355,7 @@ namespace Game.ClassLibrary
 
         #endregion
 
-        #region return all legal move
+        #region Get all the possible move either according to a specific position or on the whole grid
         /// <summary>
         /// According to the piece i parameter it returns the list piece can has to be turned over
         /// </summary>
@@ -397,9 +380,28 @@ namespace Game.ClassLibrary
                 listePiece.Add(p);
             return listePiece;
         }
+
+        /// <summary>
+        /// Methode tha return all the piece that can be placed on the grid
+        /// </summary>
+        /// <returns></returns>
+        public List<Piece> getAllLegalMoves()
+        {
+            List<Piece> listPiece = new List<Piece>();
+            for (int col = 0; col < 8; col++)
+            {
+                for (int lig = 0; lig < 8; lig++)
+                {
+                    Piece p = new Piece(col, lig);
+                    if (this.canMove(p))
+                        listPiece.Add(p);
+                }
+            }
+            return listPiece;
+        }
         #endregion
 
-        #region undo a move
+        #region Undo a move
         /// <summary>
         /// Methode to undo a previous move
         /// The grid return to its previous state
@@ -432,10 +434,16 @@ namespace Game.ClassLibrary
 
         #region Test if move is legal
 
+        /// <summary>
+        /// Test if the current player can play
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public Boolean canMove(Piece p)
         {
             return this.canMove(p, this.getCurrentPlayer());
         }
+
         /// <summary>
         /// Methode to test if a player can play in a specific compartiment
         /// this method also update the turonver table to get the number of value possible in a specific direction
@@ -472,14 +480,13 @@ namespace Game.ClassLibrary
                         next = tempo;
                     }
                 }
-            
+
                 //If the turonver is not zero and the last piece to be tested is the same as the current player
                 if (this.possiblePlace(next) && Grid[next.X, next.Y] != null && turnover != 0 && Grid[next.X, next.Y].Player == player)
                 {
                     res = true;
                     //update the turonver table for that specific direction
                     this.currentTurnover.Value[direction] = turnover;
-
                 }
                 else
                 {
@@ -494,8 +501,12 @@ namespace Game.ClassLibrary
             return (p.X >= 0 && p.Y >= 0 && p.X < 8 && p.Y < 8);
         }
 
+        #endregion
+
+        #region Get the next piece accordind to its position
+
         /// <summary>
-        /// Lethode to get next piece
+        /// Methode to get next piece
         /// </summary>
         /// <param name="direction">Direction to move</param>
         /// <param name="p">Current piece</param>    
@@ -540,188 +551,7 @@ namespace Game.ClassLibrary
 
         #endregion
 
-        #region AI
-        /// <summary>
-        /// Copy the playing grid
-        /// </summary>
-        /// <param name="source">The grid to be copied</param>
-        /// <param name="destination">Where the grid is stored</param>
-        public void copyGrid(Piece[,] source, Piece[,] destination)
-        {
-            for (int col = 0; col < 8; col++)
-            {
-                for (int lig = 0; lig < 8; lig++)
-                {
-                    if (source[col, lig] == null)
-                        destination[col, lig] = null;
-                    else
-                    {
-                        destination[col, lig] = new Piece(col, lig, source[col, lig].Player);
-                    }
-                }
-            }
-        }
-        
-        /// <summary>
-        /// Methode tha return all the piece that can be placed on the grid
-        /// </summary>
-        /// <returns></returns>
-        public List<Piece> getAllLegalMoves()
-        {
-            List<Piece> listPiece = new List<Piece>();
-            for (int col = 0; col < 8; col++)
-            {
-                for (int lig = 0; lig < 8; lig++)
-                {
-                    Piece p = new Piece(col, lig);
-                    if (this.canMove(p))
-                        listPiece.Add(p);
-                }
-            }
-            return listPiece;
-        }
-        
-        /// <summary>
-        /// Methode to evaluate the grid with the corresponding weight
-        /// </summary>
-        /// <returns></returns>
-        public int evaluateGrid()
-        {
-            int nbCurrent, nbNext, mobilityCurrent, mobilityNext;
-            int res = 0;
-            nbCurrent = getCurrentPlayer().Score;
-            this.setNextPlayer();
-            nbNext = getCurrentPlayer().Score;
-            mobilityNext = this.getAllLegalMoves().Capacity;
-            this.setNextPlayer();
-            int scoreCurrent, scoreNext = 0;
-            scoreCurrent = 0;
-            mobilityCurrent = this.getAllLegalMoves().Capacity;
-
-            for (int col = 0; col < 8; col++)
-            {
-                for (int lig = 0; lig < 8; lig++)
-                {
-                    if (this.grid[col, lig] != null && this.grid[col, lig].Player == this.getCurrentPlayer())
-                    { // Si c'est la machine alors on calcule combien de point il a
-                        scoreCurrent += this.gridWeight[col, lig];
-                    }else if (this.grid[col, lig] != null)
-                    {
-                        scoreNext += this.gridWeight[col, lig];
-                    }
-                }
-            }
-            if(nbCurrent+ nbNext <= 12)//Begining
-            {
-                res = -2 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 2 + (mobilityCurrent- mobilityNext) * 3;
-            }
-            else if (nbCurrent + nbNext <= 60)//middle
-            {
-                res = 1 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 10 + (mobilityCurrent - mobilityNext) * 5;
-            }
-            else//end
-            {
-                res = 200 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 1 + (mobilityCurrent - mobilityNext) * 1;
-            }
-            return res;
-        }
-  
-        public void minmax(int depth)
-        {
-            double max_value = Double.NegativeInfinity;
-            List<Piece> listPiece = this.getAllLegalMoves();
-            foreach (Piece p in listPiece)
-            {
-                p.Player = this.getCurrentPlayer();
-                Piece[,] tempo = new Piece[8, 8];
-                List<Player> tempoPlayers = new List<Player>();
-                this.copyGrid(this.Grid, tempo);
-                int scoreHumain = this.getPlayer(Player.HUMAN).Score;
-                int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
-
-                this.play(p, false);
-
-                double val = min(depth);
-
-                if(val > max_value)
-                {
-                    max_value = val;
-                    this.bestMove = p;
-                }
-                this.copyGrid(tempo, this.Grid);
-                this.getPlayer(Player.HUMAN).Score = scoreHumain;
-                this.getPlayer(Player.COMPUTER).Score = scoreComputer;
-                this.setNextPlayer();
-            }
-        }
-
-        public double min(int depth)
-        {
-            if(depth <= 0 || this.gameFinished())
-            {
-                return this.evaluateGrid();
-            }
-            double min_value = Double.PositiveInfinity;
-            List<Piece> listPiece = this.getAllLegalMoves();
-            foreach (Piece p in listPiece)
-            {
-                p.Player = this.getCurrentPlayer();
-                Piece[,] tempo = new Piece[8, 8];
-                List<Player> tempoPlayers = new List<Player>();
-                this.copyGrid(this.Grid, tempo);
-                int scoreHumain = this.getPlayer(Player.HUMAN).Score;
-                int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
-
-                this.play(p,false);
-
-                double val = max(depth-1);
-
-                if(val < min_value)
-                {
-                    min_value = val;
-                }
-                this.copyGrid(tempo, this.Grid);
-                this.getPlayer(Player.HUMAN).Score = scoreHumain;
-                this.getPlayer(Player.COMPUTER).Score = scoreComputer;
-                this.setNextPlayer();
-            }
-            return min_value;
-        }
-
-
-        public double max(int depth)
-        {
-            if (depth <= 0 || this.gameFinished())
-            {
-                return this.evaluateGrid();
-            }
-            double max_value = Double.NegativeInfinity;
-            List<Piece> listPiece = this.getAllLegalMoves();
-            foreach (Piece p in listPiece)
-            {
-                p.Player = this.getCurrentPlayer();
-                Piece[,] tempo = new Piece[8, 8];
-                List<Player> tempoPlayers = new List<Player>();
-                this.copyGrid(this.Grid, tempo);
-                int scoreHumain = this.getPlayer(Player.HUMAN).Score;
-                int scoreComputer = this.getPlayer(Player.COMPUTER).Score;
-
-                this.play(p, false);
-
-                double val = min(depth - 1);
-
-                if (val > max_value)
-                {
-                    max_value = val;
-                }
-                this.copyGrid(tempo, this.Grid);
-                this.getPlayer(Player.HUMAN).Score = scoreHumain;
-                this.getPlayer(Player.COMPUTER).Score = scoreComputer;
-                this.setNextPlayer();
-            }
-            return max_value;
-        }
-
         #endregion
+
     }
 }

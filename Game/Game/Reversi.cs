@@ -18,12 +18,12 @@ namespace Game
         private const string POSSIBLE_TAG = "possible";
 
         /// <summary>
-        /// Number of seconds before stopping the IA
+        /// Number of seconds before stopping the AI
         /// </summary>
         private const int IA_TIMEOUT = 10;
 
         /// <summary>
-        /// Boolean used to stop the IA calculation if it takes too long
+        /// Boolean used to stop the AI calculation if it takes too long
         /// </summary>
         public static bool stopIA = false;
 
@@ -301,7 +301,7 @@ namespace Game
         }
 
         /// <summary>
-        /// The player has played, it's the IA round now
+        /// The player has played, it's the AI round now
         /// </summary>
         private void playIA()
         {
@@ -313,7 +313,7 @@ namespace Game
                 {
                     if (!runWithTimeout(setBestMoveIA, TimeSpan.FromSeconds(IA_TIMEOUT)))
                     {
-                        MessageBox.Show("IA trop longue");
+                        MessageBox.Show("AI trop longue");
                         stopIA = false;
                     }
                     if (this.board.play(this.board.BestMove, true))
@@ -434,12 +434,13 @@ namespace Game
         }
 
         /// <summary>
-        /// Call the IA algorithm (alphabeta)
+        /// Call the AI algorithm (alphabeta)
         /// This needs to be in a separated method because we need to call it in a different thread (to stop it after X seconds)
         /// </summary>
         private void setBestMoveIA()
         {
-            this.board.minmax(this.board.IA_LEVEL);
+            AI ai = new AI(this.board);
+            //this.board.minmax(this.board.IA_LEVEL);
             //this.board.aplhaBeta(this.board.IA_LEVEL, double.PositiveInfinity, double.NegativeInfinity);
         }
 

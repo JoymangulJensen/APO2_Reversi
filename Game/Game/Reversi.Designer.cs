@@ -177,7 +177,7 @@
             this.pveItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.pveItem.Name = "pveItem";
             this.pveItem.Size = new System.Drawing.Size(161, 22);
-            this.pveItem.Text = "Joueur vs IA";
+            this.pveItem.Text = "Joueur vs AI";
             this.pveItem.Click += new System.EventHandler(this.menuItemMode_Click);
             // 
             // Reversi
