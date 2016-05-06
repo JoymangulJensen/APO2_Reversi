@@ -20,7 +20,7 @@ namespace Game
         /// <summary>
         /// Number of seconds before stopping the IA
         /// </summary>
-        private const int IA_TIMEOUT = 3;
+        private const int IA_TIMEOUT = 10;
 
         /// <summary>
         /// Boolean used to stop the IA calculation if it takes too long
@@ -527,15 +527,15 @@ namespace Game
         {
             if (easyItem.Checked)
             {
-                this.board.IA_LEVEL = 1;
+                this.board.IA_LEVEL = 2;
             }
             else if (mediumItem.Checked)
             {
-                this.board.IA_LEVEL = 3;  
+                this.board.IA_LEVEL = 1;  
             }
             else
             {
-                this.board.IA_LEVEL = 5; 
+                this.board.IA_LEVEL = 3; 
             }
         }
 

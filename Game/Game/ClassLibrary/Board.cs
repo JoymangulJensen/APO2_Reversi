@@ -587,15 +587,16 @@ namespace Game.ClassLibrary
         /// <returns></returns>
         public int evaluateGrid()
         {
-            int nbCurrent, nbNext, mobility;
+            int nbCurrent, nbNext, mobilityCurrent, mobilityNext;
             int res = 0;
             nbCurrent = getCurrentPlayer().Score;
             this.setNextPlayer();
             nbNext = getCurrentPlayer().Score;
+            mobilityNext = this.getAllLegalMoves().Capacity;
             this.setNextPlayer();
             int scoreCurrent, scoreNext = 0;
             scoreCurrent = 0;
-            mobility = this.getAllLegalMoves().Capacity;
+            mobilityCurrent = this.getAllLegalMoves().Capacity;
 
             for (int col = 0; col < 8; col++)
             {
@@ -610,17 +611,17 @@ namespace Game.ClassLibrary
                     }
                 }
             }
-            if(nbCurrent+ nbNext <= 15)//Begining
+            if(nbCurrent+ nbNext <= 12)//Begining
             {
-                res = -3 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 7 + mobility * 5;
+                res = -2 * (nbCurrent-nbNext) + (scoreCurrent - scoreNext) * 2 + (mobilityCurrent- mobilityNext) * 3;
             }
             else if (nbCurrent + nbNext <= 60)//middle
             {
-                res = 1 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 10 + mobility * 2;
+                res = 1 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 10 + (mobilityCurrent - mobilityNext) * 5;
             }
             else//end
             {
-                res = 200 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 1 + mobility * 2;
+                res = 200 * (nbCurrent - nbNext) + (scoreCurrent - scoreNext) * 1 + (mobilityCurrent - mobilityNext) * 1;
             }
             return res;
         }
