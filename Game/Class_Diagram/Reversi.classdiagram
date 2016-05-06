@@ -1,19 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <logicalClassDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" dslVersion="1.0.0.0" Id="e9ee80c9-999f-4529-b376-97afe539de11" name="Class_Diagram" linkedPackageId="919c4259-36a2-48f1-9eba-17a7b23ac06b" xmlns="http://schemas.microsoft.com/dsltools/LogicalClassDesigner">
-  <profileInstances>
-    <packageHasProfileInstances Id="3e2f00df-4b6e-41ed-817d-755f165f6bb9">
-      <profileInstance Id="c5980982-08f3-4531-9992-2a3d45d28e7a" name="StandardProfileL2">
-        <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
-      </profileInstance>
-      <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
-    </packageHasProfileInstances>
-    <packageHasProfileInstances Id="c734b6ef-5152-4318-b04e-4787e7bfe85f">
-      <profileInstance Id="8943cdf5-2aa0-4d05-9e64-b1e88167c014" name="StandardProfileL3">
-        <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
-      </profileInstance>
-      <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
-    </packageHasProfileInstances>
-  </profileInstances>
   <packagedElements>
     <logicalClassDesignerModelHasTypes>
       <class Id="31648857-5464-4766-873c-13061c66c345" name="Board" isAbstract="false" isLeaf="false" isActiveClass="false">
@@ -704,7 +690,21 @@
       </referencedType>
     </packageHasNamedElement>
   </packagedElements>
-  <package Id="919c4259-36a2-48f1-9eba-17a7b23ac06b" name="Class_Diagram">
+  <package Id="919c4259-36a2-48f1-9eba-17a7b23ac06b" name="Reversi">
     <elementDefinition Id="44f163db-d7e0-4c0f-9531-926c0122abe7" />
+    <profileInstances>
+      <packageHasProfileInstances Id="3e2f00df-4b6e-41ed-817d-755f165f6bb9">
+        <profileInstance Id="c5980982-08f3-4531-9992-2a3d45d28e7a" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="c734b6ef-5152-4318-b04e-4787e7bfe85f">
+        <profileInstance Id="8943cdf5-2aa0-4d05-9e64-b1e88167c014" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
   </package>
 </logicalClassDesignerModel>
